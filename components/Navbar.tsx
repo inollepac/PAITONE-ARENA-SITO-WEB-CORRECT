@@ -32,14 +32,6 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const bookingSection = config.sections.find(s => s.id === 'booking');
 
-  const getLogoSizeClass = () => {
-    switch(config.logoSize) {
-      case 'sm': return 'w-8 h-8';
-      case 'lg': return 'w-16 h-16';
-      default: return 'w-12 h-12';
-    }
-  };
-
   const getLogoShapeClass = () => {
     switch(config.logoShape) {
       case 'square': return 'rounded-none';
@@ -53,10 +45,22 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
-            <div className={`relative ${getLogoSizeClass()} flex items-center justify-center`}>
-               <div className={`absolute inset-0 border-2 border-brand-green ${getLogoShapeClass()} opacity-40 group-hover:scale-110 transition duration-500`}></div>
+            <div 
+              className={`relative flex items-center justify-center overflow-hidden border-2 border-brand-green transition-all duration-300 ${getLogoShapeClass()}`}
+              style={{ 
+                width: `${config.logoWidth}px`, 
+                height: `${config.logoWidth}px` 
+              }}
+            >
                {config.logoUrl ? (
-                 <img src={config.logoUrl} className={`w-full h-full object-cover z-10 ${getLogoShapeClass()}`} alt="Logo" />
+                 <img 
+                   src={config.logoUrl} 
+                   className="w-full h-full object-cover z-10" 
+                   style={{ 
+                     transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` 
+                   }} 
+                   alt="Logo" 
+                 />
                ) : (
                  <i className="fas fa-baseball-ball text-brand-green text-2xl z-10"></i>
                )}

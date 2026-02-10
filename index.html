@@ -14,8 +14,8 @@
           extend: {
             colors: {
               brand: {
-                green: '#A8D38E',
-                blue: '#4E5B83',
+                green: 'var(--brand-green, #A8D38E)',
+                blue: 'var(--brand-blue, #4E5B83)',
                 light: '#F4F7F2',
               }
             },
@@ -28,6 +28,11 @@
       }
     </script>
     <style>
+        :root {
+          --brand-blue: #4E5B83;
+          --brand-green: #A8D38E;
+          --brand-green-opaque: rgba(168, 211, 142, 0.2);
+        }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             scroll-behavior: smooth;
@@ -38,7 +43,7 @@
             -webkit-backdrop-filter: blur(16px);
         }
         .text-gradient {
-            background: linear-gradient(135deg, #4E5B83 0%, #A8D38E 100%);
+            background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-green) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
           }
@@ -47,7 +52,7 @@
         }
         .circle-accent {
             position: absolute;
-            border: 2px solid #A8D38E;
+            border: 2px solid var(--brand-green);
             border-radius: 50%;
             opacity: 0.2;
         }
@@ -67,7 +72,6 @@
 </head>
 <body class="bg-brand-light text-brand-blue">
     <div id="root"></div>
-    <!-- Vite caricherà questo file e gestirà tutte le importazioni automaticamente -->
     <script type="module" src="/index.tsx"></script>
 </body>
 </html>

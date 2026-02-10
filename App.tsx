@@ -16,19 +16,46 @@ import ChatBot from './components/ChatBot';
 import LoginPage from './components/LoginPage';
 
 // Componente per le pagine create dinamicamente
-const CustomPage: React.FC<{ section: SectionContent }> = ({ section }) => (
-  <div className="py-24 max-w-7xl mx-auto px-4">
-    <div className="max-w-4xl">
-      <h1 className="text-6xl font-black text-brand-blue uppercase italic mb-8">{section.title}</h1>
-      <p className="text-2xl text-brand-blue/60 leading-relaxed italic border-l-4 border-brand-green pl-8">
-        {section.description}
-      </p>
-      <div className="mt-16 h-96 rounded-[4rem] bg-brand-light flex items-center justify-center text-brand-blue/20">
-        <i className="fas fa-image text-8xl"></i>
+const CustomPage: React.FC<{ section: SectionContent, config: SiteConfig }> = ({ section, config }) => {
+  const getLogoShapeClass = () => {
+    switch(config.logoShape) {
+      case 'square': return 'rounded-none';
+      case 'rounded': return 'rounded-3xl';
+      default: return 'rounded-full';
+    }
+  };
+
+  return (
+    <div className="py-24 max-w-7xl mx-auto px-4">
+      <div className="max-w-4xl">
+        <div className="flex items-center gap-6 mb-8">
+          {section.showLogo && config.logoUrl && (
+            <div 
+              className={`overflow-hidden border-2 border-brand-green ${getLogoShapeClass()} shadow-md`}
+              style={{ width: '80px', height: '80px' }}
+            >
+              <img 
+                src={config.logoUrl} 
+                className="w-full h-full object-cover" 
+                style={{ 
+                  transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` 
+                }} 
+                alt="Logo" 
+              />
+            </div>
+          )}
+          <h1 className="text-6xl font-black text-brand-blue uppercase italic">{section.title}</h1>
+        </div>
+        <p className="text-2xl text-brand-blue/60 leading-relaxed italic border-l-4 border-brand-green pl-8">
+          {section.description}
+        </p>
+        <div className="mt-16 h-96 rounded-[4rem] bg-brand-light flex items-center justify-center text-brand-blue/20">
+          <i className="fas fa-image text-8xl"></i>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page>('home');
@@ -48,6 +75,13 @@ const App: React.FC = () => {
     if (savedEvents) setEvents(JSON.parse(savedEvents));
     if (savedAuth === 'true') setIsAuthenticated(true);
   }, []);
+
+  // Iniezione dinamica dei colori del brand
+  useEffect(() => {
+    document.documentElement.style.setProperty('--brand-blue', config.primaryColor);
+    document.documentElement.style.setProperty('--brand-green', config.accentColor);
+    document.documentElement.style.setProperty('--brand-green-opaque', `${config.accentColor}33`); // 20% opacity
+  }, [config.primaryColor, config.accentColor]);
 
   const updateConfig = (newConfig: SiteConfig) => {
     setConfig(newConfig);
@@ -97,7 +131,6 @@ const App: React.FC = () => {
       );
     }
 
-    // Gestione sezioni dinamiche
     const currentSection = config.sections.find(s => s.id === activePage);
 
     switch (activePage) {
@@ -109,7 +142,7 @@ const App: React.FC = () => {
       case 'booking': return <BookingSystem config={config} courts={courts} />;
       case 'contacts': return <ContactsPage config={config} />;
       default: 
-        if (currentSection) return <CustomPage section={currentSection} />;
+        if (currentSection) return <CustomPage section={currentSection} config={config} />;
         return <HomeSections config={config} events={events} courts={courts} onNavigate={navigateTo} />;
     }
   };
@@ -140,7 +173,17 @@ const App: React.FC = () => {
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-2xl font-bold mb-4">{config.centerName}</h3>
+            <div className="flex items-center gap-4 mb-4">
+              {config.logoUrl && (
+                <div 
+                  className={`overflow-hidden border border-brand-green/30 rounded-full`} 
+                  style={{ width: '40px', height: '40px' }}
+                >
+                  <img src={config.logoUrl} className="w-full h-full object-cover" style={{ transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` }} alt="Logo" />
+                </div>
+              )}
+              <h3 className="text-2xl font-bold">{config.centerName}</h3>
+            </div>
             <p className="text-gray-400 italic">"Gioca. Incontra. Rilassati."</p>
           </div>
           <div>

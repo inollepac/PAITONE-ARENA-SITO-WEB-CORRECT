@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { SiteConfig, Court, Event, SectionContent, LogoShape, LogoSize } from '../types';
+import { SiteConfig, Court, Event, SectionContent, LogoShape } from '../types';
 
 interface AdminPanelProps {
   config: SiteConfig;
@@ -40,7 +40,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
       title: 'Nuova Pagina',
       description: 'Descrizione della nuova pagina...',
       enabled: true,
-      isCustom: true
+      isCustom: true,
+      showLogo: true
     };
     setTempConfig({ ...tempConfig, sections: [...tempConfig.sections, newSection] });
   };
@@ -61,16 +62,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
   const getLogoPreviewShape = () => {
     switch(tempConfig.logoShape) {
       case 'square': return 'rounded-none';
-      case 'rounded': return 'rounded-2xl';
+      case 'rounded': return 'rounded-3xl';
       default: return 'rounded-full';
-    }
-  };
-
-  const getLogoPreviewSize = () => {
-    switch(tempConfig.logoSize) {
-      case 'sm': return 'w-16 h-16';
-      case 'lg': return 'w-40 h-40';
-      default: return 'w-24 h-24';
     }
   };
 
@@ -79,7 +72,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
       <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
         <div>
           <h2 className="text-4xl font-bold text-gray-800 tracking-tighter uppercase italic">Control Arena</h2>
-          <p className="text-gray-500 font-medium">Gestione integrale del tuo centro sportivo.</p>
+          <p className="text-gray-500 font-medium">Libertà totale di creazione e branding.</p>
         </div>
         <button onClick={handleSaveAll} className="bg-brand-blue text-white px-10 py-4 rounded-full font-black uppercase tracking-widest hover:bg-brand-green hover:text-brand-blue transition shadow-xl">
           <i className="fas fa-save mr-2"></i> Salva Tutto
@@ -90,7 +83,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
         <div className="space-y-2">
           {[
             { id: 'general', icon: 'fa-info-circle', label: 'Info & Contatti' },
-            { id: 'brand', icon: 'fa-brush', label: 'Logo & Brand' },
+            { id: 'brand', icon: 'fa-palette', label: 'Logo & Colori' },
             { id: 'sections', icon: 'fa-layer-group', label: 'Menù & Pagine' },
           ].map((tab) => (
             <button 
@@ -111,7 +104,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="md:col-span-2">
                   <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Nome Arena</label>
-                  <input type="text" value={tempConfig.centerName} onChange={e => setTempConfig({...tempConfig, centerName: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none" />
+                  <input type="text" value={tempConfig.centerName} onChange={e => setTempConfig({...tempConfig, centerName: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none font-bold" />
                 </div>
                 <div>
                   <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">WhatsApp</label>
@@ -127,71 +120,105 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
 
           {activeTab === 'brand' && (
             <div className="space-y-12">
-              <h3 className="text-3xl font-black uppercase italic text-brand-blue">Identità Visiva</h3>
+              <div>
+                <h3 className="text-3xl font-black uppercase italic text-brand-blue mb-2">Identità Visiva</h3>
+                <p className="text-gray-400 text-sm font-medium mb-10 italic">Personalizza il logo e i colori del tuo brand in tempo reale.</p>
+              </div>
               
-              {/* Logo Upload Section */}
-              <div className="space-y-10">
-                <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Logo del Centro</label>
-                  <div className="flex flex-col md:flex-row items-center gap-12 p-10 border-2 border-dashed border-gray-100 rounded-[3rem] bg-gray-50/50">
-                    <div className={`${getLogoPreviewSize()} bg-white flex items-center justify-center overflow-hidden border-4 border-white shadow-xl transition-all duration-300 ${getLogoPreviewShape()}`}>
-                      {tempConfig.logoUrl ? (
-                        <img src={tempConfig.logoUrl} className="w-full h-full object-cover" alt="Anteprima" />
-                      ) : (
-                        <i className="fas fa-image text-gray-200 text-5xl"></i>
-                      )}
-                    </div>
-                    <div className="flex-grow text-center md:text-left">
-                      <p className="text-sm text-brand-blue/60 font-medium mb-4 italic">Il logo apparirà nel menù di navigazione e nei piè di pagina.</p>
-                      <button 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="bg-brand-blue text-white px-8 py-3 rounded-full font-bold hover:bg-brand-green hover:text-brand-blue transition shadow-lg"
-                      >
-                        Carica Immagine
-                      </button>
-                      <input type="file" ref={fileInputRef} onChange={handleLogoUpload} className="hidden" accept="image/*" />
-                    </div>
+              {/* Logo Framing & Styling */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-16 p-10 bg-gray-50 rounded-[3rem] border border-gray-100">
+                <div className="flex flex-col items-center justify-center">
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-6 text-center">Anteprima Logo (Live)</label>
+                  <div 
+                    className={`bg-white border-2 border-brand-green shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-300 ${getLogoPreviewShape()}`}
+                    style={{ 
+                      width: `${tempConfig.logoWidth}px`, 
+                      height: `${tempConfig.logoWidth}px` 
+                    }}
+                  >
+                    {tempConfig.logoUrl ? (
+                      <img 
+                        src={tempConfig.logoUrl} 
+                        className="w-full h-full object-cover" 
+                        style={{ 
+                          transform: `scale(${tempConfig.logoScale}) translate(${tempConfig.logoX}%, ${tempConfig.logoY}%)` 
+                        }} 
+                        alt="Preview" 
+                      />
+                    ) : (
+                      <i className="fas fa-image text-gray-200 text-5xl"></i>
+                    )}
                   </div>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="mt-10 bg-brand-blue text-white px-8 py-3 rounded-full font-bold hover:bg-brand-green hover:text-brand-blue transition shadow-lg"
+                  >
+                    Carica Nuovo Logo
+                  </button>
+                  <input type="file" ref={fileInputRef} onChange={handleLogoUpload} className="hidden" accept="image/*" />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  {/* Shape Picker */}
+                <div className="space-y-6">
                   <div>
-                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Forma del Logo</label>
-                    <div className="flex bg-gray-100 p-2 rounded-2xl gap-2">
+                    <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
+                      <span>Dimensione Frame ({tempConfig.logoWidth}px)</span>
+                    </label>
+                    <input type="range" min="40" max="300" step="2" value={tempConfig.logoWidth} onChange={e => setTempConfig({...tempConfig, logoWidth: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                  </div>
+                  <div>
+                    <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
+                      <span>Zoom Immagine ({tempConfig.logoScale}x)</span>
+                    </label>
+                    <input type="range" min="0.5" max="4" step="0.1" value={tempConfig.logoScale} onChange={e => setTempConfig({...tempConfig, logoScale: parseFloat(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                  </div>
+                  <div>
+                    <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
+                      <span>Spostamento X ({tempConfig.logoX}%)</span>
+                    </label>
+                    <input type="range" min="-100" max="100" step="1" value={tempConfig.logoX} onChange={e => setTempConfig({...tempConfig, logoX: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                  </div>
+                  <div>
+                    <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
+                      <span>Spostamento Y ({tempConfig.logoY}%)</span>
+                    </label>
+                    <input type="range" min="-100" max="100" step="1" value={tempConfig.logoY} onChange={e => setTempConfig({...tempConfig, logoY: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                  </div>
+                  
+                  <div className="pt-4">
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-3">Forma del Frame</label>
+                    <div className="flex bg-gray-200 p-1.5 rounded-2xl gap-2">
                       {(['circle', 'rounded', 'square'] as LogoShape[]).map(shape => (
                         <button
                           key={shape}
                           onClick={() => setTempConfig({...tempConfig, logoShape: shape})}
-                          className={`flex-1 py-3 rounded-xl font-bold text-xs uppercase transition-all ${tempConfig.logoShape === shape ? 'bg-white text-brand-blue shadow-md' : 'text-gray-400 hover:text-brand-blue'}`}
+                          className={`flex-1 py-2 rounded-xl font-bold text-[10px] uppercase transition-all ${tempConfig.logoShape === shape ? 'bg-white text-brand-blue shadow-md' : 'text-gray-500 hover:text-brand-blue'}`}
                         >
-                          <i className={`fas ${shape === 'circle' ? 'fa-circle' : shape === 'square' ? 'fa-square' : 'fa-stop'} mr-2`}></i>
-                          {shape === 'circle' ? 'Cerchio' : shape === 'square' ? 'Quadro' : 'Smussato'}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Size Picker */}
-                  <div>
-                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Dimensione Logo (Menù)</label>
-                    <div className="flex bg-gray-100 p-2 rounded-2xl gap-2">
-                      {(['sm', 'md', 'lg'] as LogoSize[]).map(size => (
-                        <button
-                          key={size}
-                          onClick={() => setTempConfig({...tempConfig, logoSize: size})}
-                          className={`flex-1 py-3 rounded-xl font-bold text-xs uppercase transition-all ${tempConfig.logoSize === size ? 'bg-white text-brand-blue shadow-md' : 'text-gray-400 hover:text-brand-blue'}`}
-                        >
-                          {size === 'sm' ? 'Piccolo' : size === 'md' ? 'Medio' : 'Grande'}
+                          {shape === 'circle' ? 'Cerchio' : shape === 'square' ? 'Quadro' : 'Rounded'}
                         </button>
                       ))}
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Immagine Sfondo Principale (Hero URL)</label>
-                  <input type="text" value={tempConfig.heroImageUrl} onChange={e => setTempConfig({...tempConfig, heroImageUrl: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none" placeholder="https://..." />
+              {/* Brand Colors */}
+              <div className="p-10 border border-brand-blue/10 rounded-[3rem] space-y-10">
+                <h4 className="text-xl font-black uppercase text-brand-blue tracking-tight">Colori del Brand</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                   <div className="flex items-center gap-6">
+                      <input type="color" value={tempConfig.primaryColor} onChange={e => setTempConfig({...tempConfig, primaryColor: e.target.value})} className="w-20 h-20 rounded-2xl border-none cursor-pointer p-0 overflow-hidden" />
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase mb-1">Colore Primario</label>
+                        <span className="font-mono text-sm text-brand-blue/60">{tempConfig.primaryColor}</span>
+                      </div>
+                   </div>
+                   <div className="flex items-center gap-6">
+                      <input type="color" value={tempConfig.accentColor} onChange={e => setTempConfig({...tempConfig, accentColor: e.target.value})} className="w-20 h-20 rounded-2xl border-none cursor-pointer p-0 overflow-hidden" />
+                      <div>
+                        <label className="block text-xs font-black text-gray-400 uppercase mb-1">Colore Accento</label>
+                        <span className="font-mono text-sm text-brand-blue/60">{tempConfig.accentColor}</span>
+                      </div>
+                   </div>
                 </div>
               </div>
             </div>
@@ -211,16 +238,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
                   <div key={section.id} className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 relative group">
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center gap-4">
-                        <div className={`w-3 h-3 rounded-full ${section.enabled ? 'bg-brand-green shadow-[0_0_8px_#A8D38E]' : 'bg-gray-300'}`}></div>
+                        <div className={`w-3 h-3 rounded-full ${section.enabled ? 'bg-brand-green shadow-[0_0_8px_var(--brand-green)]' : 'bg-gray-300'}`}></div>
                         <h4 className="font-black uppercase tracking-tight text-brand-blue">{section.id}</h4>
                       </div>
                       <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 mr-4 bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm">
+                           <span className="text-[10px] font-black text-gray-400 uppercase">Logo?</span>
+                           <input type="checkbox" checked={section.showLogo} onChange={e => updateSection(section.id, { showLogo: e.target.checked })} className="accent-brand-green w-4 h-4" />
+                        </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input type="checkbox" checked={section.enabled} onChange={e => updateSection(section.id, { enabled: e.target.checked })} className="sr-only peer" />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                         </label>
                         {section.isCustom && (
-                          <button onClick={() => removeSection(section.id)} className="text-red-400 hover:text-red-600 transition p-2">
+                          <button onClick={() => removeSection(section.id)} className="text-red-400 hover:text-red-600 transition p-2 ml-2">
                              <i className="fas fa-trash-alt"></i>
                           </button>
                         )}
