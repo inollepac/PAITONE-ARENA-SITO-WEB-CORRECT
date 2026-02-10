@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { SiteConfig, Court, Event, SectionContent } from '../types';
 
 interface AdminPanelProps {
@@ -14,359 +14,182 @@ interface AdminPanelProps {
 const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdateConfig, onUpdateCourts, onUpdateEvents }) => {
   const [activeTab, setActiveTab] = useState<'general' | 'brand' | 'sections' | 'courts' | 'events'>('general');
   const [tempConfig, setTempConfig] = useState(config);
-  const [tempCourts, setTempCourts] = useState(courts);
-  const [tempEvents, setTempEvents] = useState(events);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSaveAll = () => {
     onUpdateConfig(tempConfig);
-    onUpdateCourts(tempCourts);
-    onUpdateEvents(tempEvents);
     alert('Tutte le modifiche sono state salvate con successo!');
   };
 
-  const updateSection = (key: keyof SiteConfig['sections'], updates: Partial<SectionContent>) => {
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTempConfig({ ...tempConfig, logoUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const addSection = () => {
+    const id = 'custom-' + Math.random().toString(36).substr(2, 5);
+    const newSection: SectionContent = {
+      id,
+      navLabel: 'Nuova Sezione',
+      title: 'Nuova Pagina',
+      description: 'Descrizione della nuova pagina...',
+      enabled: true,
+      isCustom: true
+    };
+    setTempConfig({ ...tempConfig, sections: [...tempConfig.sections, newSection] });
+  };
+
+  const removeSection = (id: string) => {
+    if (window.confirm('Sei sicuro di voler eliminare questa sezione?')) {
+      setTempConfig({ ...tempConfig, sections: tempConfig.sections.filter(s => s.id !== id) });
+    }
+  };
+
+  const updateSection = (id: string, updates: Partial<SectionContent>) => {
     setTempConfig({
       ...tempConfig,
-      sections: {
-        ...tempConfig.sections,
-        [key]: { ...tempConfig.sections[key], ...updates }
-      }
+      sections: tempConfig.sections.map(s => s.id === id ? { ...s, ...updates } : s)
     });
-  };
-
-  const addCourt = () => {
-    const newCourt: Court = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: 'Nuovo Campo',
-      type: 'Padel',
-      surface: 'Erba Sintetica',
-      pricePerHour: 40
-    };
-    setTempCourts([...tempCourts, newCourt]);
-  };
-
-  const removeCourt = (id: string) => {
-    setTempCourts(tempCourts.filter(c => c.id !== id));
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
         <div>
-          <h2 className="text-4xl font-bold text-gray-800">Pannello di Controllo</h2>
-          <p className="text-gray-500">Gestisci ogni aspetto del tuo centro sportivo.</p>
+          <h2 className="text-4xl font-bold text-gray-800 tracking-tighter uppercase italic">Control Arena</h2>
+          <p className="text-gray-500 font-medium">Gestione integrale del tuo centro sportivo.</p>
         </div>
-        <div className="flex gap-4">
-            <button 
-                onClick={handleSaveAll}
-                className="bg-emerald-600 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-700 transition shadow-lg flex items-center gap-2"
-            >
-                <i className="fas fa-save"></i> Salva Tutto
-            </button>
-            <div className="bg-amber-100 text-amber-700 px-4 py-2 rounded-full font-bold text-sm flex items-center">
-              <i className="fas fa-user-shield mr-2"></i> Admin
-            </div>
-        </div>
+        <button onClick={handleSaveAll} className="bg-brand-blue text-white px-10 py-4 rounded-full font-black uppercase tracking-widest hover:bg-brand-green hover:text-brand-blue transition shadow-xl">
+          <i className="fas fa-save mr-2"></i> Salva Tutto
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-        {/* Sidebar Nav */}
         <div className="space-y-2">
           {[
             { id: 'general', icon: 'fa-info-circle', label: 'Info & Contatti' },
-            { id: 'brand', icon: 'fa-brush', label: 'Brand & Logo' },
-            { id: 'sections', icon: 'fa-layer-group', label: 'Menù & Sezioni' },
-            { id: 'courts', icon: 'fa-table-tennis', label: 'Gestione Campi' },
-            { id: 'events', icon: 'fa-calendar-alt', label: 'Eventi & Community' },
+            { id: 'brand', icon: 'fa-brush', label: 'Logo & Brand' },
+            { id: 'sections', icon: 'fa-layer-group', label: 'Menù & Pagine' },
           ].map((tab) => (
             <button 
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`w-full text-left px-6 py-4 rounded-2xl font-bold transition flex items-center gap-3 ${activeTab === tab.id ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gray-50 border border-transparent hover:border-emerald-100'}`}
+              className={`w-full text-left px-8 py-5 rounded-[2rem] font-bold transition flex items-center gap-4 ${activeTab === tab.id ? 'bg-brand-blue text-white shadow-xl' : 'bg-white text-gray-400 hover:bg-brand-light border border-gray-100'}`}
             >
-              <i className={`fas ${tab.icon} w-6`}></i> {tab.label}
+              <i className={`fas ${tab.icon} w-5`}></i> {tab.label}
             </button>
           ))}
         </div>
 
-        {/* Content Area */}
-        <div className="lg:col-span-3 bg-white p-8 md:p-12 rounded-[40px] shadow-sm border border-gray-100 min-h-[600px]">
+        <div className="lg:col-span-3 bg-white p-10 md:p-16 rounded-[4rem] shadow-sm border border-gray-100">
           
-          {/* Info & Contatti */}
           {activeTab === 'general' && (
-            <div className="space-y-8">
-              <h3 className="text-2xl font-bold border-b pb-4">Informazioni Centro</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-10">
+              <h3 className="text-3xl font-black uppercase italic text-brand-blue">Dati del Centro</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-gray-500 mb-2">Nome Centro Sportivo</label>
-                  <input 
-                    type="text" 
-                    value={tempConfig.centerName} 
-                    onChange={e => setTempConfig({...tempConfig, centerName: e.target.value})}
-                    className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Nome Arena</label>
+                  <input type="text" value={tempConfig.centerName} onChange={e => setTempConfig({...tempConfig, centerName: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-2">Indirizzo</label>
-                  <input type="text" value={tempConfig.address} onChange={e => setTempConfig({...tempConfig, address: e.target.value})} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500" />
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">WhatsApp</label>
+                  <input type="text" value={tempConfig.whatsapp} onChange={e => setTempConfig({...tempConfig, whatsapp: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-2">Orari di Apertura</label>
-                  <input type="text" value={tempConfig.workingHours} onChange={e => setTempConfig({...tempConfig, workingHours: e.target.value})} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-2">WhatsApp</label>
-                  <input type="text" value={tempConfig.whatsapp} onChange={e => setTempConfig({...tempConfig, whatsapp: e.target.value})} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-2">Email</label>
-                  <input type="email" value={tempConfig.email} onChange={e => setTempConfig({...tempConfig, email: e.target.value})} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500" />
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Orari</label>
+                  <input type="text" value={tempConfig.workingHours} onChange={e => setTempConfig({...tempConfig, workingHours: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none" />
                 </div>
               </div>
             </div>
           )}
 
-          {/* Brand & Logo */}
           {activeTab === 'brand' && (
-            <div className="space-y-8">
-              <h3 className="text-2xl font-bold border-b pb-4">Identità Visiva</h3>
-              <div className="space-y-6">
+            <div className="space-y-10">
+              <h3 className="text-3xl font-black uppercase italic text-brand-blue">Identità Visiva</h3>
+              <div className="space-y-8">
                 <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-2">URL Logo (Immagine tonda in alto)</label>
-                  <div className="flex gap-4 items-center">
-                    <img src={tempConfig.logoUrl} className="w-16 h-16 rounded-full object-cover border-2 border-emerald-100" />
-                    <input 
-                        type="text" 
-                        value={tempConfig.logoUrl} 
-                        onChange={e => setTempConfig({...tempConfig, logoUrl: e.target.value})}
-                        className="flex-grow p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500" 
-                        placeholder="https://percorso-immagine.jpg"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-2">Immagine Hero (Sfondo principale)</label>
-                  <input 
-                    type="text" 
-                    value={tempConfig.heroImageUrl} 
-                    onChange={e => setTempConfig({...tempConfig, heroImageUrl: e.target.value})}
-                    className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500" 
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-bold text-gray-500 mb-2">Titolo Principale (Hero)</label>
-                        <input type="text" value={tempConfig.heroTitle} onChange={e => setTempConfig({...tempConfig, heroTitle: e.target.value})} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500" />
-                    </div>
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-bold text-gray-500 mb-2">Sottotitolo (Hero)</label>
-                        <textarea value={tempConfig.heroSubtitle} onChange={e => setTempConfig({...tempConfig, heroSubtitle: e.target.value})} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 h-24" />
-                    </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Menù & Sezioni */}
-          {activeTab === 'sections' && (
-            <div className="space-y-8">
-              <h3 className="text-2xl font-bold border-b pb-4">Visibilità & Navigazione</h3>
-              <p className="text-sm text-gray-400 italic">Abilita o disabilita le sezioni dal sito e dal menù. Cambia il nome dei link nel menù.</p>
-              
-              <div className="space-y-6">
-                {/* Fix: cast Object.entries to correct type to avoid "unknown" property access errors */}
-                {(Object.entries(tempConfig.sections) as [keyof SiteConfig['sections'], SectionContent][]).map(([id, section]) => (
-                  <div key={id} className="p-6 bg-gray-50 rounded-[30px] border border-gray-100">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${section.enabled ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
-                        <h4 className="font-bold text-lg capitalize">{id}</h4>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={section.enabled} 
-                          onChange={e => updateSection(id, { enabled: e.target.checked })}
-                          className="sr-only peer" 
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-                      </label>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {section.navLabel !== undefined && (
-                        <div>
-                          <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Etichetta Menù</label>
-                          <input 
-                            type="text" 
-                            value={section.navLabel} 
-                            onChange={e => updateSection(id, { navLabel: e.target.value })}
-                            className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm"
-                            disabled={!section.enabled}
-                          />
-                        </div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Logo del Centro</label>
+                  <div className="flex flex-col md:flex-row items-center gap-8 p-10 border-2 border-dashed border-gray-100 rounded-[3rem]">
+                    <div className="w-32 h-32 bg-gray-50 rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
+                      {tempConfig.logoUrl ? (
+                        <img src={tempConfig.logoUrl} className="w-full h-full object-cover" alt="Anteprima" />
+                      ) : (
+                        <i className="fas fa-image text-gray-300 text-4xl"></i>
                       )}
-                      <div className={section.navLabel === undefined ? 'md:col-span-2' : ''}>
-                        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Titolo Sezione</label>
-                        <input 
-                          type="text" 
-                          value={section.title} 
-                          onChange={e => updateSection(id, { title: e.target.value })}
-                          className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm"
-                          disabled={!section.enabled}
-                        />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Descrizione Sezione</label>
-                        <textarea 
-                          value={section.description} 
-                          onChange={e => updateSection(id, { description: e.target.value })}
-                          className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm h-20"
-                          disabled={!section.enabled}
-                        />
-                      </div>
+                    </div>
+                    <div className="flex-grow text-center md:text-left">
+                      <p className="text-sm text-gray-500 font-medium mb-4">Carica un'immagine quadrata per i migliori risultati.</p>
+                      <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="bg-brand-light text-brand-blue px-8 py-3 rounded-full font-bold hover:bg-brand-green transition"
+                      >
+                        Seleziona File
+                      </button>
+                      <input type="file" ref={fileInputRef} onChange={handleLogoUpload} className="hidden" accept="image/*" />
                     </div>
                   </div>
-                ))}
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Immagine Sfondo Principale (Hero)</label>
+                  <input type="text" value={tempConfig.heroImageUrl} onChange={e => setTempConfig({...tempConfig, heroImageUrl: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none" />
+                </div>
               </div>
             </div>
           )}
 
-          {/* Courts */}
-          {activeTab === 'courts' && (
-            <div className="space-y-8">
-              <div className="flex justify-between items-center border-b pb-4">
-                <h3 className="text-2xl font-bold">I tuoi campi</h3>
-                <button 
-                  onClick={addCourt}
-                  className="bg-emerald-100 text-emerald-600 px-4 py-2 rounded-xl font-bold hover:bg-emerald-200 transition"
-                >
-                  <i className="fas fa-plus mr-2"></i> Aggiungi Campo
+          {activeTab === 'sections' && (
+            <div className="space-y-10">
+              <div className="flex justify-between items-center">
+                <h3 className="text-3xl font-black uppercase italic text-brand-blue">Menù & Sezioni</h3>
+                <button onClick={addSection} className="bg-brand-green text-brand-blue px-6 py-3 rounded-full font-black uppercase tracking-widest text-[10px] hover:scale-105 transition shadow-lg">
+                  <i className="fas fa-plus mr-2"></i> Nuova Sezione
                 </button>
               </div>
-              <div className="space-y-4">
-                {tempCourts.map((court, idx) => (
-                  <div key={court.id} className="p-6 border rounded-[30px] flex flex-wrap md:flex-nowrap items-center gap-4 bg-gray-50 border-gray-100">
-                    <div className="w-full md:w-1/4">
-                      <label className="text-xs font-bold text-gray-400 block mb-1 uppercase">Nome</label>
-                      <input 
-                        type="text" 
-                        value={court.name}
-                        onChange={e => {
-                          const newC = [...tempCourts];
-                          newC[idx].name = e.target.value;
-                          setTempCourts(newC);
-                        }}
-                        className="w-full p-3 bg-white border border-gray-100 rounded-xl text-sm"
-                      />
+              
+              <div className="space-y-6">
+                {tempConfig.sections.map((section) => (
+                  <div key={section.id} className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 relative group">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-3 h-3 rounded-full ${section.enabled ? 'bg-brand-green shadow-[0_0_8px_#A8D38E]' : 'bg-gray-300'}`}></div>
+                        <h4 className="font-black uppercase tracking-tight text-brand-blue">{section.id}</h4>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" checked={section.enabled} onChange={e => updateSection(section.id, { enabled: e.target.checked })} className="sr-only peer" />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                        {section.isCustom && (
+                          <button onClick={() => removeSection(section.id)} className="text-red-400 hover:text-red-600 transition p-2">
+                             <i className="fas fa-trash-alt"></i>
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <div className="w-1/2 md:w-1/6">
-                      <label className="text-xs font-bold text-gray-400 block mb-1 uppercase">Tipo</label>
-                      <select 
-                        value={court.type}
-                        onChange={e => {
-                          const newC = [...tempCourts];
-                          newC[idx].type = e.target.value as 'Padel' | 'Tennis';
-                          setTempCourts(newC);
-                        }}
-                        className="w-full p-3 bg-white border border-gray-100 rounded-xl text-sm"
-                      >
-                        <option>Padel</option>
-                        <option>Tennis</option>
-                      </select>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Nome nel Menù</label>
+                        <input type="text" value={section.navLabel} onChange={e => updateSection(section.id, { navLabel: e.target.value })} className="w-full p-4 bg-white rounded-xl border border-gray-100" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Titolo Pagina</label>
+                        <input type="text" value={section.title} onChange={e => updateSection(section.id, { title: e.target.value })} className="w-full p-4 bg-white rounded-xl border border-gray-100" />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Descrizione/Contenuto</label>
+                        <textarea value={section.description} onChange={e => updateSection(section.id, { description: e.target.value })} className="w-full p-4 bg-white rounded-xl border border-gray-100 h-24" />
+                      </div>
                     </div>
-                    <div className="w-1/2 md:w-1/4">
-                      <label className="text-xs font-bold text-gray-400 block mb-1 uppercase">Prezzo (€/h)</label>
-                      <input 
-                        type="number" 
-                        value={court.pricePerHour}
-                        onChange={e => {
-                          const newC = [...tempCourts];
-                          newC[idx].pricePerHour = Number(e.target.value);
-                          setTempCourts(newC);
-                        }}
-                        className="w-full p-3 bg-white border border-gray-100 rounded-xl text-sm"
-                      />
-                    </div>
-                    <div className="flex-grow"></div>
-                    <button 
-                      onClick={() => removeCourt(court.id)}
-                      className="w-10 h-10 bg-red-50 text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition"
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* Events */}
-          {activeTab === 'events' && (
-            <div className="space-y-8">
-                <h3 className="text-2xl font-bold border-b pb-4">Gestione Community</h3>
-                <div className="space-y-4">
-                  {tempEvents.map((ev, idx) => (
-                    <div key={ev.id} className="p-6 border border-gray-100 rounded-[30px] bg-gray-50 flex flex-col gap-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-grow">
-                          <label className="text-xs font-bold text-gray-400 block mb-1 uppercase">Titolo Evento</label>
-                          <input 
-                            className="font-bold bg-white w-full p-3 rounded-xl border border-gray-100" 
-                            value={ev.title} 
-                            onChange={e => {
-                              const newEv = [...tempEvents];
-                              newEv[idx].title = e.target.value;
-                              setTempEvents(newEv);
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-xs font-bold text-gray-400 block mb-1 uppercase">Data/Orario</label>
-                          <input 
-                            className="text-sm text-gray-600 bg-white w-full p-3 rounded-xl border border-gray-100" 
-                            value={ev.date} 
-                            onChange={e => {
-                              const newEv = [...tempEvents];
-                              newEv[idx].date = e.target.value;
-                              setTempEvents(newEv);
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-bold text-gray-400 block mb-1 uppercase">Tipo</label>
-                          <select 
-                            className="text-sm text-gray-600 bg-white w-full p-3 rounded-xl border border-gray-100"
-                            value={ev.type}
-                            onChange={e => {
-                              const newEv = [...tempEvents];
-                              newEv[idx].type = e.target.value as any;
-                              setTempEvents(newEv);
-                            }}
-                          >
-                             <option value="Tournament">Torneo</option>
-                             <option value="Social">Socialità</option>
-                             <option value="Course">Corso</option>
-                          </select>
-                        </div>
-                        <div className="md:col-span-2">
-                           <label className="text-xs font-bold text-gray-400 block mb-1 uppercase">Descrizione</label>
-                           <textarea 
-                             className="text-sm text-gray-600 bg-white w-full p-3 rounded-xl border border-gray-100 h-20"
-                             value={ev.description}
-                             onChange={e => {
-                               const newEv = [...tempEvents];
-                               newEv[idx].description = e.target.value;
-                               setTempEvents(newEv);
-                             }}
-                           />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
             </div>
           )}
         </div>

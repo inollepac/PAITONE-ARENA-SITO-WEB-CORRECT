@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Page, SiteConfig, Court, Event } from './types';
+import { Page, SiteConfig, Court, Event, SectionContent } from './types';
 import { INITIAL_SITE_CONFIG, INITIAL_COURTS, INITIAL_EVENTS } from './constants';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -15,6 +15,21 @@ import AdminPanel from './components/AdminPanel';
 import ChatBot from './components/ChatBot';
 import LoginPage from './components/LoginPage';
 
+// Componente per le pagine create dinamicamente
+const CustomPage: React.FC<{ section: SectionContent }> = ({ section }) => (
+  <div className="py-24 max-w-7xl mx-auto px-4">
+    <div className="max-w-4xl">
+      <h1 className="text-6xl font-black text-brand-blue uppercase italic mb-8">{section.title}</h1>
+      <p className="text-2xl text-brand-blue/60 leading-relaxed italic border-l-4 border-brand-green pl-8">
+        {section.description}
+      </p>
+      <div className="mt-16 h-96 rounded-[4rem] bg-brand-light flex items-center justify-center text-brand-blue/20">
+        <i className="fas fa-image text-8xl"></i>
+      </div>
+    </div>
+  </div>
+);
+
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page>('home');
   const [config, setConfig] = useState<SiteConfig>(INITIAL_SITE_CONFIG);
@@ -22,7 +37,6 @@ const App: React.FC = () => {
   const [events, setEvents] = useState<Event[]>(INITIAL_EVENTS);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Persistence simulation
   useEffect(() => {
     const savedConfig = localStorage.getItem('ace_site_config');
     const savedCourts = localStorage.getItem('ace_site_courts');
@@ -63,28 +77,14 @@ const App: React.FC = () => {
     setActivePage('home');
   };
 
-  // Safe navigation that checks if page is enabled
   const navigateTo = (page: Page) => {
-    if (page === 'home' || page === 'admin') {
-      setActivePage(page);
-      window.scrollTo(0, 0);
-      return;
-    }
-    
-    const sectionKey = page as keyof SiteConfig['sections'];
-    if (config.sections[sectionKey] && !config.sections[sectionKey].enabled) {
-      setActivePage('home');
-    } else {
-      setActivePage(page);
-    }
+    setActivePage(page);
     window.scrollTo(0, 0);
   };
 
   const renderPage = () => {
     if (activePage === 'admin') {
-      if (!isAuthenticated) {
-        return <LoginPage onLogin={handleLogin} />;
-      }
+      if (!isAuthenticated) return <LoginPage onLogin={handleLogin} />;
       return (
         <AdminPanel 
           config={config} 
@@ -97,6 +97,9 @@ const App: React.FC = () => {
       );
     }
 
+    // Gestione sezioni dinamiche
+    const currentSection = config.sections.find(s => s.id === activePage);
+
     switch (activePage) {
       case 'home': return <HomeSections config={config} events={events} courts={courts} onNavigate={navigateTo} />;
       case 'space': return <OurSpace config={config} />;
@@ -105,7 +108,9 @@ const App: React.FC = () => {
       case 'community': return <CommunityPage events={events} />;
       case 'booking': return <BookingSystem config={config} courts={courts} />;
       case 'contacts': return <ContactsPage config={config} />;
-      default: return <HomeSections config={config} events={events} courts={courts} onNavigate={navigateTo} />;
+      default: 
+        if (currentSection) return <CustomPage section={currentSection} />;
+        return <HomeSections config={config} events={events} courts={courts} onNavigate={navigateTo} />;
     }
   };
 
@@ -115,10 +120,7 @@ const App: React.FC = () => {
         activePage={activePage} 
         onNavigate={navigateTo} 
         config={config} 
-        onAdminToggle={() => {
-            if (activePage === 'admin') navigateTo('home');
-            else navigateTo('admin');
-        }}
+        onAdminToggle={() => navigateTo(activePage === 'admin' ? 'home' : 'admin')}
         isAdminActive={activePage === 'admin'}
         isAuthenticated={isAuthenticated}
         onLogout={handleLogout}
@@ -145,9 +147,8 @@ const App: React.FC = () => {
             <h4 className="font-semibold mb-4 text-emerald-400">Link Rapidi</h4>
             <ul className="space-y-2 text-gray-400">
               <li><button onClick={() => navigateTo('home')} className="hover:text-white transition">Home</button></li>
-              {config.sections.booking.enabled && <li><button onClick={() => navigateTo('booking')} className="hover:text-white transition">Prenota</button></li>}
-              {config.sections.sports.enabled && <li><button onClick={() => navigateTo('sports')} className="hover:text-white transition">Campi</button></li>}
-              {config.sections.courses.enabled && <li><button onClick={() => navigateTo('courses')} className="hover:text-white transition">Corsi</button></li>}
+              {config.sections.find(s => s.id === 'booking')?.enabled && <li><button onClick={() => navigateTo('booking')} className="hover:text-white transition">Prenota</button></li>}
+              {config.sections.find(s => s.id === 'sports')?.enabled && <li><button onClick={() => navigateTo('sports')} className="hover:text-white transition">Campi</button></li>}
             </ul>
           </div>
           <div>
@@ -164,9 +165,6 @@ const App: React.FC = () => {
               <a href={`https://wa.me/${config.whatsapp}`} className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition"><i className="fab fa-whatsapp"></i></a>
             </div>
           </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} {config.centerName}. Tutti i diritti riservati.
         </div>
       </footer>
 

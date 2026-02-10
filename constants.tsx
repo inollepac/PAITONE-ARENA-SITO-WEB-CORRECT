@@ -3,7 +3,7 @@ import { SiteConfig, Court, Event } from './types';
 
 export const INITIAL_SITE_CONFIG: SiteConfig = {
   centerName: 'Paitone Arena',
-  logoUrl: 'https://i.imgur.com/your_logo_url_here.png', 
+  logoUrl: '', 
   heroTitle: 'Gioca. Impara. Stacca.',
   heroSubtitle: 'L’arena dove il relax incontra la competenza tecnica. Tennis e Padel guidati da professionisti laureati e certificati federali.',
   heroVideoUrl: '',
@@ -14,28 +14,16 @@ export const INITIAL_SITE_CONFIG: SiteConfig = {
   email: 'info@paitonearena.it',
   workingHours: 'Lun-Dom: 07:30 - 23:30',
   externalBookingUrl: 'https://google.com',
-  sections: {
-    whyUs: { 
-      id: 'whyUs', 
-      navLabel: '', 
-      title: 'Perché Paitone Arena?', 
-      description: 'Uniamo la scienza del movimento al divertimento dello sport. Per staccare la spina, serve una guida sicura.', 
-      enabled: true 
-    },
-    space: { id: 'space', navLabel: 'Il nostro spazio', title: 'Un\'arena per ogni sfida.', description: 'Ambienti moderni disegnati sulle forme del divertimento.', enabled: true },
-    sports: { id: 'sports', navLabel: 'Tennis & Padel', title: 'Campi nuovi, competenza vera.', description: 'Vieni a giocare in un centro dove l\'unica cosa che conta è divertirsi insieme, imparando i segreti del gioco dai migliori esperti.', enabled: true },
-    courses: { 
-      id: 'courses', 
-      navLabel: 'Corsi', 
-      title: 'L’eccellenza nell’insegnamento.', 
-      description: 'Percorsi formativi basati su studi universitari e metodologie federali d’avanguardia.', 
-      enabled: true 
-    },
-    community: { id: 'community', navLabel: 'Community', title: 'Oltre il rettangolo di gioco.', description: 'Eventi, tornei e momenti di aggregazione che fanno la differenza.', enabled: true },
-    booking: { id: 'booking', navLabel: 'Prenota', title: 'Prenotazione Istantanea', description: 'Entra in campo con un semplice click.', enabled: true },
-    contacts: { id: 'contacts', navLabel: 'Contatti', title: 'Sempre a tua disposizione.', description: 'Hai domande? Il nostro team è pronto ad aiutarti.', enabled: true },
-    staff: { id: 'staff', navLabel: '', title: 'Esperti del Movimento', description: 'Passione sportiva supportata da percorsi accademici e federali.', enabled: true },
-  }
+  sections: [
+    { id: 'whyUs', navLabel: '', title: 'Perché Paitone Arena?', description: 'Uniamo la scienza del movimento al divertimento dello sport. Per staccare la spina, serve una guida sicura.', enabled: true },
+    { id: 'space', navLabel: 'Il nostro spazio', title: 'Un\'arena per ogni sfida.', description: 'Ambienti moderni disegnati sulle forme del divertimento.', enabled: true },
+    { id: 'sports', navLabel: 'Tennis & Padel', title: 'Campi nuovi, competenza vera.', description: 'Vieni a giocare in un centro dove l\'unica cosa che conta è divertirsi insieme, imparando i segreti del gioco dai migliori esperti.', enabled: true },
+    { id: 'courses', navLabel: 'Corsi', title: 'L’eccellenza nell’insegnamento.', description: 'Percorsi formativi basati su studi universitari e metodologie federali d’avanguardia.', enabled: true },
+    { id: 'community', navLabel: 'Community', title: 'Oltre il rettangolo di gioco.', description: 'Eventi, tornei e momenti di aggregazione che fanno la differenza.', enabled: true },
+    { id: 'booking', navLabel: 'Prenota', title: 'Prenotazione Istantanea', description: 'Entra in campo con un semplice click.', enabled: true },
+    { id: 'contacts', navLabel: 'Contatti', title: 'Sempre a tua disposizione.', description: 'Hai domande? Il nostro team è pronto ad aiutarti.', enabled: true },
+    { id: 'staff', navLabel: '', title: 'Esperti del Movimento', description: 'Passione sportiva supportata da percorsi accademici e federali.', enabled: true },
+  ]
 };
 
 export const INITIAL_COURTS: Court[] = [

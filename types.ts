@@ -22,11 +22,12 @@ export interface SectionContent {
   description?: string;
   enabled: boolean;
   navLabel: string;
+  isCustom?: boolean; // Per distinguere sezioni aggiunte dall'utente
 }
 
 export interface SiteConfig {
   centerName: string;
-  logoUrl: string;
+  logoUrl: string; // Manterrà la stringa base64 o l'URL
   heroTitle: string;
   heroSubtitle: string;
   heroVideoUrl: string;
@@ -37,17 +38,7 @@ export interface SiteConfig {
   email: string;
   workingHours: string;
   externalBookingUrl: string;
-  // Dynamic Section Management
-  sections: {
-    space: SectionContent;
-    sports: SectionContent;
-    courses: SectionContent;
-    community: SectionContent;
-    contacts: SectionContent;
-    booking: SectionContent;
-    whyUs: SectionContent; // Home-only section
-    staff: SectionContent; // Home-only section
-  };
+  sections: SectionContent[]; // Trasformato in array per gestione dinamica
 }
 
 export interface Slot {
@@ -56,4 +47,4 @@ export interface Slot {
   courtId: string;
 }
 
-export type Page = 'home' | 'space' | 'sports' | 'courses' | 'community' | 'booking' | 'contacts' | 'admin';
+export type Page = string; // Reso stringa per supportare ID di sezioni dinamiche
