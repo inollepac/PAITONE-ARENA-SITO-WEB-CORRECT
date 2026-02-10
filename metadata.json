@@ -1,0 +1,7 @@
+{
+  "name": "Paitone Arena - Tennis & Padel Club - by Next",
+  "description": "A high-end showcase website for a Tennis and Padel center with an integrated booking system, admin management dashboard, and friendly AI chatbot.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
