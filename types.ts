@@ -28,20 +28,23 @@ export interface SectionContent {
 
 export interface LogoPlacementConfig {
   enabled: boolean;
+  logoSource: 'primary' | 'secondary'; // Scelta tra i due loghi caricati
   width: number;
   height: number;
-  borderRadius: number;
+  borderRadius: number; // 0 per rettangoli, 50 per cerchi/ovali
+  borderWidth: number;  // 0 per rimuovere il contorno
   scale: number;
   x: number;
   y: number;
-  objectFit: 'cover' | 'contain'; // 'contain' per non tagliare mai il logo, 'cover' per riempire
-  showName: boolean; // Se mostrare il nome del centro accanto al logo in quel punto
+  objectFit: 'cover' | 'contain';
+  showName: boolean; // Toggle per il nome testuale del brand
 }
 
 export interface SiteConfig {
   centerName: string;
-  logoUrl: string; 
-  // Configurazioni specifiche per punto di inserimento
+  primaryLogoUrl: string;   // Logo principale
+  secondaryLogoUrl: string; // Secondo logo opzionale
+  
   navbarLogo: LogoPlacementConfig;
   heroLogo: LogoPlacementConfig;
   footerLogo: LogoPlacementConfig;

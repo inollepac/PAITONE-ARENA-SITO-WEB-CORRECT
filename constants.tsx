@@ -1,11 +1,13 @@
 
 import { SiteConfig, Court, Event, LogoPlacementConfig } from './types';
 
-const DEFAULT_LOGO_CONFIG: LogoPlacementConfig = {
+const DEFAULT_PLACEMENT: LogoPlacementConfig = {
   enabled: true,
+  logoSource: 'primary',
   width: 60,
   height: 60,
-  borderRadius: 50,
+  borderRadius: 0,
+  borderWidth: 0,
   scale: 1,
   x: 0,
   y: 0,
@@ -15,10 +17,12 @@ const DEFAULT_LOGO_CONFIG: LogoPlacementConfig = {
 
 export const INITIAL_SITE_CONFIG: SiteConfig = {
   centerName: 'Paitone Arena',
-  logoUrl: '', 
-  navbarLogo: { ...DEFAULT_LOGO_CONFIG, width: 48, height: 48 },
-  heroLogo: { ...DEFAULT_LOGO_CONFIG, enabled: false, width: 120, height: 120, showName: false },
-  footerLogo: { ...DEFAULT_LOGO_CONFIG, width: 40, height: 40 },
+  primaryLogoUrl: '', 
+  secondaryLogoUrl: '',
+  
+  navbarLogo: { ...DEFAULT_PLACEMENT, width: 60, height: 60, showName: true },
+  heroLogo: { ...DEFAULT_PLACEMENT, enabled: false, width: 150, height: 100, borderRadius: 10, showName: false },
+  footerLogo: { ...DEFAULT_PLACEMENT, width: 50, height: 50, showName: true },
   
   primaryColor: '#4E5B83',
   accentColor: '#A8D38E',

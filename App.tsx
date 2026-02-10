@@ -17,24 +17,29 @@ import LoginPage from './components/LoginPage';
 
 // Componente per le pagine create dinamicamente
 const CustomPage: React.FC<{ section: SectionContent, config: SiteConfig }> = ({ section, config }) => {
+  const { navbarLogo } = config;
+  const logoUrl = navbarLogo.logoSource === 'primary' ? config.primaryLogoUrl : config.secondaryLogoUrl;
+
   return (
     <div className="py-24 max-w-7xl mx-auto px-4">
       <div className="max-w-4xl">
         <div className="flex items-center gap-6 mb-8">
-          {section.showLogo && config.logoUrl && (
+          {section.showLogo && logoUrl && (
             <div 
-              className="overflow-hidden border-2 border-brand-green shadow-md"
+              className="overflow-hidden shadow-md"
               style={{ 
                 width: '80px', 
                 height: '80px',
-                borderRadius: `${config.navbarLogo.borderRadius}%`
+                borderRadius: `${navbarLogo.borderRadius}%`,
+                border: navbarLogo.borderWidth > 0 ? `${navbarLogo.borderWidth}px solid var(--brand-green)` : 'none'
               }}
             >
               <img 
-                src={config.logoUrl} 
-                className="w-full h-full object-contain" 
+                src={logoUrl} 
+                className="w-full h-full" 
                 style={{ 
-                  transform: `scale(${config.navbarLogo.scale}) translate(${config.navbarLogo.x}%, ${config.navbarLogo.y}%)` 
+                  objectFit: navbarLogo.objectFit,
+                  transform: `scale(${navbarLogo.scale}) translate(${navbarLogo.x}%, ${navbarLogo.y}%)` 
                 }} 
                 alt="Logo" 
               />
@@ -72,11 +77,10 @@ const App: React.FC = () => {
     if (savedAuth === 'true') setIsAuthenticated(true);
   }, []);
 
-  // Iniezione dinamica dei colori del brand
   useEffect(() => {
     document.documentElement.style.setProperty('--brand-blue', config.primaryColor);
     document.documentElement.style.setProperty('--brand-green', config.accentColor);
-    document.documentElement.style.setProperty('--brand-green-opaque', `${config.accentColor}33`); // 20% opacity
+    document.documentElement.style.setProperty('--brand-green-opaque', `${config.accentColor}33`);
   }, [config.primaryColor, config.accentColor]);
 
   const updateConfig = (newConfig: SiteConfig) => {
@@ -143,6 +147,9 @@ const App: React.FC = () => {
     }
   };
 
+  const { footerLogo } = config;
+  const footerLogoUrl = footerLogo.logoSource === 'primary' ? config.primaryLogoUrl : config.secondaryLogoUrl;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar 
@@ -166,48 +173,48 @@ const App: React.FC = () => {
         {renderPage()}
       </main>
 
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div>
-            <div className="flex items-center gap-4 mb-4">
-              {config.footerLogo.enabled && config.logoUrl && (
+            <div className="flex items-center gap-4 mb-6">
+              {footerLogo.enabled && footerLogoUrl && (
                 <div 
                   className="overflow-hidden" 
                   style={{ 
-                    width: `${config.footerLogo.width}px`, 
-                    height: `${config.footerLogo.height}px`,
-                    borderRadius: `${config.footerLogo.borderRadius}%`
+                    width: `${footerLogo.width}px`, 
+                    height: `${footerLogo.height}px`,
+                    borderRadius: `${footerLogo.borderRadius}%`,
+                    border: footerLogo.borderWidth > 0 ? `${footerLogo.borderWidth}px solid var(--brand-green)` : 'none'
                   }}
                 >
-                  <img src={config.logoUrl} className="w-full h-full" style={{ objectFit: config.footerLogo.objectFit, transform: `scale(${config.footerLogo.scale}) translate(${config.footerLogo.x}%, ${config.footerLogo.y}%)` }} alt="Footer Logo" />
+                  <img src={footerLogoUrl} className="w-full h-full" style={{ objectFit: footerLogo.objectFit, transform: `scale(${footerLogo.scale}) translate(${footerLogo.x}%, ${footerLogo.y}%)` }} alt="Footer Logo" />
                 </div>
               )}
-              {config.footerLogo.showName && (
-                <h3 className="text-2xl font-bold">{config.centerName}</h3>
+              {footerLogo.showName && (
+                <h3 className="text-2xl font-black uppercase italic tracking-tighter">{config.centerName}</h3>
               )}
             </div>
-            <p className="text-gray-400 italic">"Gioca. Incontra. Rilassati."</p>
+            <p className="text-gray-400 italic">"Gioca. Incontra. Rilassati. Il potere dello sport nel Control Arena."</p>
           </div>
           <div>
-            <h4 className="font-semibold mb-4 text-emerald-400">Link Rapidi</h4>
-            <ul className="space-y-2 text-gray-400">
+            <h4 className="font-bold mb-6 text-brand-green uppercase tracking-widest text-xs">Esplora</h4>
+            <ul className="space-y-4 text-gray-400 text-sm">
               <li><button onClick={() => navigateTo('home')} className="hover:text-white transition">Home</button></li>
-              {config.sections.find(s => s.id === 'booking')?.enabled && <li><button onClick={() => navigateTo('booking')} className="hover:text-white transition">Prenota</button></li>}
-              {config.sections.find(s => s.id === 'sports')?.enabled && <li><button onClick={() => navigateTo('sports')} className="hover:text-white transition">Campi</button></li>}
+              <li><button onClick={() => navigateTo('booking')} className="hover:text-white transition font-bold text-brand-green">Prenota Campi</button></li>
+              <li><button onClick={() => navigateTo('sports')} className="hover:text-white transition">Sport & Arena</button></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4 text-emerald-400">Contatti</h4>
-            <p className="text-gray-400 text-sm mb-2"><i className="fas fa-map-marker-alt mr-2"></i> {config.address}</p>
-            <p className="text-gray-400 text-sm mb-2"><i className="fas fa-phone mr-2"></i> {config.phone}</p>
-            <p className="text-gray-400 text-sm"><i className="fas fa-envelope mr-2"></i> {config.email}</p>
+            <h4 className="font-bold mb-6 text-brand-green uppercase tracking-widest text-xs">Contatti Diretti</h4>
+            <p className="text-gray-400 text-sm mb-3"><i className="fas fa-map-marker-alt mr-2 text-brand-green"></i> {config.address}</p>
+            <p className="text-gray-400 text-sm mb-3"><i className="fas fa-phone mr-2 text-brand-green"></i> {config.phone}</p>
+            <p className="text-gray-400 text-sm"><i className="fas fa-envelope mr-2 text-brand-green"></i> {config.email}</p>
           </div>
           <div>
-            <h4 className="font-semibold mb-4 text-emerald-400">Social</h4>
+            <h4 className="font-bold mb-6 text-brand-green uppercase tracking-widest text-xs">Seguici</h4>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition"><i className="fab fa-facebook-f"></i></a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition"><i className="fab fa-instagram"></i></a>
-              <a href={`https://wa.me/${config.whatsapp}`} className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition"><i className="fab fa-whatsapp"></i></a>
+              <a href="#" className="w-12 h-12 bg-gray-800 rounded-2xl flex items-center justify-center hover:bg-brand-green hover:text-brand-blue transition-all"><i className="fab fa-instagram text-xl"></i></a>
+              <a href={`https://wa.me/${config.whatsapp}`} className="w-12 h-12 bg-gray-800 rounded-2xl flex items-center justify-center hover:bg-brand-green hover:text-brand-blue transition-all"><i className="fab fa-whatsapp text-xl"></i></a>
             </div>
           </div>
         </div>

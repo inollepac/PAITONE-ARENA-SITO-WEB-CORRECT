@@ -10,6 +10,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ config, onBookingClick, onDiscoverClick }) => {
   const { heroLogo } = config;
+  const logoUrl = heroLogo.logoSource === 'primary' ? config.primaryLogoUrl : config.secondaryLogoUrl;
 
   return (
     <section className="relative h-[90vh] flex items-center overflow-hidden bg-brand-blue">
@@ -20,11 +21,8 @@ const Hero: React.FC<HeroProps> = ({ config, onBookingClick, onDiscoverClick }) 
           alt="Tennis & Padel Arena" 
           className="w-full h-full object-cover opacity-60 mix-blend-overlay scale-110"
         />
-        {/* Animated Circle Accents mimicking the logo */}
         <div className="circle-accent w-[800px] h-[800px] -top-96 -left-96 animate-[spin_60s_linear_infinite]"></div>
         <div className="circle-accent w-[400px] h-[400px] bottom-10 -right-20 animate-[spin_40s_linear_infinite_reverse]"></div>
-        
-        {/* Overlay Gradients */}
         <div className="absolute inset-0 bg-gradient-to-r from-brand-blue via-brand-blue/40 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-brand-blue/80 to-transparent"></div>
       </div>
@@ -32,18 +30,19 @@ const Hero: React.FC<HeroProps> = ({ config, onBookingClick, onDiscoverClick }) 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
         <div className="max-w-3xl">
           <div className="flex items-center gap-6 mb-8">
-            {heroLogo.enabled && config.logoUrl && (
+            {heroLogo.enabled && logoUrl && (
               <div className="flex items-center gap-6">
                 <div 
                   className="overflow-hidden flex-shrink-0"
                   style={{ 
                     width: `${heroLogo.width}px`, 
                     height: `${heroLogo.height}px`,
-                    borderRadius: `${heroLogo.borderRadius}%`
+                    borderRadius: `${heroLogo.borderRadius}%`,
+                    border: heroLogo.borderWidth > 0 ? `${heroLogo.borderWidth}px solid white` : 'none'
                   }}
                 >
                   <img 
-                    src={config.logoUrl} 
+                    src={logoUrl} 
                     className="w-full h-full" 
                     style={{ 
                       objectFit: heroLogo.objectFit,
@@ -88,7 +87,6 @@ const Hero: React.FC<HeroProps> = ({ config, onBookingClick, onDiscoverClick }) 
         </div>
       </div>
       
-      {/* Brand Curve Bottom Accent */}
       <div className="absolute bottom-[-1px] left-0 w-full overflow-hidden leading-[0] transform rotate-180">
         <svg className="relative block w-[calc(130%+1.3px)] h-[80px]" viewBox="0 0 1200 120" preserveAspectRatio="none">
           <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5,73.84-4.36,147.54,16.88,218.2,35.26,69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113,14.29,1200,52.47V0Z" fill="#F4F7F2"></path>
