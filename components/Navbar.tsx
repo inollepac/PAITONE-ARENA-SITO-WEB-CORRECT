@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Page, SiteConfig } from '../types';
+import { Page, SiteConfig, SectionContent } from '../types';
 
 interface NavbarProps {
   activePage: Page;
@@ -25,7 +25,8 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const navItems: { label: string; page: Page }[] = [
     { label: 'Home', page: 'home' as Page },
-    ...Object.entries(config.sections)
+    // Fix: cast Object.entries to correct type to avoid "unknown" property access errors
+    ...(Object.entries(config.sections) as [keyof SiteConfig['sections'], SectionContent][])
       .filter(([id, section]) => section.enabled && section.navLabel && id !== 'booking')
       .map(([id, section]) => ({
         label: section.navLabel,

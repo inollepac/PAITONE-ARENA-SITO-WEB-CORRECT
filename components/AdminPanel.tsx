@@ -174,7 +174,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
               <p className="text-sm text-gray-400 italic">Abilita o disabilita le sezioni dal sito e dal menù. Cambia il nome dei link nel menù.</p>
               
               <div className="space-y-6">
-                {Object.entries(tempConfig.sections).map(([id, section]) => (
+                {/* Fix: cast Object.entries to correct type to avoid "unknown" property access errors */}
+                {(Object.entries(tempConfig.sections) as [keyof SiteConfig['sections'], SectionContent][]).map(([id, section]) => (
                   <div key={id} className="p-6 bg-gray-50 rounded-[30px] border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
@@ -185,7 +186,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
                         <input 
                           type="checkbox" 
                           checked={section.enabled} 
-                          onChange={e => updateSection(id as any, { enabled: e.target.checked })}
+                          onChange={e => updateSection(id, { enabled: e.target.checked })}
                           className="sr-only peer" 
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
@@ -199,7 +200,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
                           <input 
                             type="text" 
                             value={section.navLabel} 
-                            onChange={e => updateSection(id as any, { navLabel: e.target.value })}
+                            onChange={e => updateSection(id, { navLabel: e.target.value })}
                             className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm"
                             disabled={!section.enabled}
                           />
@@ -210,7 +211,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
                         <input 
                           type="text" 
                           value={section.title} 
-                          onChange={e => updateSection(id as any, { title: e.target.value })}
+                          onChange={e => updateSection(id, { title: e.target.value })}
                           className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm"
                           disabled={!section.enabled}
                         />
@@ -219,7 +220,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
                         <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Descrizione Sezione</label>
                         <textarea 
                           value={section.description} 
-                          onChange={e => updateSection(id as any, { description: e.target.value })}
+                          onChange={e => updateSection(id, { description: e.target.value })}
                           className="w-full p-3 bg-white border border-gray-200 rounded-xl text-sm h-20"
                           disabled={!section.enabled}
                         />

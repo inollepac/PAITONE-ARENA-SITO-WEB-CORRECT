@@ -9,13 +9,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
-      tailwind.config = {
+      window.tailwind.config = {
         theme: {
           extend: {
             colors: {
               brand: {
-                green: '#A8D38E', // Light green from logo
-                blue: '#4E5B83',  // Dark blue/grey from logo
+                green: '#A8D38E',
+                blue: '#4E5B83',
                 light: '#F4F7F2',
               }
             },
@@ -41,8 +41,7 @@
             background: linear-gradient(135deg, #4E5B83 0%, #A8D38E 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-        /* Custom curved shapes to mimic the logo arc */
+          }
         .curved-arc {
             border-radius: 50% 50% 50% 50% / 0% 0% 10% 10%;
         }
@@ -56,17 +55,19 @@
 <script type="importmap">
 {
   "imports": {
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "react/": "https://esm.sh/react@^19.2.4/",
     "react": "https://esm.sh/react@^19.2.4",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
-    "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4"
+    "@google/genai": "https://esm.sh/@google/genai@^1.40.0"
   }
 }
 </script>
 </head>
 <body class="bg-brand-light text-brand-blue">
     <div id="root"></div>
+    <!-- Vite caricherà questo file e gestirà tutte le importazioni automaticamente -->
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>

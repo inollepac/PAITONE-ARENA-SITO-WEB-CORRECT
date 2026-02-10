@@ -3,7 +3,8 @@ import { GoogleGenAI } from "@google/genai";
 import { SiteConfig } from "../types";
 
 export const getChatbotResponse = async (userMessage: string, config: SiteConfig) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  // Use API key directly from process.env as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const systemInstruction = `
     Sei l'assistente virtuale di "${config.centerName}".
