@@ -4,13 +4,14 @@ import { SiteConfig, Court, Event } from './types';
 export const INITIAL_SITE_CONFIG: SiteConfig = {
   centerName: 'Paitone Arena',
   logoUrl: '', 
-  logoShape: 'circle',
-  logoWidth: 48,
+  logoShape: 'none', // Nessun contorno di default
+  logoWidth: 60,
   logoScale: 1,
   logoX: 0,
   logoY: 0,
-  primaryColor: '#4E5B83', // Default brand-blue
-  accentColor: '#A8D38E',  // Default brand-green
+  hideCenterName: false,
+  primaryColor: '#4E5B83',
+  accentColor: '#A8D38E',
   heroTitle: 'Gioca. Impara. Stacca.',
   heroSubtitle: 'L’arena dove il relax incontra la competenza tecnica. Tennis e Padel guidati da professionisti laureati e certificati federali.',
   heroVideoUrl: '',

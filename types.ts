@@ -23,21 +23,22 @@ export interface SectionContent {
   enabled: boolean;
   navLabel: string;
   isCustom?: boolean;
-  showLogo?: boolean; // Opzione per mostrare il logo nella sezione
+  showLogo?: boolean;
 }
 
-export type LogoShape = 'circle' | 'square' | 'rounded';
+export type LogoShape = 'circle' | 'square' | 'rounded' | 'none';
 
 export interface SiteConfig {
   centerName: string;
   logoUrl: string; 
   logoShape: LogoShape;
-  logoWidth: number; // Dimensione libera in pixel
-  logoScale: number; // Zoom dell'immagine dentro il frame
-  logoX: number;     // Posizionamento X dell'immagine
-  logoY: number;     // Posizionamento Y dell'immagine
-  primaryColor: string; // Colore Blue personalizzabile
-  accentColor: string;  // Colore Green personalizzabile
+  logoWidth: number;
+  logoScale: number;
+  logoX: number;
+  logoY: number;
+  hideCenterName: boolean; // Se true, mostra solo il logo
+  primaryColor: string;
+  accentColor: string;
   heroTitle: string;
   heroSubtitle: string;
   heroVideoUrl: string;

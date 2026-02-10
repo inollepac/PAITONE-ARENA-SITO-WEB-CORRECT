@@ -36,17 +36,20 @@ const Navbar: React.FC<NavbarProps> = ({
     switch(config.logoShape) {
       case 'square': return 'rounded-none';
       case 'rounded': return 'rounded-xl';
-      default: return 'rounded-full';
+      case 'circle': return 'rounded-full';
+      default: return 'rounded-none'; // 'none' non ha arrotondamento né bordi visibili
     }
   };
+
+  const showTextBranding = !config.hideCenterName || !config.logoUrl;
 
   return (
     <nav className="fixed w-full z-50 glass border-b border-brand-green/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
+        <div className="flex justify-between h-24 items-center">
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
             <div 
-              className={`relative flex items-center justify-center overflow-hidden border-2 border-brand-green transition-all duration-300 ${getLogoShapeClass()}`}
+              className={`relative flex items-center justify-center overflow-hidden transition-all duration-300 ${getLogoShapeClass()} ${config.logoShape !== 'none' ? 'border-2 border-brand-green' : ''}`}
               style={{ 
                 width: `${config.logoWidth}px`, 
                 height: `${config.logoWidth}px` 
@@ -65,12 +68,14 @@ const Navbar: React.FC<NavbarProps> = ({
                  <i className="fas fa-baseball-ball text-brand-green text-2xl z-10"></i>
                )}
             </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold text-brand-blue tracking-tight leading-none uppercase">
-                {config.centerName}
-              </span>
-              <span className="text-[10px] text-brand-green font-medium tracking-[0.2em] uppercase mt-1">Tennis & Padel Club</span>
-            </div>
+            {showTextBranding && (
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-brand-blue tracking-tight leading-none uppercase">
+                  {config.centerName}
+                </span>
+                <span className="text-[10px] text-brand-green font-medium tracking-[0.2em] uppercase mt-1">Tennis & Padel Club</span>
+              </div>
+            )}
           </div>
 
           <div className="hidden md:flex items-center space-x-8">

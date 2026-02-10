@@ -63,7 +63,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
     switch(tempConfig.logoShape) {
       case 'square': return 'rounded-none';
       case 'rounded': return 'rounded-3xl';
-      default: return 'rounded-full';
+      case 'circle': return 'rounded-full';
+      default: return 'rounded-none';
     }
   };
 
@@ -120,40 +121,57 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
 
           {activeTab === 'brand' && (
             <div className="space-y-12">
-              <div>
-                <h3 className="text-3xl font-black uppercase italic text-brand-blue mb-2">Identità Visiva</h3>
-                <p className="text-gray-400 text-sm font-medium mb-10 italic">Personalizza il logo e i colori del tuo brand in tempo reale.</p>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-3xl font-black uppercase italic text-brand-blue mb-2">Identità Visiva</h3>
+                  <p className="text-gray-400 text-sm font-medium italic">Personalizza il logo e i colori del tuo brand.</p>
+                </div>
+                <div className="flex flex-col items-end gap-2 bg-brand-light p-4 rounded-3xl border border-brand-green/10">
+                   <span className="text-[10px] font-black uppercase text-brand-blue">Usa solo Logo (Nascondi Nome)</span>
+                   <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" checked={tempConfig.hideCenterName} onChange={e => setTempConfig({...tempConfig, hideCenterName: e.target.checked})} className="sr-only peer" />
+                      <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                    </label>
+                </div>
               </div>
               
               {/* Logo Framing & Styling */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-16 p-10 bg-gray-50 rounded-[3rem] border border-gray-100">
                 <div className="flex flex-col items-center justify-center">
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-6 text-center">Anteprima Logo (Live)</label>
-                  <div 
-                    className={`bg-white border-2 border-brand-green shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-300 ${getLogoPreviewShape()}`}
-                    style={{ 
-                      width: `${tempConfig.logoWidth}px`, 
-                      height: `${tempConfig.logoWidth}px` 
-                    }}
-                  >
-                    {tempConfig.logoUrl ? (
-                      <img 
-                        src={tempConfig.logoUrl} 
-                        className="w-full h-full object-cover" 
-                        style={{ 
-                          transform: `scale(${tempConfig.logoScale}) translate(${tempConfig.logoX}%, ${tempConfig.logoY}%)` 
-                        }} 
-                        alt="Preview" 
-                      />
-                    ) : (
-                      <i className="fas fa-image text-gray-200 text-5xl"></i>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-6 text-center">Anteprima Brand (Menù)</label>
+                  <div className="flex items-center gap-4 bg-white p-6 rounded-[2rem] shadow-inner border border-gray-100">
+                    <div 
+                      className={`flex items-center justify-center overflow-hidden transition-all duration-300 ${getLogoPreviewShape()} ${tempConfig.logoShape !== 'none' ? 'border-2 border-brand-green' : ''}`}
+                      style={{ 
+                        width: `${tempConfig.logoWidth}px`, 
+                        height: `${tempConfig.logoWidth}px` 
+                      }}
+                    >
+                      {tempConfig.logoUrl ? (
+                        <img 
+                          src={tempConfig.logoUrl} 
+                          className="w-full h-full object-cover" 
+                          style={{ 
+                            transform: `scale(${tempConfig.logoScale}) translate(${tempConfig.logoX}%, ${tempConfig.logoY}%)` 
+                          }} 
+                          alt="Preview" 
+                        />
+                      ) : (
+                        <i className="fas fa-image text-gray-200 text-3xl"></i>
+                      )}
+                    </div>
+                    {!tempConfig.hideCenterName && (
+                      <div className="flex flex-col">
+                        <span className="font-bold uppercase text-xs">{tempConfig.centerName}</span>
+                        <span className="text-[8px] text-brand-green font-bold uppercase tracking-widest">Tennis & Padel</span>
+                      </div>
                     )}
                   </div>
                   <button 
                     onClick={() => fileInputRef.current?.click()}
                     className="mt-10 bg-brand-blue text-white px-8 py-3 rounded-full font-bold hover:bg-brand-green hover:text-brand-blue transition shadow-lg"
                   >
-                    Carica Nuovo Logo
+                    Sostituisci Logo
                   </button>
                   <input type="file" ref={fileInputRef} onChange={handleLogoUpload} className="hidden" accept="image/*" />
                 </div>
@@ -161,39 +179,37 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
                 <div className="space-y-6">
                   <div>
                     <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
-                      <span>Dimensione Frame ({tempConfig.logoWidth}px)</span>
+                      <span>Dimensione Logo ({tempConfig.logoWidth}px)</span>
                     </label>
-                    <input type="range" min="40" max="300" step="2" value={tempConfig.logoWidth} onChange={e => setTempConfig({...tempConfig, logoWidth: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                    <input type="range" min="30" max="350" step="2" value={tempConfig.logoWidth} onChange={e => setTempConfig({...tempConfig, logoWidth: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
                   </div>
                   <div>
                     <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
                       <span>Zoom Immagine ({tempConfig.logoScale}x)</span>
                     </label>
-                    <input type="range" min="0.5" max="4" step="0.1" value={tempConfig.logoScale} onChange={e => setTempConfig({...tempConfig, logoScale: parseFloat(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                    <input type="range" min="0.1" max="5" step="0.05" value={tempConfig.logoScale} onChange={e => setTempConfig({...tempConfig, logoScale: parseFloat(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
                   </div>
-                  <div>
-                    <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
-                      <span>Spostamento X ({tempConfig.logoX}%)</span>
-                    </label>
-                    <input type="range" min="-100" max="100" step="1" value={tempConfig.logoX} onChange={e => setTempConfig({...tempConfig, logoX: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
-                  </div>
-                  <div>
-                    <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
-                      <span>Spostamento Y ({tempConfig.logoY}%)</span>
-                    </label>
-                    <input type="range" min="-100" max="100" step="1" value={tempConfig.logoY} onChange={e => setTempConfig({...tempConfig, logoY: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Spostamento X</label>
+                      <input type="range" min="-150" max="150" step="1" value={tempConfig.logoX} onChange={e => setTempConfig({...tempConfig, logoX: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase mb-2">Spostamento Y</label>
+                      <input type="range" min="-150" max="150" step="1" value={tempConfig.logoY} onChange={e => setTempConfig({...tempConfig, logoY: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                    </div>
                   </div>
                   
                   <div className="pt-4">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-3">Forma del Frame</label>
+                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-3">Forma del Frame (Contorno)</label>
                     <div className="flex bg-gray-200 p-1.5 rounded-2xl gap-2">
-                      {(['circle', 'rounded', 'square'] as LogoShape[]).map(shape => (
+                      {(['none', 'circle', 'rounded', 'square'] as LogoShape[]).map(shape => (
                         <button
                           key={shape}
                           onClick={() => setTempConfig({...tempConfig, logoShape: shape})}
-                          className={`flex-1 py-2 rounded-xl font-bold text-[10px] uppercase transition-all ${tempConfig.logoShape === shape ? 'bg-white text-brand-blue shadow-md' : 'text-gray-500 hover:text-brand-blue'}`}
+                          className={`flex-1 py-2 rounded-xl font-bold text-[9px] uppercase transition-all ${tempConfig.logoShape === shape ? 'bg-white text-brand-blue shadow-md' : 'text-gray-500 hover:text-brand-blue'}`}
                         >
-                          {shape === 'circle' ? 'Cerchio' : shape === 'square' ? 'Quadro' : 'Rounded'}
+                          {shape === 'none' ? 'Solo Logo' : shape === 'circle' ? 'Cerchio' : shape === 'square' ? 'Quadro' : 'Arrotondato'}
                         </button>
                       ))}
                     </div>
