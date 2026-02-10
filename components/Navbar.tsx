@@ -22,6 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({
   onLogout 
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { navbarLogo } = config;
 
   const navItems = [
     { label: 'Home', page: 'home' },
@@ -31,28 +32,28 @@ const Navbar: React.FC<NavbarProps> = ({
   ];
 
   const bookingSection = config.sections.find(s => s.id === 'booking');
-  const showTextBranding = !config.hideCenterName || !config.logoUrl;
 
   return (
     <nav className="fixed w-full z-50 glass border-b border-brand-green/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-24 items-center">
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
-            {config.showLogoInNavbar && (
+            {navbarLogo.enabled && (
               <div 
                 className="relative flex items-center justify-center overflow-hidden transition-all duration-300"
                 style={{ 
-                  width: `${config.logoWidth}px`, 
-                  height: `${config.logoWidth}px`,
-                  borderRadius: `${config.logoBorderRadius}%`
+                  width: `${navbarLogo.width}px`, 
+                  height: `${navbarLogo.height}px`,
+                  borderRadius: `${navbarLogo.borderRadius}%`
                 }}
               >
                  {config.logoUrl ? (
                    <img 
                      src={config.logoUrl} 
-                     className="w-full h-full object-cover z-10" 
+                     className="w-full h-full z-10" 
                      style={{ 
-                       transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` 
+                       objectFit: navbarLogo.objectFit,
+                       transform: `scale(${navbarLogo.scale}) translate(${navbarLogo.x}%, ${navbarLogo.y}%)` 
                      }} 
                      alt="Logo" 
                    />
@@ -61,7 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({
                  )}
               </div>
             )}
-            {showTextBranding && (
+            {navbarLogo.showName && (
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-brand-blue tracking-tight leading-none uppercase">
                   {config.centerName}

@@ -26,18 +26,26 @@ export interface SectionContent {
   showLogo?: boolean;
 }
 
+export interface LogoPlacementConfig {
+  enabled: boolean;
+  width: number;
+  height: number;
+  borderRadius: number;
+  scale: number;
+  x: number;
+  y: number;
+  objectFit: 'cover' | 'contain'; // 'contain' per non tagliare mai il logo, 'cover' per riempire
+  showName: boolean; // Se mostrare il nome del centro accanto al logo in quel punto
+}
+
 export interface SiteConfig {
   centerName: string;
   logoUrl: string; 
-  logoBorderRadius: number; // Valore 0-100 per controllo totale della forma
-  logoWidth: number;
-  logoScale: number;
-  logoX: number;
-  logoY: number;
-  hideCenterName: boolean; 
-  showLogoInHero: boolean;  // Nuova posizione: Hero
-  showLogoInNavbar: boolean; // Nuova posizione: Navbar
-  showLogoInFooter: boolean; // Nuova posizione: Footer
+  // Configurazioni specifiche per punto di inserimento
+  navbarLogo: LogoPlacementConfig;
+  heroLogo: LogoPlacementConfig;
+  footerLogo: LogoPlacementConfig;
+  
   primaryColor: string;
   accentColor: string;
   heroTitle: string;

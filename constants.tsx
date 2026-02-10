@@ -1,18 +1,25 @@
 
-import { SiteConfig, Court, Event } from './types';
+import { SiteConfig, Court, Event, LogoPlacementConfig } from './types';
+
+const DEFAULT_LOGO_CONFIG: LogoPlacementConfig = {
+  enabled: true,
+  width: 60,
+  height: 60,
+  borderRadius: 50,
+  scale: 1,
+  x: 0,
+  y: 0,
+  objectFit: 'contain',
+  showName: true
+};
 
 export const INITIAL_SITE_CONFIG: SiteConfig = {
   centerName: 'Paitone Arena',
   logoUrl: '', 
-  logoBorderRadius: 50, // Default cerchio (50%)
-  logoWidth: 60,
-  logoScale: 1,
-  logoX: 0,
-  logoY: 0,
-  hideCenterName: false,
-  showLogoInHero: false,
-  showLogoInNavbar: true,
-  showLogoInFooter: true,
+  navbarLogo: { ...DEFAULT_LOGO_CONFIG, width: 48, height: 48 },
+  heroLogo: { ...DEFAULT_LOGO_CONFIG, enabled: false, width: 120, height: 120, showName: false },
+  footerLogo: { ...DEFAULT_LOGO_CONFIG, width: 40, height: 40 },
+  
   primaryColor: '#4E5B83',
   accentColor: '#A8D38E',
   heroTitle: 'Gioca. Impara. Stacca.',

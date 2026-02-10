@@ -27,14 +27,14 @@ const CustomPage: React.FC<{ section: SectionContent, config: SiteConfig }> = ({
               style={{ 
                 width: '80px', 
                 height: '80px',
-                borderRadius: `${config.logoBorderRadius}%`
+                borderRadius: `${config.navbarLogo.borderRadius}%`
               }}
             >
               <img 
                 src={config.logoUrl} 
-                className="w-full h-full object-cover" 
+                className="w-full h-full object-contain" 
                 style={{ 
-                  transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` 
+                  transform: `scale(${config.navbarLogo.scale}) translate(${config.navbarLogo.x}%, ${config.navbarLogo.y}%)` 
                 }} 
                 alt="Logo" 
               />
@@ -170,19 +170,21 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-4 mb-4">
-              {config.showLogoInFooter && config.logoUrl && (
+              {config.footerLogo.enabled && config.logoUrl && (
                 <div 
-                  className="overflow-hidden border border-brand-green/30" 
+                  className="overflow-hidden" 
                   style={{ 
-                    width: '40px', 
-                    height: '40px',
-                    borderRadius: `${config.logoBorderRadius}%`
+                    width: `${config.footerLogo.width}px`, 
+                    height: `${config.footerLogo.height}px`,
+                    borderRadius: `${config.footerLogo.borderRadius}%`
                   }}
                 >
-                  <img src={config.logoUrl} className="w-full h-full object-cover" style={{ transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` }} alt="Footer Logo" />
+                  <img src={config.logoUrl} className="w-full h-full" style={{ objectFit: config.footerLogo.objectFit, transform: `scale(${config.footerLogo.scale}) translate(${config.footerLogo.x}%, ${config.footerLogo.y}%)` }} alt="Footer Logo" />
                 </div>
               )}
-              <h3 className="text-2xl font-bold">{config.centerName}</h3>
+              {config.footerLogo.showName && (
+                <h3 className="text-2xl font-bold">{config.centerName}</h3>
+              )}
             </div>
             <p className="text-gray-400 italic">"Gioca. Incontra. Rilassati."</p>
           </div>

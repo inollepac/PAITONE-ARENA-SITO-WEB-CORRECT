@@ -9,6 +9,8 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ config, onBookingClick, onDiscoverClick }) => {
+  const { heroLogo } = config;
+
   return (
     <section className="relative h-[90vh] flex items-center overflow-hidden bg-brand-blue">
       {/* Visual Background with Mask */}
@@ -30,27 +32,37 @@ const Hero: React.FC<HeroProps> = ({ config, onBookingClick, onDiscoverClick }) 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
         <div className="max-w-3xl">
           <div className="flex items-center gap-6 mb-8">
-            {config.showLogoInHero && config.logoUrl && (
-              <div 
-                className="overflow-hidden border-2 border-brand-green shadow-2xl flex-shrink-0"
-                style={{ 
-                  width: '120px', 
-                  height: '120px',
-                  borderRadius: `${config.logoBorderRadius}%`
-                }}
-              >
-                <img 
-                  src={config.logoUrl} 
-                  className="w-full h-full object-cover" 
-                  style={{ transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` }} 
-                  alt="Hero Logo" 
-                />
+            {heroLogo.enabled && config.logoUrl && (
+              <div className="flex items-center gap-6">
+                <div 
+                  className="overflow-hidden flex-shrink-0"
+                  style={{ 
+                    width: `${heroLogo.width}px`, 
+                    height: `${heroLogo.height}px`,
+                    borderRadius: `${heroLogo.borderRadius}%`
+                  }}
+                >
+                  <img 
+                    src={config.logoUrl} 
+                    className="w-full h-full" 
+                    style={{ 
+                      objectFit: heroLogo.objectFit,
+                      transform: `scale(${heroLogo.scale}) translate(${heroLogo.x}%, ${heroLogo.y}%)` 
+                    }} 
+                    alt="Hero Logo" 
+                  />
+                </div>
+                {heroLogo.showName && (
+                  <h2 className="text-3xl font-black uppercase italic text-brand-green">{config.centerName}</h2>
+                )}
               </div>
             )}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-green/20 border border-brand-green/30 rounded-full">
-              <div className="w-2 h-2 bg-brand-green rounded-full animate-pulse"></div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-green">Welcome to the Arena</span>
-            </div>
+            {!heroLogo.enabled && (
+               <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-green/20 border border-brand-green/30 rounded-full">
+                <div className="w-2 h-2 bg-brand-green rounded-full animate-pulse"></div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-green">Welcome to the Arena</span>
+              </div>
+            )}
           </div>
           <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter leading-[0.9] uppercase italic">
             {config.heroTitle}
