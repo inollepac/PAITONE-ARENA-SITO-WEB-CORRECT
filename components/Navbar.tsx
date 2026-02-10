@@ -32,15 +32,31 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const bookingSection = config.sections.find(s => s.id === 'booking');
 
+  const getLogoSizeClass = () => {
+    switch(config.logoSize) {
+      case 'sm': return 'w-8 h-8';
+      case 'lg': return 'w-16 h-16';
+      default: return 'w-12 h-12';
+    }
+  };
+
+  const getLogoShapeClass = () => {
+    switch(config.logoShape) {
+      case 'square': return 'rounded-none';
+      case 'rounded': return 'rounded-xl';
+      default: return 'rounded-full';
+    }
+  };
+
   return (
     <nav className="fixed w-full z-50 glass border-b border-brand-green/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
-            <div className="relative w-12 h-12 flex items-center justify-center">
-               <div className="absolute inset-0 border-2 border-brand-green rounded-full opacity-40 group-hover:scale-110 transition duration-500"></div>
+            <div className={`relative ${getLogoSizeClass()} flex items-center justify-center`}>
+               <div className={`absolute inset-0 border-2 border-brand-green ${getLogoShapeClass()} opacity-40 group-hover:scale-110 transition duration-500`}></div>
                {config.logoUrl ? (
-                 <img src={config.logoUrl} className="w-10 h-10 rounded-full object-cover z-10" alt="Logo" />
+                 <img src={config.logoUrl} className={`w-full h-full object-cover z-10 ${getLogoShapeClass()}`} alt="Logo" />
                ) : (
                  <i className="fas fa-baseball-ball text-brand-green text-2xl z-10"></i>
                )}

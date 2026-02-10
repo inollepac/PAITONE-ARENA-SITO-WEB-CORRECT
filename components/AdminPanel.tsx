@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { SiteConfig, Court, Event, SectionContent } from '../types';
+import { SiteConfig, Court, Event, SectionContent, LogoShape, LogoSize } from '../types';
 
 interface AdminPanelProps {
   config: SiteConfig;
@@ -58,6 +58,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
     });
   };
 
+  const getLogoPreviewShape = () => {
+    switch(tempConfig.logoShape) {
+      case 'square': return 'rounded-none';
+      case 'rounded': return 'rounded-2xl';
+      default: return 'rounded-full';
+    }
+  };
+
+  const getLogoPreviewSize = () => {
+    switch(tempConfig.logoSize) {
+      case 'sm': return 'w-16 h-16';
+      case 'lg': return 'w-40 h-40';
+      default: return 'w-24 h-24';
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
@@ -110,34 +126,72 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
           )}
 
           {activeTab === 'brand' && (
-            <div className="space-y-10">
+            <div className="space-y-12">
               <h3 className="text-3xl font-black uppercase italic text-brand-blue">Identità Visiva</h3>
-              <div className="space-y-8">
+              
+              {/* Logo Upload Section */}
+              <div className="space-y-10">
                 <div>
                   <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Logo del Centro</label>
-                  <div className="flex flex-col md:flex-row items-center gap-8 p-10 border-2 border-dashed border-gray-100 rounded-[3rem]">
-                    <div className="w-32 h-32 bg-gray-50 rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
+                  <div className="flex flex-col md:flex-row items-center gap-12 p-10 border-2 border-dashed border-gray-100 rounded-[3rem] bg-gray-50/50">
+                    <div className={`${getLogoPreviewSize()} bg-white flex items-center justify-center overflow-hidden border-4 border-white shadow-xl transition-all duration-300 ${getLogoPreviewShape()}`}>
                       {tempConfig.logoUrl ? (
                         <img src={tempConfig.logoUrl} className="w-full h-full object-cover" alt="Anteprima" />
                       ) : (
-                        <i className="fas fa-image text-gray-300 text-4xl"></i>
+                        <i className="fas fa-image text-gray-200 text-5xl"></i>
                       )}
                     </div>
                     <div className="flex-grow text-center md:text-left">
-                      <p className="text-sm text-gray-500 font-medium mb-4">Carica un'immagine quadrata per i migliori risultati.</p>
+                      <p className="text-sm text-brand-blue/60 font-medium mb-4 italic">Il logo apparirà nel menù di navigazione e nei piè di pagina.</p>
                       <button 
                         onClick={() => fileInputRef.current?.click()}
-                        className="bg-brand-light text-brand-blue px-8 py-3 rounded-full font-bold hover:bg-brand-green transition"
+                        className="bg-brand-blue text-white px-8 py-3 rounded-full font-bold hover:bg-brand-green hover:text-brand-blue transition shadow-lg"
                       >
-                        Seleziona File
+                        Carica Immagine
                       </button>
                       <input type="file" ref={fileInputRef} onChange={handleLogoUpload} className="hidden" accept="image/*" />
                     </div>
                   </div>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  {/* Shape Picker */}
+                  <div>
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Forma del Logo</label>
+                    <div className="flex bg-gray-100 p-2 rounded-2xl gap-2">
+                      {(['circle', 'rounded', 'square'] as LogoShape[]).map(shape => (
+                        <button
+                          key={shape}
+                          onClick={() => setTempConfig({...tempConfig, logoShape: shape})}
+                          className={`flex-1 py-3 rounded-xl font-bold text-xs uppercase transition-all ${tempConfig.logoShape === shape ? 'bg-white text-brand-blue shadow-md' : 'text-gray-400 hover:text-brand-blue'}`}
+                        >
+                          <i className={`fas ${shape === 'circle' ? 'fa-circle' : shape === 'square' ? 'fa-square' : 'fa-stop'} mr-2`}></i>
+                          {shape === 'circle' ? 'Cerchio' : shape === 'square' ? 'Quadro' : 'Smussato'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Size Picker */}
+                  <div>
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Dimensione Logo (Menù)</label>
+                    <div className="flex bg-gray-100 p-2 rounded-2xl gap-2">
+                      {(['sm', 'md', 'lg'] as LogoSize[]).map(size => (
+                        <button
+                          key={size}
+                          onClick={() => setTempConfig({...tempConfig, logoSize: size})}
+                          className={`flex-1 py-3 rounded-xl font-bold text-xs uppercase transition-all ${tempConfig.logoSize === size ? 'bg-white text-brand-blue shadow-md' : 'text-gray-400 hover:text-brand-blue'}`}
+                        >
+                          {size === 'sm' ? 'Piccolo' : size === 'md' ? 'Medio' : 'Grande'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Immagine Sfondo Principale (Hero)</label>
-                  <input type="text" value={tempConfig.heroImageUrl} onChange={e => setTempConfig({...tempConfig, heroImageUrl: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none" />
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Immagine Sfondo Principale (Hero URL)</label>
+                  <input type="text" value={tempConfig.heroImageUrl} onChange={e => setTempConfig({...tempConfig, heroImageUrl: e.target.value})} className="w-full p-5 bg-gray-50 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none" placeholder="https://..." />
                 </div>
               </div>
             </div>

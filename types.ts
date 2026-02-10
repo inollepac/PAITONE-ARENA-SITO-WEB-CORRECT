@@ -25,9 +25,14 @@ export interface SectionContent {
   isCustom?: boolean; // Per distinguere sezioni aggiunte dall'utente
 }
 
+export type LogoShape = 'circle' | 'square' | 'rounded';
+export type LogoSize = 'sm' | 'md' | 'lg';
+
 export interface SiteConfig {
   centerName: string;
-  logoUrl: string; // Manterrà la stringa base64 o l'URL
+  logoUrl: string; 
+  logoShape: LogoShape;
+  logoSize: LogoSize;
   heroTitle: string;
   heroSubtitle: string;
   heroVideoUrl: string;
@@ -38,7 +43,7 @@ export interface SiteConfig {
   email: string;
   workingHours: string;
   externalBookingUrl: string;
-  sections: SectionContent[]; // Trasformato in array per gestione dinamica
+  sections: SectionContent[]; 
 }
 
 export interface Slot {
@@ -47,4 +52,4 @@ export interface Slot {
   courtId: string;
 }
 
-export type Page = string; // Reso stringa per supportare ID di sezioni dinamiche
+export type Page = string;

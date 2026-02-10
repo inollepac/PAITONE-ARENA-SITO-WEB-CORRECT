@@ -4,6 +4,8 @@ import { SiteConfig, Court, Event } from './types';
 export const INITIAL_SITE_CONFIG: SiteConfig = {
   centerName: 'Paitone Arena',
   logoUrl: '', 
+  logoShape: 'circle',
+  logoSize: 'md',
   heroTitle: 'Gioca. Impara. Stacca.',
   heroSubtitle: 'L’arena dove il relax incontra la competenza tecnica. Tennis e Padel guidati da professionisti laureati e certificati federali.',
   heroVideoUrl: '',
