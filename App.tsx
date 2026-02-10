@@ -17,22 +17,18 @@ import LoginPage from './components/LoginPage';
 
 // Componente per le pagine create dinamicamente
 const CustomPage: React.FC<{ section: SectionContent, config: SiteConfig }> = ({ section, config }) => {
-  const getLogoShapeClass = () => {
-    switch(config.logoShape) {
-      case 'square': return 'rounded-none';
-      case 'rounded': return 'rounded-3xl';
-      default: return 'rounded-full';
-    }
-  };
-
   return (
     <div className="py-24 max-w-7xl mx-auto px-4">
       <div className="max-w-4xl">
         <div className="flex items-center gap-6 mb-8">
           {section.showLogo && config.logoUrl && (
             <div 
-              className={`overflow-hidden border-2 border-brand-green ${getLogoShapeClass()} shadow-md`}
-              style={{ width: '80px', height: '80px' }}
+              className="overflow-hidden border-2 border-brand-green shadow-md"
+              style={{ 
+                width: '80px', 
+                height: '80px',
+                borderRadius: `${config.logoBorderRadius}%`
+              }}
             >
               <img 
                 src={config.logoUrl} 
@@ -174,12 +170,16 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-4 mb-4">
-              {config.logoUrl && (
+              {config.showLogoInFooter && config.logoUrl && (
                 <div 
-                  className={`overflow-hidden border border-brand-green/30 rounded-full`} 
-                  style={{ width: '40px', height: '40px' }}
+                  className="overflow-hidden border border-brand-green/30" 
+                  style={{ 
+                    width: '40px', 
+                    height: '40px',
+                    borderRadius: `${config.logoBorderRadius}%`
+                  }}
                 >
-                  <img src={config.logoUrl} className="w-full h-full object-cover" style={{ transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` }} alt="Logo" />
+                  <img src={config.logoUrl} className="w-full h-full object-cover" style={{ transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` }} alt="Footer Logo" />
                 </div>
               )}
               <h3 className="text-2xl font-bold">{config.centerName}</h3>

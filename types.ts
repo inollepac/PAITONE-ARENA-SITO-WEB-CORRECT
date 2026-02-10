@@ -26,17 +26,18 @@ export interface SectionContent {
   showLogo?: boolean;
 }
 
-export type LogoShape = 'circle' | 'square' | 'rounded' | 'none';
-
 export interface SiteConfig {
   centerName: string;
   logoUrl: string; 
-  logoShape: LogoShape;
+  logoBorderRadius: number; // Valore 0-100 per controllo totale della forma
   logoWidth: number;
   logoScale: number;
   logoX: number;
   logoY: number;
-  hideCenterName: boolean; // Se true, mostra solo il logo
+  hideCenterName: boolean; 
+  showLogoInHero: boolean;  // Nuova posizione: Hero
+  showLogoInNavbar: boolean; // Nuova posizione: Navbar
+  showLogoInFooter: boolean; // Nuova posizione: Footer
   primaryColor: string;
   accentColor: string;
   heroTitle: string;

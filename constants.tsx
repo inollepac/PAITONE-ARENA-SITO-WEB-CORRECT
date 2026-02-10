@@ -4,12 +4,15 @@ import { SiteConfig, Court, Event } from './types';
 export const INITIAL_SITE_CONFIG: SiteConfig = {
   centerName: 'Paitone Arena',
   logoUrl: '', 
-  logoShape: 'none', // Nessun contorno di default
+  logoBorderRadius: 50, // Default cerchio (50%)
   logoWidth: 60,
   logoScale: 1,
   logoX: 0,
   logoY: 0,
   hideCenterName: false,
+  showLogoInHero: false,
+  showLogoInNavbar: true,
+  showLogoInFooter: true,
   primaryColor: '#4E5B83',
   accentColor: '#A8D38E',
   heroTitle: 'Gioca. Impara. Stacca.',

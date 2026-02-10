@@ -31,16 +31,6 @@ const Navbar: React.FC<NavbarProps> = ({
   ];
 
   const bookingSection = config.sections.find(s => s.id === 'booking');
-
-  const getLogoShapeClass = () => {
-    switch(config.logoShape) {
-      case 'square': return 'rounded-none';
-      case 'rounded': return 'rounded-xl';
-      case 'circle': return 'rounded-full';
-      default: return 'rounded-none'; // 'none' non ha arrotondamento né bordi visibili
-    }
-  };
-
   const showTextBranding = !config.hideCenterName || !config.logoUrl;
 
   return (
@@ -48,26 +38,29 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-24 items-center">
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
-            <div 
-              className={`relative flex items-center justify-center overflow-hidden transition-all duration-300 ${getLogoShapeClass()} ${config.logoShape !== 'none' ? 'border-2 border-brand-green' : ''}`}
-              style={{ 
-                width: `${config.logoWidth}px`, 
-                height: `${config.logoWidth}px` 
-              }}
-            >
-               {config.logoUrl ? (
-                 <img 
-                   src={config.logoUrl} 
-                   className="w-full h-full object-cover z-10" 
-                   style={{ 
-                     transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` 
-                   }} 
-                   alt="Logo" 
-                 />
-               ) : (
-                 <i className="fas fa-baseball-ball text-brand-green text-2xl z-10"></i>
-               )}
-            </div>
+            {config.showLogoInNavbar && (
+              <div 
+                className="relative flex items-center justify-center overflow-hidden transition-all duration-300"
+                style={{ 
+                  width: `${config.logoWidth}px`, 
+                  height: `${config.logoWidth}px`,
+                  borderRadius: `${config.logoBorderRadius}%`
+                }}
+              >
+                 {config.logoUrl ? (
+                   <img 
+                     src={config.logoUrl} 
+                     className="w-full h-full object-cover z-10" 
+                     style={{ 
+                       transform: `scale(${config.logoScale}) translate(${config.logoX}%, ${config.logoY}%)` 
+                     }} 
+                     alt="Logo" 
+                   />
+                 ) : (
+                   <i className="fas fa-baseball-ball text-brand-green text-2xl z-10"></i>
+                 )}
+              </div>
+            )}
             {showTextBranding && (
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-brand-blue tracking-tight leading-none uppercase">

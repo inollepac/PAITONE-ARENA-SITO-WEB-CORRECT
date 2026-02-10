@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { SiteConfig, Court, Event, SectionContent, LogoShape } from '../types';
+import { SiteConfig, Court, Event, SectionContent } from '../types';
 
 interface AdminPanelProps {
   config: SiteConfig;
@@ -59,15 +59,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
     });
   };
 
-  const getLogoPreviewShape = () => {
-    switch(tempConfig.logoShape) {
-      case 'square': return 'rounded-none';
-      case 'rounded': return 'rounded-3xl';
-      case 'circle': return 'rounded-full';
-      default: return 'rounded-none';
-    }
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
@@ -124,27 +115,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-3xl font-black uppercase italic text-brand-blue mb-2">Identità Visiva</h3>
-                  <p className="text-gray-400 text-sm font-medium italic">Personalizza il logo e i colori del tuo brand.</p>
-                </div>
-                <div className="flex flex-col items-end gap-2 bg-brand-light p-4 rounded-3xl border border-brand-green/10">
-                   <span className="text-[10px] font-black uppercase text-brand-blue">Usa solo Logo (Nascondi Nome)</span>
-                   <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" checked={tempConfig.hideCenterName} onChange={e => setTempConfig({...tempConfig, hideCenterName: e.target.checked})} className="sr-only peer" />
-                      <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                    </label>
+                  <p className="text-gray-400 text-sm font-medium italic">Personalizza il logo, la sua forma e i punti di inserimento.</p>
                 </div>
               </div>
               
               {/* Logo Framing & Styling */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-16 p-10 bg-gray-50 rounded-[3rem] border border-gray-100">
                 <div className="flex flex-col items-center justify-center">
-                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-6 text-center">Anteprima Brand (Menù)</label>
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-6 text-center">Anteprima Branding</label>
                   <div className="flex items-center gap-4 bg-white p-6 rounded-[2rem] shadow-inner border border-gray-100">
                     <div 
-                      className={`flex items-center justify-center overflow-hidden transition-all duration-300 ${getLogoPreviewShape()} ${tempConfig.logoShape !== 'none' ? 'border-2 border-brand-green' : ''}`}
+                      className="flex items-center justify-center overflow-hidden transition-all duration-300 border-2 border-brand-green shadow-xl"
                       style={{ 
                         width: `${tempConfig.logoWidth}px`, 
-                        height: `${tempConfig.logoWidth}px` 
+                        height: `${tempConfig.logoWidth}px`,
+                        borderRadius: `${tempConfig.logoBorderRadius}%`
                       }}
                     >
                       {tempConfig.logoUrl ? (
@@ -179,9 +164,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
                 <div className="space-y-6">
                   <div>
                     <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
-                      <span>Dimensione Logo ({tempConfig.logoWidth}px)</span>
+                      <span>Dimensione Frame ({tempConfig.logoWidth}px)</span>
                     </label>
                     <input type="range" min="30" max="350" step="2" value={tempConfig.logoWidth} onChange={e => setTempConfig({...tempConfig, logoWidth: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                  </div>
+                  <div>
+                    <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
+                      <span>Arrotondamento / Forma ({tempConfig.logoBorderRadius}%)</span>
+                    </label>
+                    <input type="range" min="0" max="50" step="1" value={tempConfig.logoBorderRadius} onChange={e => setTempConfig({...tempConfig, logoBorderRadius: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
+                    <div className="flex justify-between text-[8px] text-gray-400 mt-1 uppercase font-bold">
+                        <span>Quadro</span>
+                        <span>Cerchio</span>
+                    </div>
                   </div>
                   <div>
                     <label className="flex justify-between text-[10px] font-black text-gray-400 uppercase mb-2">
@@ -199,22 +194,42 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, courts, events, onUpdat
                       <input type="range" min="-150" max="150" step="1" value={tempConfig.logoY} onChange={e => setTempConfig({...tempConfig, logoY: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-blue" />
                     </div>
                   </div>
-                  
-                  <div className="pt-4">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase mb-3">Forma del Frame (Contorno)</label>
-                    <div className="flex bg-gray-200 p-1.5 rounded-2xl gap-2">
-                      {(['none', 'circle', 'rounded', 'square'] as LogoShape[]).map(shape => (
-                        <button
-                          key={shape}
-                          onClick={() => setTempConfig({...tempConfig, logoShape: shape})}
-                          className={`flex-1 py-2 rounded-xl font-bold text-[9px] uppercase transition-all ${tempConfig.logoShape === shape ? 'bg-white text-brand-blue shadow-md' : 'text-gray-500 hover:text-brand-blue'}`}
-                        >
-                          {shape === 'none' ? 'Solo Logo' : shape === 'circle' ? 'Cerchio' : shape === 'square' ? 'Quadro' : 'Arrotondato'}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
                 </div>
+              </div>
+
+              {/* Logo Placements */}
+              <div className="p-10 bg-brand-light rounded-[3rem] border border-brand-green/10 space-y-8">
+                 <h4 className="text-xl font-black uppercase text-brand-blue tracking-tight">Punti di inserimento Logo</h4>
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="flex flex-col gap-3 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <span className="text-[10px] font-black uppercase text-brand-blue">Menù (Navbar)</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={tempConfig.showLogoInNavbar} onChange={e => setTempConfig({...tempConfig, showLogoInNavbar: e.target.checked})} className="sr-only peer" />
+                            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                    </div>
+                    <div className="flex flex-col gap-3 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <span className="text-[10px] font-black uppercase text-brand-blue">Sfondo Hero</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={tempConfig.showLogoInHero} onChange={e => setTempConfig({...tempConfig, showLogoInHero: e.target.checked})} className="sr-only peer" />
+                            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                    </div>
+                    <div className="flex flex-col gap-3 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <span className="text-[10px] font-black uppercase text-brand-blue">Pié di pagina</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={tempConfig.showLogoInFooter} onChange={e => setTempConfig({...tempConfig, showLogoInFooter: e.target.checked})} className="sr-only peer" />
+                            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                    </div>
+                    <div className="flex flex-col gap-3 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                        <span className="text-[10px] font-black uppercase text-brand-blue">Solo Logo (No Testo)</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={tempConfig.hideCenterName} onChange={e => setTempConfig({...tempConfig, hideCenterName: e.target.checked})} className="sr-only peer" />
+                            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-brand-green after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                    </div>
+                 </div>
               </div>
 
               {/* Brand Colors */}
