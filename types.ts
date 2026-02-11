@@ -56,7 +56,6 @@ export interface SiteConfig {
   heroVideoUrl: string;
   heroImageUrl: string;
   
-  // Immagini Sezioni
   sportsImageUrl: string;
   tennisImageUrl: string;
   padelImageUrl: string;
