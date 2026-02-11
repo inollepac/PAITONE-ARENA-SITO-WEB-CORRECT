@@ -55,6 +55,14 @@ export interface SiteConfig {
   heroSubtitle: string;
   heroVideoUrl: string;
   heroImageUrl: string;
+  
+  // Immagini Sezioni
+  sportsImageUrl: string;
+  tennisImageUrl: string;
+  padelImageUrl: string;
+  communityImageUrl: string;
+  spaceImageUrls: string[]; // Grid immagini "Il nostro spazio"
+  
   address: string;
   phone: string;
   whatsapp: string;

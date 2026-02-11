@@ -138,7 +138,7 @@ const App: React.FC = () => {
       case 'space': return <OurSpace config={config} />;
       case 'sports': return <SportsPage config={config} courts={courts} />;
       case 'courses': return <CoursesPage />;
-      case 'community': return <CommunityPage events={events} />;
+      case 'community': return <CommunityPage events={events} config={config} />;
       case 'booking': return <BookingSystem config={config} courts={courts} />;
       case 'contacts': return <ContactsPage config={config} />;
       default: 

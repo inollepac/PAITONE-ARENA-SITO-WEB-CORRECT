@@ -84,7 +84,13 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, events, courts, onN
               <p className="text-xl text-white/60 border-l-2 border-brand-green pl-8 italic">{sports.description}</p>
               <button onClick={() => onNavigate('booking')} className="bg-brand-green text-brand-blue px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-white transition-all shadow-2xl">Prenota ora</button>
             </div>
-            <div className="lg:w-1/2"><img src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=800" className="rounded-[4rem] shadow-2xl border-4 border-brand-green/20" alt="Sports" /></div>
+            <div className="lg:w-1/2">
+              <img 
+                src={config.sportsImageUrl} 
+                className="rounded-[4rem] shadow-2xl border-4 border-brand-green/20 w-full h-auto object-cover max-h-[500px]" 
+                alt="Sports Showcase" 
+              />
+            </div>
           </div>
         </section>
       )}
