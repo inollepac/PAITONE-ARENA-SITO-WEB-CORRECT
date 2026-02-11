@@ -28,22 +28,22 @@ export interface SectionContent {
 
 export interface LogoPlacementConfig {
   enabled: boolean;
-  logoSource: 'primary' | 'secondary'; // Scelta tra i due loghi caricati
+  logoSource: 'primary' | 'secondary';
   width: number;
   height: number;
-  borderRadius: number; // 0 per rettangoli, 50 per cerchi/ovali
-  borderWidth: number;  // 0 per rimuovere il contorno
+  borderRadius: number; 
+  borderWidth: number; 
   scale: number;
   x: number;
   y: number;
   objectFit: 'cover' | 'contain';
-  showName: boolean; // Toggle per il nome testuale del brand
+  showName: boolean; 
 }
 
 export interface SiteConfig {
   centerName: string;
-  primaryLogoUrl: string;   // Logo principale
-  secondaryLogoUrl: string; // Secondo logo opzionale
+  primaryLogoUrl: string; 
+  secondaryLogoUrl: string;
   
   navbarLogo: LogoPlacementConfig;
   heroLogo: LogoPlacementConfig;
@@ -56,12 +56,11 @@ export interface SiteConfig {
   heroVideoUrl: string;
   heroImageUrl: string;
   
-  // Immagini Sezioni
   sportsImageUrl: string;
   tennisImageUrl: string;
   padelImageUrl: string;
   communityImageUrl: string;
-  spaceImageUrls: string[]; // Grid immagini "Il nostro spazio"
+  spaceImageUrls: string[]; 
   
   address: string;
   phone: string;
