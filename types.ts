@@ -15,6 +15,13 @@ export interface Event {
   type: 'Tournament' | 'Social' | 'Course';
 }
 
+export interface SectionElement {
+  id: string;
+  type: 'text' | 'image' | 'logo';
+  content: string; // Testo o URL/Base64 immagine
+  label?: string; // Etichetta opzionale (es. didascalia)
+}
+
 export interface SectionContent {
   id: string;
   title: string;
@@ -24,6 +31,7 @@ export interface SectionContent {
   navLabel: string;
   isCustom?: boolean;
   showLogo?: boolean;
+  elements?: SectionElement[]; // Lista di elementi aggiuntivi (immagini, didascalie, loghi)
 }
 
 export interface LogoPlacementConfig {

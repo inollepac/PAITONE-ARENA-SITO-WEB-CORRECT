@@ -32,9 +32,29 @@ const Navbar: React.FC<NavbarProps> = ({
     const newSections = [...config.sections];
     const newIndex = direction === 'left' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= newSections.length) return;
-    
     [newSections[index], newSections[newIndex]] = [newSections[newIndex], newSections[index]];
     onUpdateConfig({ ...config, sections: newSections });
+  };
+
+  const deleteItem = (id: string) => {
+    if (confirm("Vuoi eliminare questa voce dal menù? La sezione verrà disabilitata.")) {
+      const newSections = config.sections.map(s => s.id === id ? { ...s, enabled: false, navLabel: '' } : s);
+      onUpdateConfig({ ...config, sections: newSections });
+    }
+  };
+
+  const addItem = () => {
+    const id = `new_section_${Date.now()}`;
+    const newSection = {
+      id,
+      navLabel: 'Nuova Voce',
+      title: 'Nuova Sezione',
+      description: 'Descrizione della sezione...',
+      enabled: true,
+      isCustom: true,
+      elements: []
+    };
+    onUpdateConfig({ ...config, sections: [...config.sections, newSection] });
   };
 
   const navItems = config.sections
@@ -68,12 +88,13 @@ const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          <div className="hidden md:flex items-center space-x-6">
-            {navItems.map((item, i) => (
+          <div className="hidden md:flex items-center space-x-4">
+            {navItems.map((item) => (
               <div key={item.id} className="group/nav relative flex items-center">
                 {isEditMode && (
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex gap-1 opacity-0 group-hover/nav:opacity-100 transition-all bg-brand-blue rounded-full px-2 py-1 shadow-xl z-[60]">
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex gap-1 opacity-0 group-hover/nav:opacity-100 transition-all bg-brand-blue rounded-full px-2 py-1 shadow-xl z-[60]">
                     <button onClick={() => moveItem(item.originalIndex, 'left')} className="text-white text-[8px] p-1 hover:text-brand-green"><i className="fas fa-arrow-left"></i></button>
+                    <button onClick={() => deleteItem(item.id)} className="text-red-400 text-[8px] p-1 hover:text-red-500"><i className="fas fa-trash"></i></button>
                     <button onClick={() => moveItem(item.originalIndex, 'right')} className="text-white text-[8px] p-1 hover:text-brand-green"><i className="fas fa-arrow-right"></i></button>
                   </div>
                 )}
@@ -100,6 +121,12 @@ const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
             ))}
+
+            {isEditMode && (
+              <button onClick={addItem} className="w-8 h-8 rounded-full bg-brand-green/20 text-brand-green flex items-center justify-center hover:bg-brand-green hover:text-brand-blue transition-all">
+                <i className="fas fa-plus text-xs"></i>
+              </button>
+            )}
             
             <button
               onClick={() => onNavigate('booking')}
@@ -108,7 +135,7 @@ const Navbar: React.FC<NavbarProps> = ({
               Prenota
             </button>
             
-            <div className="flex items-center gap-2 border-l pl-6 border-brand-blue/10">
+            <div className="flex items-center gap-2 border-l pl-4 border-brand-blue/10">
               <button 
                   onClick={onAdminToggle}
                   className={`p-2.5 rounded-full transition ${isAdminActive ? 'bg-brand-green text-brand-blue' : 'text-brand-blue/30 hover:text-brand-blue'}`}
