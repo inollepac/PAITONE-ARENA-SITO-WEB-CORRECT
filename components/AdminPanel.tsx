@@ -1,13 +1,24 @@
 
 import React, { useState, useRef } from 'react';
-import { SiteConfig, LogoPlacementConfig } from '../types';
+import { SiteConfig, LogoPlacementConfig, Court, Event } from '../types';
 
 interface AdminPanelProps {
   config: SiteConfig;
+  courts: Court[];
+  events: Event[];
   onUpdateConfig: (config: SiteConfig) => void;
+  onUpdateCourts: (courts: Court[]) => void;
+  onUpdateEvents: (events: Event[]) => void;
 }
 
-const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
+const AdminPanel: React.FC<AdminPanelProps> = ({ 
+  config, 
+  courts, 
+  events, 
+  onUpdateConfig, 
+  onUpdateCourts, 
+  onUpdateEvents 
+}) => {
   const [activeTab, setActiveTab] = useState<'general' | 'brand' | 'media' | 'sync'>('general');
   const [logoTab, setLogoTab] = useState<'navbar' | 'hero' | 'footer'>('navbar');
   const [tempConfig, setTempConfig] = useState<SiteConfig>({ ...config });

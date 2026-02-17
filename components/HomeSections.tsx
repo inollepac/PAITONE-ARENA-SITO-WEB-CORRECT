@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from 'react';
-import { SiteConfig, Page, SectionContent, SectionElement, SectionStyle } from '../types';
+import { SiteConfig, Page, SectionContent, SectionElement, SectionStyle, Court, Event } from '../types';
 
 const STYLE_MAPS = {
   variant: {
@@ -555,9 +555,11 @@ interface HomeSectionsProps {
   isEditMode: boolean;
   onUpdateConfig: (config: SiteConfig, save?: boolean) => void;
   onNavigate: (page: Page) => void;
+  events: Event[];
+  courts: Court[];
 }
 
-const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdateConfig, onNavigate }) => {
+const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdateConfig, onNavigate, events, courts }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadTarget = useRef<{sectionId: string, elementId?: string, isBg?: boolean} | null>(null);
 

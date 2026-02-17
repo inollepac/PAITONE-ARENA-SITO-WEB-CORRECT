@@ -96,9 +96,9 @@ const App: React.FC = () => {
           config={config} 
           courts={courts} 
           events={events} 
-          onUpdateConfig={(c) => updateConfig(c)} 
-          onUpdateCourts={(c) => { setCourts(c); localStorage.setItem('arena_v2_courts', JSON.stringify(c)); }}
-          onUpdateEvents={(e) => { setEvents(e); localStorage.setItem('arena_v2_events', JSON.stringify(e)); }}
+          onUpdateConfig={(c: SiteConfig) => updateConfig(c)} 
+          onUpdateCourts={(c: Court[]) => { setCourts(c); localStorage.setItem('arena_v2_courts', JSON.stringify(c)); }}
+          onUpdateEvents={(e: Event[]) => { setEvents(e); localStorage.setItem('arena_v2_events', JSON.stringify(e)); }}
         />
       );
     }
