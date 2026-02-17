@@ -41,15 +41,18 @@ export interface SectionElement {
 }
 
 export interface SectionStyle {
-  variant: 'glass' | 'solid' | 'transparent' | 'dark' | 'brand' | 'image-bg';
+  variant: 'glass' | 'solid' | 'transparent' | 'dark' | 'brand' | 'image-bg' | 'custom';
   shape: 'rounded' | 'sharp' | 'pill' | 'oval' | 'arc-top' | 'arc-bottom';
   padding: 'none' | 'small' | 'medium' | 'large' | 'huge';
   width: 'narrow' | 'contained' | 'full';
   shadow: 'none' | 'soft' | 'medium' | 'heavy' | 'extra';
   borderWidth: number;
   borderColor: string;
+  bgColor?: string;
+  bgGradient?: string;
   bgImageUrl?: string;
   bgOpacity?: number;
+  parallax?: boolean;
 }
 
 export interface SectionContent {
