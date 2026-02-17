@@ -324,8 +324,7 @@ const LogoElementEditor: React.FC<LogoElementEditorProps> = ({ element, onUpdate
                 <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Arrotondamento</label>
                 <input 
                   type="range" 
-                  min="0" 
-                  max="100" 
+                  min="0" max="100" 
                   value={parseInt(style.borderRadius || '0')} 
                   onChange={e => onUpdate(element.content, { borderRadius: `${e.target.value}%` })} 
                   className="w-full accent-brand-blue" 
@@ -389,19 +388,34 @@ const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdate
 
               <div>
                 <label className="text-[8px] font-black opacity-40 uppercase mb-2 block text-left">Font Weight</label>
-                <div className="flex gap-1">
+                <div className="flex gap-1 bg-gray-50 p-1 rounded-xl">
                   {[
                     { label: 'Normal', val: 'normal' },
-                    { label: 'Semi', val: '600' },
-                    { label: 'Bold', val: 'bold' },
-                    { label: 'Ultra', val: '900' }
+                    { label: '600', val: '600' },
+                    { label: '700', val: '700' },
+                    { label: 'Bold', val: 'bold' }
                   ].map(w => (
                     <button 
                       key={w.val} 
                       onClick={() => onUpdateStyle({ fontWeight: w.val })} 
-                      className={`flex-1 py-2 text-[7px] font-black uppercase rounded-lg border transition-all ${style.fontWeight === w.val ? 'bg-brand-blue text-white border-brand-blue' : 'bg-gray-50 border-gray-100 text-brand-blue/40'}`}
+                      className={`flex-1 py-2 text-[7px] font-black uppercase rounded-lg border transition-all ${style.fontWeight === w.val ? 'bg-brand-blue text-white border-brand-blue shadow-sm' : 'bg-transparent border-transparent text-brand-blue/40 hover:bg-white'}`}
                     >
                       {w.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block text-left">Allineamento</label>
+                <div className="flex gap-2">
+                  {(['left', 'center', 'right'] as const).map(align => (
+                    <button 
+                      key={align} 
+                      onClick={() => onUpdateStyle({ textAlign: align })} 
+                      className={`flex-1 p-3 rounded-xl transition-all ${style.textAlign === align ? 'bg-brand-blue text-white shadow-md scale-105' : 'bg-gray-50 text-brand-blue/40 border border-gray-100 hover:bg-gray-100'}`}
+                    >
+                      <i className={`fas fa-align-${align} text-xs`}></i>
                     </button>
                   ))}
                 </div>
@@ -417,21 +431,6 @@ const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdate
                   <option value="neon">Neon White</option>
                   <option value="dark">Profondo</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block text-left">Allineamento</label>
-                <div className="flex gap-2">
-                  {(['left', 'center', 'right'] as const).map(align => (
-                    <button 
-                      key={align} 
-                      onClick={() => onUpdateStyle({ textAlign: align })} 
-                      className={`flex-1 p-3 rounded-xl transition-all ${style.textAlign === align ? 'bg-brand-blue text-white shadow-md' : 'bg-gray-50 text-brand-blue/40 border border-gray-100'}`}
-                    >
-                      <i className={`fas fa-align-${align} text-xs`}></i>
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
           ) : (
