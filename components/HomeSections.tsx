@@ -453,6 +453,15 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
   const [tab, setTab] = useState<'style' | 'position'>('style');
   const style = element.style || {};
 
+  const resetFilters = () => {
+    onUpdateStyle({
+      brightness: 1,
+      contrast: 1,
+      grayscale: 0,
+      sepia: 0
+    });
+  };
+
   return (
     <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-blue text-white px-3 py-1 rounded-full shadow-lg z-40 animate-in fade-in zoom-in duration-200">
       <button onClick={() => setIsOpen(!isOpen)} className="text-[9px] font-black uppercase tracking-tighter">
@@ -471,7 +480,17 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
               <button onClick={onReplace} className="w-full py-3 rounded-xl bg-brand-light text-brand-blue text-[9px] font-black uppercase tracking-widest hover:bg-brand-green transition">Cambia Immagine</button>
               
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Aspetto Fisico</label>
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Dimensioni & Bordi</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Larghezza ({style.width || '100%'})</label>
+                    <input type="text" value={style.width || '100%'} onChange={e => onUpdateStyle({ width: e.target.value })} className="w-full bg-gray-50 p-2 rounded-lg text-[10px] outline-none" placeholder="es. 100% o 300px" />
+                  </div>
+                  <div>
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Altezza ({style.height || 'auto'})</label>
+                    <input type="text" value={style.height || 'auto'} onChange={e => onUpdateStyle({ height: e.target.value })} className="w-full bg-gray-50 p-2 rounded-lg text-[10px] outline-none" placeholder="es. auto o 400px" />
+                  </div>
+                </div>
                 <div>
                   <label className="text-[7px] font-bold opacity-30 block mb-1">Arrotondamento</label>
                   <input type="range" min="0" max="200" value={parseInt(style.borderRadius || '48')} onChange={e => onUpdateStyle({ borderRadius: `${e.target.value}px` })} className="w-full accent-brand-blue" />
@@ -483,7 +502,10 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
               </div>
 
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Filtri Immagine</label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-[8px] font-black opacity-40 uppercase">Filtri Immagine</label>
+                  <button onClick={resetFilters} className="text-[7px] font-black uppercase text-brand-blue opacity-40 hover:opacity-100 transition">Reset</button>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-[7px] font-bold opacity-30 block mb-1">Brightness ({style.brightness || 1})</label>
@@ -758,9 +780,11 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                               ...transformStyle, 
                               borderRadius: elStyle.borderRadius || '3rem', 
                               opacity: elStyle.opacity || 1,
+                              width: elStyle.width || '100%',
+                              height: elStyle.height || '400px',
                               overflow: 'hidden'
                             }} 
-                            className="relative h-[400px] group/img cursor-pointer shadow-2xl transition-transform duration-500" 
+                            className="relative group/img cursor-pointer shadow-2xl transition-all duration-500" 
                             onClick={() => isEditMode && handleImageClick(section.id, el.id)}
                           >
                             {isEditMode && <ImageElementEditor element={el} onUpdateStyle={(upd) => updateElementStyle(section.id, el.id, upd)} onReplace={() => handleImageClick(section.id, el.id)} />}
