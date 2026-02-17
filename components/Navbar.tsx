@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Page, SiteConfig } from '../types';
 
 interface NavbarProps {
@@ -69,8 +70,13 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="flex justify-between h-24 items-center">
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
             {navbarLogo.enabled && logoUrl && (
-              <div 
-                className="relative overflow-hidden"
+              <motion.div 
+                className="relative overflow-hidden transition-shadow"
+                whileHover={{ 
+                  scale: 1.08,
+                  boxShadow: '0 10px 25px -5px rgba(168, 211, 142, 0.4)' 
+                }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 style={{ 
                   width: `${navbarLogo.width}px`, 
                   height: `${navbarLogo.height}px`,
@@ -78,11 +84,11 @@ const Navbar: React.FC<NavbarProps> = ({
                   border: navbarLogo.borderWidth > 0 ? `${navbarLogo.borderWidth}px solid var(--brand-green)` : 'none'
                 }}
               >
-                <img src={logoUrl} className="w-full h-full object-contain" />
-              </div>
+                <img src={logoUrl} className="w-full h-full object-contain" alt="Logo" />
+              </motion.div>
             )}
             {navbarLogo.showName && (
-              <span className="text-xl font-bold text-brand-blue uppercase tracking-tighter">
+              <span className="text-xl font-bold text-brand-blue uppercase tracking-tighter transition-colors group-hover:text-brand-green">
                 {config.centerName}
               </span>
             )}
