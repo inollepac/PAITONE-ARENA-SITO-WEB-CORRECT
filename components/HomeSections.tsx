@@ -72,30 +72,30 @@ interface ElementPositionEditorProps {
 const ElementPositionEditor: React.FC<ElementPositionEditorProps> = ({ style, onUpdate }) => {
   const s = style || {};
   return (
-    <div className="space-y-4 pt-4 border-t border-gray-100">
+    <div className="space-y-4 pt-4 border-t border-gray-100 text-left">
       <label className="text-[8px] font-black opacity-40 uppercase block mb-1">Posizionamento & Scala</label>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-[7px] font-bold opacity-30 block">Offset X ({s.x || 0}px)</label>
+          <label className="text-[7px] font-bold opacity-30 block text-left">Offset X ({s.x || 0}px)</label>
           <input type="range" min="-300" max="300" value={s.x || 0} onChange={e => onUpdate({ x: +e.target.value })} className="w-full accent-brand-blue" />
         </div>
         <div>
-          <label className="text-[7px] font-bold opacity-30 block">Offset Y ({s.y || 0}px)</label>
+          <label className="text-[7px] font-bold opacity-30 block text-left">Offset Y ({s.y || 0}px)</label>
           <input type="range" min="-300" max="300" value={s.y || 0} onChange={e => onUpdate({ y: +e.target.value })} className="w-full accent-brand-blue" />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-[7px] font-bold opacity-30 block">Scala ({s.scale || 1})</label>
-          <input type="range" min="0.1" max="2" step="0.1" value={s.scale || 1} onChange={e => onUpdate({ scale: +e.target.value })} className="w-full accent-brand-blue" />
+          <label className="text-[7px] font-bold opacity-30 block text-left">Scala ({s.scale || 1})</label>
+          <input type="range" min="0.1" max="5" step="0.1" value={s.scale || 1} onChange={e => onUpdate({ scale: +e.target.value })} className="w-full accent-brand-blue" />
         </div>
         <div>
-          <label className="text-[7px] font-bold opacity-30 block">Z-Index ({s.zIndex || 1})</label>
+          <label className="text-[7px] font-bold opacity-30 block text-left">Z-Index ({s.zIndex || 1})</label>
           <input type="range" min="1" max="100" value={s.zIndex || 1} onChange={e => onUpdate({ zIndex: +e.target.value })} className="w-full accent-brand-blue" />
         </div>
       </div>
       <div>
-        <label className="text-[7px] font-bold opacity-30 block">Rotazione ({s.rotation || 0}°)</label>
+        <label className="text-[7px] font-bold opacity-30 block text-left">Rotazione ({s.rotation || 0}°)</label>
         <input type="range" min="0" max="360" value={s.rotation || 0} onChange={e => onUpdate({ rotation: +e.target.value })} className="w-full accent-brand-blue" />
       </div>
     </div>
@@ -188,11 +188,11 @@ const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({ section, onUpda
               </div>
               <div className="pt-4 border-t border-gray-100 space-y-4">
                  <div>
-                    <label className="text-[8px] font-black opacity-30 uppercase block mb-2">Spessore Bordo ({s.borderWidth}px)</label>
+                    <label className="text-[8px] font-black opacity-30 uppercase block mb-2 text-left">Spessore Bordo ({s.borderWidth}px)</label>
                     <input type="range" min="0" max="20" value={s.borderWidth} onChange={e => updateStyle('borderWidth', +e.target.value)} className="w-full accent-brand-blue" />
                  </div>
                  <div>
-                    <label className="text-[8px] font-black opacity-30 uppercase block mb-2">Colore Bordo</label>
+                    <label className="text-[8px] font-black opacity-30 uppercase block mb-2 text-left">Colore Bordo</label>
                     <div className="flex items-center gap-3">
                       <input 
                         type="color" 
@@ -220,21 +220,21 @@ const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({ section, onUpda
                     </button>
                   </div>
                   <div>
-                    <label className="text-[8px] font-black opacity-30 uppercase block mb-2">Opacità Sfondo ({s.bgOpacity || 1})</label>
+                    <label className="text-[8px] font-black opacity-30 uppercase block mb-2 text-left">Opacità Sfondo ({s.bgOpacity || 1})</label>
                     <input type="range" min="0" max="1" step="0.1" value={s.bgOpacity || 1} onChange={e => updateStyle('bgOpacity', +e.target.value)} className="w-full accent-brand-blue" />
                   </div>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <label className="text-[8px] font-black opacity-30 uppercase block mb-3">Colore Solido</label>
+                    <label className="text-[8px] font-black opacity-30 uppercase block mb-3 text-left">Colore Solido</label>
                     <div className="flex items-center gap-3">
                       <input type="color" value={s.bgColor || '#FFFFFF'} onChange={e => updateStyle('bgColor', e.target.value)} className="w-10 h-10 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
                       <span className="text-[10px] font-mono opacity-40">{s.bgColor}</span>
                     </div>
                   </div>
                   <div>
-                    <label className="text-[8px] font-black opacity-30 uppercase block mb-3">Gradiente Preset</label>
+                    <label className="text-[8px] font-black opacity-30 uppercase block mb-3 text-left">Gradiente Preset</label>
                     <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto no-scrollbar">
                       {GRADIENTS.map(g => (
                         <button 
@@ -387,7 +387,7 @@ const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdate
               </div>
 
               <div>
-                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Font Weight</label>
+                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block text-left">Font Weight</label>
                 <div className="flex gap-1">
                   {[
                     { label: 'Normal', val: 'normal' },
@@ -407,7 +407,7 @@ const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdate
               </div>
 
               <div>
-                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Effetti Ombra</label>
+                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block text-left">Effetti Ombra</label>
                 <select value={Object.keys(TEXT_SHADOWS).find(k => (TEXT_SHADOWS as any)[k] === style.textShadow) || 'none'} onChange={e => onUpdateStyle({ textShadow: (TEXT_SHADOWS as any)[e.target.value] })} className="w-full bg-gray-50 p-3 rounded-xl text-[10px] font-bold outline-none border-0">
                   <option value="none">Piatto</option>
                   <option value="soft">Morbido</option>
@@ -419,7 +419,7 @@ const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdate
               </div>
 
               <div>
-                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Allineamento</label>
+                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block text-left">Allineamento</label>
                 <div className="flex gap-2">
                   {(['left', 'center', 'right'] as const).map(align => (
                     <button 
@@ -460,22 +460,62 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
       </button>
       
       {isOpen && (
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-white p-6 rounded-[2.5rem] shadow-2xl border border-brand-blue/20 w-72 z-50 text-brand-blue text-left">
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-white p-6 rounded-[2.5rem] shadow-2xl border border-brand-blue/20 w-80 z-50 text-brand-blue text-left">
           <div className="flex gap-2 mb-4 bg-gray-50 p-1 rounded-full">
-            <button onClick={() => setTab('style')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'style' ? 'bg-brand-blue text-white' : ''}`}>Design</button>
-            <button onClick={() => setTab('position')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'position' ? 'bg-brand-blue text-white' : ''}`}>Movimento</button>
+            <button onClick={() => setTab('style')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'style' ? 'bg-brand-blue text-white' : ''}`}>Design & Filtri</button>
+            <button onClick={() => setTab('position')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'position' ? 'bg-brand-blue text-white' : ''}`}>Ritaglio & Scala</button>
           </div>
 
           {tab === 'style' ? (
-            <div className="space-y-4">
+            <div className="space-y-6 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
               <button onClick={onReplace} className="w-full py-3 rounded-xl bg-brand-light text-brand-blue text-[9px] font-black uppercase tracking-widest hover:bg-brand-green transition">Cambia Immagine</button>
-              <div>
-                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Arrotondamento</label>
-                <input type="range" min="0" max="100" value={parseInt(style.borderRadius || '3rem')} onChange={e => onUpdateStyle({ borderRadius: `${e.target.value}px` })} className="w-full accent-brand-blue" />
+              
+              <div className="space-y-4 pt-4 border-t border-gray-100">
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Aspetto Fisico</label>
+                <div>
+                  <label className="text-[7px] font-bold opacity-30 block mb-1">Arrotondamento</label>
+                  <input type="range" min="0" max="200" value={parseInt(style.borderRadius || '48')} onChange={e => onUpdateStyle({ borderRadius: `${e.target.value}px` })} className="w-full accent-brand-blue" />
+                </div>
+                <div>
+                  <label className="text-[7px] font-bold opacity-30 block mb-1">Opacità ({style.opacity || 1})</label>
+                  <input type="range" min="0" max="1" step="0.1" value={style.opacity || 1} onChange={e => onUpdateStyle({ opacity: +e.target.value })} className="w-full accent-brand-blue" />
+                </div>
               </div>
-              <div>
-                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Opacità ({style.opacity || 1})</label>
-                <input type="range" min="0" max="1" step="0.1" value={style.opacity || 1} onChange={e => onUpdateStyle({ opacity: +e.target.value })} className="w-full accent-brand-blue" />
+
+              <div className="space-y-4 pt-4 border-t border-gray-100">
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Filtri Immagine</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Brightness ({style.brightness || 1})</label>
+                    <input type="range" min="0" max="2" step="0.1" value={style.brightness || 1} onChange={e => onUpdateStyle({ brightness: +e.target.value })} className="w-full accent-brand-blue" />
+                  </div>
+                  <div>
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Contrast ({style.contrast || 1})</label>
+                    <input type="range" min="0" max="2" step="0.1" value={style.contrast || 1} onChange={e => onUpdateStyle({ contrast: +e.target.value })} className="w-full accent-brand-blue" />
+                  </div>
+                  <div>
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Grayscale ({style.grayscale || 0})</label>
+                    <input type="range" min="0" max="1" step="0.1" value={style.grayscale || 0} onChange={e => onUpdateStyle({ grayscale: +e.target.value })} className="w-full accent-brand-blue" />
+                  </div>
+                  <div>
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Sepia ({style.sepia || 0})</label>
+                    <input type="range" min="0" max="1" step="0.1" value={style.sepia || 0} onChange={e => onUpdateStyle({ sepia: +e.target.value })} className="w-full accent-brand-blue" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-gray-100">
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Adattamento (Crop Mode)</label>
+                <select 
+                  value={style.objectFit || 'cover'} 
+                  onChange={e => onUpdateStyle({ objectFit: e.target.value as any })} 
+                  className="w-full bg-gray-50 p-2 rounded-lg text-[10px] font-bold outline-none border-0"
+                >
+                  <option value="cover">Riempi (Cover)</option>
+                  <option value="contain">Contieni (Contain)</option>
+                  <option value="fill">Stira (Fill)</option>
+                  <option value="none">Originale</option>
+                </select>
               </div>
             </div>
           ) : (
@@ -532,7 +572,12 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         y: 0,
         scale: 1,
         rotation: 0,
-        zIndex: 5
+        zIndex: 5,
+        brightness: 1,
+        contrast: 1,
+        grayscale: 0,
+        sepia: 0,
+        objectFit: 'cover'
       }
     };
     const next = config.sections.map(s => s.id === sectionId ? { ...s, elements: [...(s.elements || []), newElement] } : s);
@@ -704,16 +749,30 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                     }
 
                     if (el.type === 'image') {
+                      const filters = `brightness(${elStyle.brightness || 1}) contrast(${elStyle.contrast || 1}) grayscale(${elStyle.grayscale || 0}) sepia(${elStyle.sepia || 0})`;
                       return (
                         <div key={el.id} className="relative group/el w-full">
                           {commonControls}
                           <div 
-                            style={{ ...transformStyle, borderRadius: elStyle.borderRadius || '3rem', opacity: elStyle.opacity || 1 }} 
-                            className="relative h-[400px] overflow-hidden group/img cursor-pointer shadow-2xl transition-transform duration-500" 
+                            style={{ 
+                              ...transformStyle, 
+                              borderRadius: elStyle.borderRadius || '3rem', 
+                              opacity: elStyle.opacity || 1,
+                              overflow: 'hidden'
+                            }} 
+                            className="relative h-[400px] group/img cursor-pointer shadow-2xl transition-transform duration-500" 
                             onClick={() => isEditMode && handleImageClick(section.id, el.id)}
                           >
                             {isEditMode && <ImageElementEditor element={el} onUpdateStyle={(upd) => updateElementStyle(section.id, el.id, upd)} onReplace={() => handleImageClick(section.id, el.id)} />}
-                            <img src={el.content} className="w-full h-full object-cover transition-transform duration-1000 group-hover/img:scale-110" />
+                            <img 
+                              src={el.content} 
+                              style={{ 
+                                filter: filters,
+                                objectFit: elStyle.objectFit || 'cover',
+                                transition: 'filter 0.3s ease-out'
+                              }}
+                              className="w-full h-full transition-transform duration-1000 group-hover/img:scale-105" 
+                            />
                           </div>
                         </div>
                       );

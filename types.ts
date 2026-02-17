@@ -37,6 +37,11 @@ export interface SectionElement {
     y?: number;
     zIndex?: number;
     scale?: number;
+    brightness?: number;
+    contrast?: number;
+    grayscale?: number;
+    sepia?: number;
+    objectFit?: 'cover' | 'contain' | 'fill' | 'none';
   };
 }
 
