@@ -324,7 +324,8 @@ const LogoElementEditor: React.FC<LogoElementEditorProps> = ({ element, onUpdate
                 <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Arrotondamento</label>
                 <input 
                   type="range" 
-                  min="0" max="100" 
+                  min="0" 
+                  max="100" 
                   value={parseInt(style.borderRadius || '0')} 
                   onChange={e => onUpdate(element.content, { borderRadius: `${e.target.value}%` })} 
                   className="w-full accent-brand-blue" 
@@ -458,7 +459,11 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
       brightness: 1,
       contrast: 1,
       grayscale: 0,
-      sepia: 0
+      sepia: 0,
+      blur: 0,
+      hueRotate: 0,
+      saturate: 1,
+      invert: 0
     });
   };
 
@@ -480,68 +485,103 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
               <button onClick={onReplace} className="w-full py-3 rounded-xl bg-brand-light text-brand-blue text-[9px] font-black uppercase tracking-widest hover:bg-brand-green transition">Cambia Immagine</button>
               
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Dimensioni & Bordi</label>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Larghezza ({style.width || '100%'})</label>
-                    <input type="text" value={style.width || '100%'} onChange={e => onUpdateStyle({ width: e.target.value })} className="w-full bg-gray-50 p-2 rounded-lg text-[10px] outline-none" placeholder="es. 100% o 300px" />
-                  </div>
-                  <div>
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Altezza ({style.height || 'auto'})</label>
-                    <input type="text" value={style.height || 'auto'} onChange={e => onUpdateStyle({ height: e.target.value })} className="w-full bg-gray-50 p-2 rounded-lg text-[10px] outline-none" placeholder="es. auto o 400px" />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-[7px] font-bold opacity-30 block mb-1">Arrotondamento</label>
-                  <input type="range" min="0" max="200" value={parseInt(style.borderRadius || '48')} onChange={e => onUpdateStyle({ borderRadius: `${e.target.value}px` })} className="w-full accent-brand-blue" />
-                </div>
-                <div>
-                  <label className="text-[7px] font-bold opacity-30 block mb-1">Opacità ({style.opacity || 1})</label>
-                  <input type="range" min="0" max="1" step="0.1" value={style.opacity || 1} onChange={e => onUpdateStyle({ opacity: +e.target.value })} className="w-full accent-brand-blue" />
-                </div>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t border-gray-100">
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-[8px] font-black opacity-40 uppercase">Filtri Immagine</label>
+                  <label className="text-[8px] font-black opacity-40 uppercase">Filtri & Colore</label>
                   <button onClick={resetFilters} className="text-[7px] font-black uppercase text-brand-blue opacity-40 hover:opacity-100 transition">Reset</button>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Brightness ({style.brightness || 1})</label>
-                    <input type="range" min="0" max="2" step="0.1" value={style.brightness || 1} onChange={e => onUpdateStyle({ brightness: +e.target.value })} className="w-full accent-brand-blue" />
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Blur ({style.blur || 0}px)</label>
+                    <input type="range" min="0" max="20" value={style.blur || 0} onChange={e => onUpdateStyle({ blur: +e.target.value })} className="w-full accent-brand-blue" />
                   </div>
                   <div>
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Contrast ({style.contrast || 1})</label>
-                    <input type="range" min="0" max="2" step="0.1" value={style.contrast || 1} onChange={e => onUpdateStyle({ contrast: +e.target.value })} className="w-full accent-brand-blue" />
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Sat ({style.saturate || 1})</label>
+                    <input type="range" min="0" max="5" step="0.1" value={style.saturate || 1} onChange={e => onUpdateStyle({ saturate: +e.target.value })} className="w-full accent-brand-blue" />
                   </div>
                   <div>
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Grayscale ({style.grayscale || 0})</label>
-                    <input type="range" min="0" max="1" step="0.1" value={style.grayscale || 0} onChange={e => onUpdateStyle({ grayscale: +e.target.value })} className="w-full accent-brand-blue" />
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Hue ({style.hueRotate || 0}°)</label>
+                    <input type="range" min="0" max="360" value={style.hueRotate || 0} onChange={e => onUpdateStyle({ hueRotate: +e.target.value })} className="w-full accent-brand-blue" />
                   </div>
                   <div>
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Sepia ({style.sepia || 0})</label>
-                    <input type="range" min="0" max="1" step="0.1" value={style.sepia || 0} onChange={e => onUpdateStyle({ sepia: +e.target.value })} className="w-full accent-brand-blue" />
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Invert ({style.invert || 0})</label>
+                    <input type="range" min="0" max="1" step="0.1" value={style.invert || 0} onChange={e => onUpdateStyle({ invert: +e.target.value })} className="w-full accent-brand-blue" />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Adattamento (Crop Mode)</label>
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Bordi & Ombre</label>
+                <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl">
+                  <input type="color" value={style.borderColor || '#A8D38E'} onChange={e => onUpdateStyle({ borderColor: e.target.value })} className="w-8 h-8 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
+                  <div className="flex-1">
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Spessore ({style.borderWidth || 0}px)</label>
+                    <input type="range" min="0" max="20" value={style.borderWidth || 0} onChange={e => onUpdateStyle({ borderWidth: +e.target.value })} className="w-full accent-brand-blue" />
+                  </div>
+                </div>
+                <select 
+                  value={Object.keys(BOX_SHADOWS).find(k => (BOX_SHADOWS as any)[k] === style.shadow) || 'none'} 
+                  onChange={e => onUpdateStyle({ shadow: (BOX_SHADOWS as any)[e.target.value] })} 
+                  className="w-full bg-gray-50 p-3 rounded-xl text-[10px] font-bold outline-none border-0"
+                >
+                  <option value="none">Senza Ombra</option>
+                  <option value="soft">Ombra Morbida</option>
+                  <option value="medium">Ombra Media</option>
+                  <option value="heavy">Ombra Forte</option>
+                  <option value="neon">Neon Paitone Arena</option>
+                </select>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-gray-100">
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Comportamento (Hover)</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: 'none', label: 'Statico' },
+                    { id: 'zoom', label: 'Zoom' },
+                    { id: 'lift', label: 'Solleva' },
+                    { id: 'brighten', label: 'Illumina' }
+                  ].map(eff => (
+                    <button 
+                      key={eff.id} 
+                      onClick={() => onUpdateStyle({ hoverEffect: eff.id as any })}
+                      className={`py-2 rounded-xl text-[8px] font-black uppercase transition-all ${style.hoverEffect === eff.id ? 'bg-brand-blue text-white shadow-md' : 'bg-gray-50 text-brand-blue/40 border border-gray-100'}`}
+                    >
+                      {eff.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Proporzioni (Aspect Ratio)</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['auto', '1/1', '4/3', '16/9', '9/16'].map(ratio => (
+                    <button 
+                      key={ratio} 
+                      onClick={() => onUpdateStyle({ aspectRatio: ratio })}
+                      className={`py-2 rounded-xl text-[8px] font-black uppercase transition-all ${style.aspectRatio === ratio ? 'bg-brand-blue text-white shadow-md' : 'bg-gray-50 text-brand-blue/40 border border-gray-100'}`}
+                    >
+                      {ratio}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-4 pt-4 border-t border-gray-100">
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Metodo di Ritaglio</label>
                 <select 
                   value={style.objectFit || 'cover'} 
                   onChange={e => onUpdateStyle({ objectFit: e.target.value as any })} 
-                  className="w-full bg-gray-50 p-2 rounded-lg text-[10px] font-bold outline-none border-0"
+                  className="w-full bg-gray-50 p-3 rounded-xl text-[10px] font-bold outline-none border-0"
                 >
                   <option value="cover">Riempi (Cover)</option>
-                  <option value="contain">Contieni (Contain)</option>
+                  <option value="contain">Adatta (Contain)</option>
                   <option value="fill">Stira (Fill)</option>
                   <option value="none">Originale</option>
                 </select>
               </div>
+              <ElementPositionEditor style={style} onUpdate={onUpdateStyle} />
             </div>
-          ) : (
-            <ElementPositionEditor style={style} onUpdate={onUpdateStyle} />
           )}
         </div>
       )}
@@ -601,6 +641,14 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         contrast: 1,
         grayscale: 0,
         sepia: 0,
+        blur: 0,
+        hueRotate: 0,
+        saturate: 1,
+        invert: 0,
+        borderWidth: 0,
+        borderColor: '#A8D38E',
+        hoverEffect: 'none',
+        aspectRatio: 'auto',
         objectFit: 'cover'
       }
     };
@@ -773,7 +821,15 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                     }
 
                     if (el.type === 'image') {
-                      const filters = `brightness(${elStyle.brightness || 1}) contrast(${elStyle.contrast || 1}) grayscale(${elStyle.grayscale || 0}) sepia(${elStyle.sepia || 0})`;
+                      const filters = `brightness(${elStyle.brightness || 1}) contrast(${elStyle.contrast || 1}) grayscale(${elStyle.grayscale || 0}) sepia(${elStyle.sepia || 0}) blur(${elStyle.blur || 0}px) hue-rotate(${elStyle.hueRotate || 0}deg) saturate(${elStyle.saturate || 1}) invert(${elStyle.invert || 0})`;
+                      
+                      const hoverClasses = {
+                        none: '',
+                        zoom: 'hover:scale-110',
+                        lift: 'hover:-translate-y-6 hover:shadow-2xl',
+                        brighten: 'hover:brightness-125'
+                      };
+
                       return (
                         <div key={el.id} className="relative group/el w-full">
                           {commonControls}
@@ -784,9 +840,12 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                               opacity: elStyle.opacity || 1,
                               width: elStyle.width || '100%',
                               height: elStyle.height || '400px',
-                              overflow: 'hidden'
+                              overflow: 'hidden',
+                              aspectRatio: elStyle.aspectRatio !== 'auto' ? elStyle.aspectRatio : undefined,
+                              border: elStyle.borderWidth ? `${elStyle.borderWidth}px solid ${elStyle.borderColor || '#A8D38E'}` : 'none',
+                              boxShadow: elStyle.shadow || 'none'
                             }} 
-                            className="relative group/img cursor-pointer shadow-2xl transition-all duration-500" 
+                            className={`relative cursor-pointer shadow-2xl transition-all duration-700 ease-out ${hoverClasses[elStyle.hoverEffect || 'none']}`} 
                             onClick={() => isEditMode && handleImageClick(section.id, el.id)}
                           >
                             {isEditMode && <ImageElementEditor element={el} onUpdateStyle={(upd) => updateElementStyle(section.id, el.id, upd)} onReplace={() => handleImageClick(section.id, el.id)} />}
@@ -795,9 +854,12 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                               style={{ 
                                 filter: filters,
                                 objectFit: elStyle.objectFit || 'cover',
-                                transition: 'filter 0.3s ease-out'
+                                width: '100%',
+                                height: '100%',
+                                transition: 'filter 0.5s ease-out'
                               }}
-                              className="w-full h-full transition-transform duration-1000 group-hover/img:scale-105" 
+                              className="transition-transform duration-1000" 
+                              alt="Arena Asset"
                             />
                           </div>
                         </div>

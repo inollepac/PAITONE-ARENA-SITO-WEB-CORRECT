@@ -41,6 +41,14 @@ export interface SectionElement {
     contrast?: number;
     grayscale?: number;
     sepia?: number;
+    blur?: number;
+    hueRotate?: number;
+    saturate?: number;
+    invert?: number;
+    borderWidth?: number;
+    borderColor?: string;
+    hoverEffect?: 'none' | 'zoom' | 'lift' | 'brighten';
+    aspectRatio?: string;
     objectFit?: 'cover' | 'contain' | 'fill' | 'none';
   };
 }
