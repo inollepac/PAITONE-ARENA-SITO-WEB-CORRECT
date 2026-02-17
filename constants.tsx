@@ -30,6 +30,7 @@ export const INITIAL_SITE_CONFIG: SiteConfig = {
   heroSubtitle: 'L’arena dove il relax incontra la competenza tecnica. Tennis e Padel guidati da professionisti laureati e certificati federali.',
   heroVideoUrl: '',
   heroImageUrl: 'https://images.unsplash.com/photo-1592709823125-a191f07a2a5e?auto=format&fit=crop&q=80&w=2000',
+  heroBgOpacity: 0.6,
   
   sportsImageUrl: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=800',
   tennisImageUrl: 'https://images.unsplash.com/photo-1595435063785-547bb7c2c537?auto=format&fit=crop&q=80&w=1000',

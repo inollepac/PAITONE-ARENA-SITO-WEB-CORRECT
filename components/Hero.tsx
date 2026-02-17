@@ -31,8 +31,7 @@ const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBooki
     reader.readAsDataURL(file);
   };
 
-  const updateHeroConfig = (updates: any) => {
-    // Note: Since hero properties are flat in SiteConfig for now, we update them directly
+  const updateHeroConfig = (updates: Partial<SiteConfig>) => {
     onUpdateConfig({ ...config, ...updates });
   };
 
@@ -43,7 +42,7 @@ const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBooki
         <img 
           src={config.heroImageUrl} 
           className="w-full h-full object-cover transition-all duration-1000"
-          style={{ opacity: isEditMode ? 0.8 : 0.6 }}
+          style={{ filter: `brightness(${config.heroBgOpacity || 0.6})` }}
         />
         <div 
           className="absolute inset-0 transition-all duration-500" 
@@ -66,37 +65,39 @@ const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBooki
           
           {showDesignPanel && (
             <div className="bg-white p-8 rounded-[3rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border border-brand-green/20 w-80 animate-in fade-in zoom-in duration-200">
-              <h3 className="text-xs font-black uppercase tracking-widest text-brand-blue mb-6 border-b pb-4">Hero Design Lab</h3>
+              <h3 className="text-xs font-black uppercase tracking-widest text-brand-blue mb-6 border-b pb-4 text-left">Hero Design Lab</h3>
               
               <div className="space-y-6">
                 <div>
-                  <label className="text-[9px] font-black uppercase opacity-40 mb-3 block">Immagine Sfondo</label>
+                  <label className="text-[9px] font-black uppercase opacity-40 mb-3 block text-left">Immagine Sfondo</label>
                   <button 
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full py-3 bg-brand-light rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-green transition"
                   >
-                    Carica Foto
+                    Sostituisci Foto
                   </button>
                   <input type="file" ref={fileInputRef} className="hidden" onChange={handleImageChange} accept="image/*" />
                 </div>
 
                 <div>
-                  <label className="text-[9px] font-black uppercase opacity-40 mb-3 block">Vignettatura Sfondo</label>
+                  <label className="text-[9px] font-black uppercase opacity-40 mb-3 block text-left">Luminosità Foto ({Math.round((config.heroBgOpacity || 0.6) * 100)}%)</label>
                   <input 
                     type="range" 
-                    min="0" max="1" step="0.1" 
+                    min="0" max="1" step="0.05" 
+                    value={config.heroBgOpacity || 0.6}
+                    onChange={(e) => updateHeroConfig({ heroBgOpacity: parseFloat(e.target.value) })}
                     className="w-full accent-brand-blue"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[9px] font-black uppercase opacity-40 mb-3 block">Preset Atmosfera</label>
+                  <label className="text-[9px] font-black uppercase opacity-40 mb-3 block text-left">Preset Atmosfera</label>
                   <div className="grid grid-cols-2 gap-2">
                     {HERO_GRADIENTS.map(g => (
                       <button 
                         key={g.name}
                         onClick={() => updateHeroConfig({ heroVideoUrl: g.value })}
-                        className="p-2 border rounded-lg text-[8px] font-bold hover:bg-gray-50 uppercase"
+                        className={`p-2 border rounded-lg text-[8px] font-bold hover:bg-gray-50 uppercase ${config.heroVideoUrl === g.value ? 'border-brand-green bg-brand-light' : 'border-gray-100'}`}
                       >
                         {g.name}
                       </button>

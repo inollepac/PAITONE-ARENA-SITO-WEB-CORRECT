@@ -154,7 +154,7 @@ const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({ section, onUpda
 
           {tab === 'layout' ? (
             <div className="space-y-4">
-              <div className="flex justify-between items-center text-[9px] font-bold">
+              <div className="flex justify-between items-center text-[9px] font-bold text-left">
                 <span className="opacity-40 uppercase">Variante Base</span>
                 <select value={s.variant} onChange={e => updateStyle('variant', e.target.value)} className="bg-gray-50 p-2 rounded-lg outline-none">
                   <option value="solid">Solido</option>
@@ -166,7 +166,7 @@ const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({ section, onUpda
                   <option value="custom">Personalizzato</option>
                 </select>
               </div>
-              <div className="flex justify-between items-center text-[9px] font-bold">
+              <div className="flex justify-between items-center text-[9px] font-bold text-left">
                 <span className="opacity-40 uppercase">Forma</span>
                 <select value={s.shape} onChange={e => updateStyle('shape', e.target.value)} className="bg-gray-50 p-2 rounded-lg outline-none">
                   <option value="rounded">Arrotondato</option>
@@ -177,7 +177,7 @@ const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({ section, onUpda
                   <option value="arc-bottom">Arco Sotto</option>
                 </select>
               </div>
-              <div className="flex justify-between items-center text-[9px] font-bold">
+              <div className="flex justify-between items-center text-[9px] font-bold text-left">
                 <span className="opacity-40 uppercase">Padding</span>
                 <select value={s.padding} onChange={e => updateStyle('padding', e.target.value)} className="bg-gray-50 p-2 rounded-lg outline-none">
                   <option value="none">Nessuno</option>
@@ -210,7 +210,7 @@ const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({ section, onUpda
             <div className="space-y-6">
               {s.variant === 'image-bg' ? (
                 <div className="space-y-4">
-                  <button onClick={onImageUpload} className="w-full py-3 bg-brand-light text-brand-blue rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-brand-green transition">Cambia Immagine Sfondo</button>
+                  <button onClick={onImageUpload} className="w-full py-3 bg-brand-light text-brand-blue rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-green transition">Cambia Immagine Sfondo</button>
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                     <span className="text-[9px] font-black opacity-40 uppercase">Effetto Parallasse</span>
                     <button 
@@ -262,24 +262,28 @@ const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({ section, onUpda
 interface LogoElementEditorProps {
   element: SectionElement;
   onUpdate: (content: string, style: Partial<SectionElement['style']>) => void;
+  onDuplicate: () => void;
 }
 
-const LogoElementEditor: React.FC<LogoElementEditorProps> = ({ element, onUpdate }) => {
+const LogoElementEditor: React.FC<LogoElementEditorProps> = ({ element, onUpdate, onDuplicate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<'style' | 'position'>('style');
   const style = element.style || {};
 
   return (
-    <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-blue text-white px-3 py-1 rounded-full shadow-lg z-[70] animate-in fade-in zoom-in duration-200">
+    <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-blue text-white px-3 py-1.5 rounded-full shadow-lg z-[70] animate-in fade-in zoom-in duration-200">
       <button onClick={() => setIsOpen(!isOpen)} className="text-[9px] font-black uppercase tracking-tighter">
-        <i className="fas fa-cog mr-1"></i> Logo Editor
+        <i className="fas fa-cog mr-1"></i> Edit Logo
+      </button>
+      <button onClick={onDuplicate} className="text-[9px] font-black uppercase border-l border-white/20 pl-2">
+        <i className="fas fa-clone"></i>
       </button>
       
       {isOpen && (
         <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-white p-6 rounded-[2.5rem] shadow-2xl border border-brand-blue/20 w-80 z-[80] text-brand-blue text-left">
           <div className="flex gap-2 mb-4 bg-gray-50 p-1 rounded-full">
             <button onClick={() => setTab('style')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'style' ? 'bg-brand-blue text-white' : ''}`}>Stile</button>
-            <button onClick={() => setTab('position')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'position' ? 'bg-brand-blue text-white' : ''}`}>Movimento</button>
+            <button onClick={() => setTab('position')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'position' ? 'bg-brand-blue text-white' : ''}`}>Posizione</button>
           </div>
 
           {tab === 'style' ? (
@@ -307,7 +311,7 @@ const LogoElementEditor: React.FC<LogoElementEditorProps> = ({ element, onUpdate
                 />
               </div>
               <div>
-                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Shadow Effect</label>
+                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block">Effetto Ombra</label>
                 <select 
                   value={Object.keys(BOX_SHADOWS).find(k => (BOX_SHADOWS as any)[k] === style.shadow) || 'none'} 
                   onChange={e => onUpdate(element.content, { shadow: (BOX_SHADOWS as any)[e.target.value] })} 
@@ -344,24 +348,28 @@ const LogoElementEditor: React.FC<LogoElementEditorProps> = ({ element, onUpdate
 interface TextElementEditorProps {
   element: SectionElement;
   onUpdateStyle: (updates: Partial<SectionElement['style']>) => void;
+  onDuplicate: () => void;
 }
 
-const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdateStyle }) => {
+const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdateStyle, onDuplicate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<'style' | 'position'>('style');
   const style = element.style || {};
 
   return (
-    <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-green text-brand-blue px-3 py-1 rounded-full shadow-lg z-40 animate-in fade-in zoom-in duration-200">
+    <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-green text-brand-blue px-3 py-1.5 rounded-full shadow-lg z-40 animate-in fade-in zoom-in duration-200">
       <button onClick={() => setIsOpen(!isOpen)} className="text-[9px] font-black uppercase tracking-tighter">
-        <i className="fas fa-text-height mr-1"></i> Text Editor
+        <i className="fas fa-text-height mr-1"></i> Edit Text
+      </button>
+      <button onClick={onDuplicate} className="text-[9px] font-black uppercase border-l border-brand-blue/20 pl-2">
+        <i className="fas fa-clone"></i>
       </button>
       
       {isOpen && (
         <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-white p-6 rounded-[2.5rem] shadow-2xl border border-brand-green/20 w-80 z-50 text-brand-blue text-left">
           <div className="flex gap-2 mb-4 bg-gray-50 p-1 rounded-full">
             <button onClick={() => setTab('style')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'style' ? 'bg-brand-blue text-white' : ''}`}>Tipografia</button>
-            <button onClick={() => setTab('position')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'position' ? 'bg-brand-blue text-white' : ''}`}>Movimento</button>
+            <button onClick={() => setTab('position')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'position' ? 'bg-brand-blue text-white' : ''}`}>Posizione</button>
           </div>
 
           {tab === 'style' ? (
@@ -388,23 +396,13 @@ const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdate
               </div>
 
               <div>
-                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block text-left">Font Weight</label>
-                <div className="flex gap-1 bg-gray-50 p-1 rounded-xl">
-                  {[
-                    { label: 'Normal', val: 'normal' },
-                    { label: '600', val: '600' },
-                    { label: '700', val: '700' },
-                    { label: 'Bold', val: 'bold' }
-                  ].map(w => (
-                    <button 
-                      key={w.val} 
-                      onClick={() => onUpdateStyle({ fontWeight: w.val })} 
-                      className={`flex-1 py-2 text-[7px] font-black uppercase rounded-lg border transition-all ${style.fontWeight === w.val ? 'bg-brand-blue text-white border-brand-blue shadow-sm' : 'bg-transparent border-transparent text-brand-blue/40 hover:bg-white'}`}
-                    >
-                      {w.label}
-                    </button>
-                  ))}
-                </div>
+                <label className="text-[8px] font-black opacity-40 uppercase mb-2 block text-left">Larghezza Area</label>
+                <select value={style.width || '100%'} onChange={e => onUpdateStyle({ width: e.target.value })} className="w-full bg-gray-50 p-2 rounded-lg text-[10px] font-bold">
+                  <option value="100%">Intera</option>
+                  <option value="50%">Metà</option>
+                  <option value="33%">Un Terzo</option>
+                  <option value="400px">Fisso (400px)</option>
+                </select>
               </div>
 
               <div>
@@ -430,7 +428,6 @@ const TextElementEditor: React.FC<TextElementEditorProps> = ({ element, onUpdate
                   <option value="hard">Retrò</option>
                   <option value="glow">Bagliore Verde</option>
                   <option value="neon">Neon White</option>
-                  <option value="dark">Profondo</option>
                 </select>
               </div>
             </div>
@@ -447,9 +444,10 @@ interface ImageElementEditorProps {
   element: SectionElement;
   onUpdateStyle: (updates: Partial<SectionElement['style']>) => void;
   onReplace: () => void;
+  onDuplicate: () => void;
 }
 
-const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpdateStyle, onReplace }) => {
+const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpdateStyle, onReplace, onDuplicate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<'style' | 'position'>('style');
   const style = element.style || {};
@@ -468,16 +466,19 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
   };
 
   return (
-    <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-blue text-white px-3 py-1 rounded-full shadow-lg z-40 animate-in fade-in zoom-in duration-200">
+    <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-blue text-white px-3 py-1.5 rounded-full shadow-lg z-40 animate-in fade-in zoom-in duration-200">
       <button onClick={() => setIsOpen(!isOpen)} className="text-[9px] font-black uppercase tracking-tighter">
-        <i className="fas fa-image mr-1"></i> Image Editor
+        <i className="fas fa-image mr-1"></i> Edit Image
+      </button>
+      <button onClick={onDuplicate} className="text-[9px] font-black uppercase border-l border-white/20 pl-2">
+        <i className="fas fa-clone"></i>
       </button>
       
       {isOpen && (
         <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-white p-6 rounded-[2.5rem] shadow-2xl border border-brand-blue/20 w-80 z-50 text-brand-blue text-left">
           <div className="flex gap-2 mb-4 bg-gray-50 p-1 rounded-full">
-            <button onClick={() => setTab('style')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'style' ? 'bg-brand-blue text-white' : ''}`}>Design & Filtri</button>
-            <button onClick={() => setTab('position')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'position' ? 'bg-brand-blue text-white' : ''}`}>Ritaglio & Scala</button>
+            <button onClick={() => setTab('style')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'style' ? 'bg-brand-blue text-white' : ''}`}>Filtri & Design</button>
+            <button onClick={() => setTab('position')} className={`flex-1 py-1 rounded-full text-[8px] font-black uppercase ${tab === 'position' ? 'bg-brand-blue text-white' : ''}`}>Layout & Scala</button>
           </div>
 
           {tab === 'style' ? (
@@ -486,10 +487,10 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
               
               <div className="space-y-4 pt-4 border-t border-gray-100">
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-[8px] font-black opacity-40 uppercase">Filtri & Colore</label>
+                  <label className="text-[8px] font-black opacity-40 uppercase">Filtri Avanzati</label>
                   <button onClick={resetFilters} className="text-[7px] font-black uppercase text-brand-blue opacity-40 hover:opacity-100 transition">Reset</button>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 text-left">
                   <div>
                     <label className="text-[7px] font-bold opacity-30 block mb-1">Blur ({style.blur || 0}px)</label>
                     <input type="range" min="0" max="20" value={style.blur || 0} onChange={e => onUpdateStyle({ blur: +e.target.value })} className="w-full accent-brand-blue" />
@@ -507,37 +508,20 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
                     <input type="range" min="0" max="1" step="0.1" value={style.invert || 0} onChange={e => onUpdateStyle({ invert: +e.target.value })} className="w-full accent-brand-blue" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                   <div>
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Luminosità ({style.brightness || 1})</label>
-                    <input type="range" min="0" max="2" step="0.1" value={style.brightness || 1} onChange={e => onUpdateStyle({ brightness: +e.target.value })} className="w-full accent-brand-blue" />
-                  </div>
-                  <div>
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Contrasto ({style.contrast || 1})</label>
-                    <input type="range" min="0" max="2" step="0.1" value={style.contrast || 1} onChange={e => onUpdateStyle({ contrast: +e.target.value })} className="w-full accent-brand-blue" />
-                  </div>
-                </div>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Bordi & Ombre</label>
-                <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl">
-                  <input type="color" value={style.borderColor || '#A8D38E'} onChange={e => onUpdateStyle({ borderColor: e.target.value })} className="w-8 h-8 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
-                  <div className="flex-1">
-                    <label className="text-[7px] font-bold opacity-30 block mb-1">Spessore ({style.borderWidth || 0}px)</label>
-                    <input type="range" min="0" max="20" value={style.borderWidth || 0} onChange={e => onUpdateStyle({ borderWidth: +e.target.value })} className="w-full accent-brand-blue" />
-                  </div>
-                </div>
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Shadow & Neon</label>
                 <select 
                   value={Object.keys(BOX_SHADOWS).find(k => (BOX_SHADOWS as any)[k] === style.shadow) || 'none'} 
                   onChange={e => onUpdateStyle({ shadow: (BOX_SHADOWS as any)[e.target.value] })} 
                   className="w-full bg-gray-50 p-3 rounded-xl text-[10px] font-bold outline-none border-0"
                 >
-                  <option value="none">Senza Ombra</option>
-                  <option value="soft">Ombra Morbida</option>
-                  <option value="medium">Ombra Media</option>
-                  <option value="heavy">Ombra Forte</option>
-                  <option value="neon">Neon Paitone Arena</option>
+                  <option value="none">Nessuna</option>
+                  <option value="soft">Morbida</option>
+                  <option value="medium">Media</option>
+                  <option value="heavy">Marcata</option>
+                  <option value="neon">Neon Paitone</option>
                 </select>
               </div>
 
@@ -545,10 +529,10 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
                 <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Comportamento (Hover)</label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: 'none', label: 'Statico' },
+                    { id: 'none', label: 'Statica' },
                     { id: 'zoom', label: 'Zoom' },
-                    { id: 'lift', label: 'Solleva' },
-                    { id: 'brighten', label: 'Illumina' }
+                    { id: 'lift', label: 'Lift' },
+                    { id: 'brighten', label: 'Glow' }
                   ].map(eff => (
                     <button 
                       key={eff.id} 
@@ -564,42 +548,26 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
           ) : (
             <div className="space-y-6">
               <div className="space-y-4">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Proporzioni (Aspect Ratio)</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {['auto', '1/1', '4/3', '16/9', '9/16'].map(ratio => (
-                    <button 
-                      key={ratio} 
-                      onClick={() => onUpdateStyle({ aspectRatio: ratio })}
-                      className={`py-2 rounded-xl text-[8px] font-black uppercase transition-all ${style.aspectRatio === ratio ? 'bg-brand-blue text-white shadow-md' : 'bg-gray-50 text-brand-blue/40 border border-gray-100'}`}
-                    >
-                      {ratio}
-                    </button>
-                  ))}
-                </div>
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Larghezza Elemento</label>
+                <select value={style.width || '100%'} onChange={e => onUpdateStyle({ width: e.target.value })} className="w-full bg-gray-50 p-2 rounded-lg text-[10px] font-bold">
+                  <option value="100%">Intera</option>
+                  <option value="50%">Metà</option>
+                  <option value="33%">Un Terzo</option>
+                  <option value="400px">Fisso (400px)</option>
+                  <option value="600px">Grande (600px)</option>
+                </select>
               </div>
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Metodo di Ritaglio (Crop Mode)</label>
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Ritaglio (Object Fit)</label>
                 <select 
                   value={style.objectFit || 'cover'} 
                   onChange={e => onUpdateStyle({ objectFit: e.target.value as any })} 
                   className="w-full bg-gray-50 p-3 rounded-xl text-[10px] font-bold outline-none border-0"
                 >
-                  <option value="cover">Riempi (Cover)</option>
-                  <option value="contain">Adatta (Contain)</option>
-                  <option value="fill">Stira (Fill)</option>
-                  <option value="none">Originale</option>
+                  <option value="cover">Riempimento (Cover)</option>
+                  <option value="contain">Adattamento (Contain)</option>
+                  <option value="fill">Stiramento (Fill)</option>
                 </select>
-              </div>
-              <div className="space-y-4 pt-4 border-t border-gray-100">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Opacità & Arrotondamento</label>
-                <div>
-                   <label className="text-[7px] font-bold opacity-30 block mb-1">Arrotondamento</label>
-                   <input type="range" min="0" max="200" value={parseInt(style.borderRadius || '48')} onChange={e => onUpdateStyle({ borderRadius: `${e.target.value}px` })} className="w-full accent-brand-blue" />
-                </div>
-                <div>
-                   <label className="text-[7px] font-bold opacity-30 block mb-1">Opacità ({style.opacity || 1})</label>
-                   <input type="range" min="0" max="1" step="0.1" value={style.opacity || 1} onChange={e => onUpdateStyle({ opacity: +e.target.value })} className="w-full accent-brand-blue" />
-                </div>
               </div>
               <ElementPositionEditor style={style} onUpdate={onUpdateStyle} />
             </div>
@@ -638,39 +606,24 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
     onUpdateConfig({ ...config, sections: newSections });
   };
 
-  const addElement = (sectionId: string, type: 'text' | 'image' | 'logo') => {
+  const addElement = (sectionId: string, type: 'text' | 'image' | 'logo', baseStyle?: any) => {
     const newElement: SectionElement = {
-      id: `el_${Date.now()}`,
+      id: `el_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
       type,
       content: type === 'text' ? 'Scrivi qui il tuo messaggio...' : type === 'image' ? 'https://images.unsplash.com/photo-1595435063785-547bb7c2c537?auto=format&fit=crop&q=80&w=800' : 'primary',
-      style: { 
+      style: baseStyle || { 
         width: type === 'logo' ? '120px' : '100%', 
-        height: type === 'logo' ? 'auto' : 'auto',
-        borderRadius: type === 'text' ? '3rem' : type === 'image' ? '3rem' : '0%',
+        height: 'auto',
+        borderRadius: type === 'logo' ? '0%' : '3rem',
         fontSize: '1.125rem',
         color: config.primaryColor,
         textAlign: 'center',
         textShadow: 'none',
         fontWeight: 'normal',
         lineHeight: '1.5',
-        x: 0,
-        y: 0,
-        scale: 1,
-        rotation: 0,
-        zIndex: 5,
-        brightness: 1,
-        contrast: 1,
-        grayscale: 0,
-        sepia: 0,
-        blur: 0,
-        hueRotate: 0,
-        saturate: 1,
-        invert: 0,
-        borderWidth: 0,
-        borderColor: '#A8D38E',
-        hoverEffect: 'none',
-        aspectRatio: 'auto',
-        objectFit: 'cover'
+        x: 0, y: 0, scale: 1, rotation: 0, zIndex: 5,
+        brightness: 1, contrast: 1, grayscale: 0, sepia: 0, blur: 0, hueRotate: 0, saturate: 1, invert: 0,
+        borderWidth: 0, borderColor: config.accentColor, hoverEffect: 'none', aspectRatio: 'auto', objectFit: 'cover'
       }
     };
     const next = config.sections.map(s => s.id === sectionId ? { ...s, elements: [...(s.elements || []), newElement] } : s);
@@ -690,6 +643,12 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
       ...s,
       elements: s.elements?.map(el => el.id === elId ? { ...el, style: { ...(el.style || {}), ...styleUpdates } } : el)
     } : s);
+    onUpdateConfig({ ...config, sections: next });
+  };
+
+  const duplicateElement = (sectionId: string, element: SectionElement) => {
+    const duplicate = { ...element, id: `el_copy_${Date.now()}_${Math.random().toString(36).substr(2, 5)}` };
+    const next = config.sections.map(s => s.id === sectionId ? { ...s, elements: [...(s.elements || []), duplicate] } : s);
     onUpdateConfig({ ...config, sections: next });
   };
 
@@ -754,7 +713,6 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
               ${isEditMode ? 'ring-2 ring-dashed ring-brand-blue/10 m-6' : ''}
             `}
           >
-            {/* Overlay per l'opacità/luminosità dello sfondo se è image-bg */}
             {s.variant === 'image-bg' && s.bgOpacity !== undefined && (
               <div 
                 className="absolute inset-0 pointer-events-none transition-all duration-500" 
@@ -774,9 +732,9 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
             )}
 
             <div className={`${widthClass} mx-auto px-6 relative z-10`}>
-              <div className="text-center space-y-6 relative">
+              <div className="text-center space-y-6">
                 {isEditMode ? (
-                  <div className="space-y-4 relative z-10">
+                  <div className="space-y-4">
                     <input 
                       value={section.title} 
                       onChange={e => updateSection(section.id, { title: e.target.value }, false)}
@@ -789,24 +747,25 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                     />
                   </div>
                 ) : (
-                  <div className="animate-in fade-in slide-in-from-bottom duration-1000 relative z-10">
+                  <div className="animate-in fade-in slide-in-from-bottom duration-1000">
                     <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-4 italic">{section.title}</h2>
                     <p className="text-xl opacity-60 italic max-w-3xl mx-auto">{section.description}</p>
                   </div>
                 )}
 
-                {/* Grid Elementi Dinamici */}
-                <div className={`grid grid-cols-1 md:grid-cols-${Math.min(section.elements?.length || 1, 3)} gap-12 mt-20 items-center justify-items-center relative`}>
+                {/* Multi-Element Container: Flex-wrap allows relative positioning of many elements */}
+                <div className="flex flex-wrap items-center justify-center gap-12 mt-20 relative min-h-[100px]">
                   {section.elements?.map(el => {
                     const elStyle = el.style || {};
                     const transformStyle: React.CSSProperties = {
                       transform: `translate(${elStyle.x || 0}px, ${elStyle.y || 0}px) rotate(${elStyle.rotation || 0}deg) scale(${elStyle.scale || 1})`,
                       zIndex: elStyle.zIndex || 5,
+                      width: elStyle.width || '100%',
                       position: 'relative',
                       transition: 'transform 0.2s ease-out'
                     };
 
-                    const commonControls = isEditMode && (
+                    const removeControl = isEditMode && (
                       <div className="absolute -top-4 -right-4 flex gap-2 z-[90] opacity-0 group-hover/el:opacity-100 transition-all">
                         <button onClick={() => {
                           const next = config.sections.map(sec => sec.id === section.id ? { ...sec, elements: sec.elements?.filter(e => e.id !== el.id) } : sec);
@@ -816,23 +775,13 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                     );
 
                     if (el.type === 'text') {
-                      const textStyles: React.CSSProperties = {
-                        ...transformStyle,
-                        fontSize: elStyle.fontSize || '1.125rem',
-                        color: elStyle.color || 'inherit',
-                        textAlign: elStyle.textAlign || 'center',
-                        textShadow: elStyle.textShadow || 'none',
-                        fontWeight: elStyle.fontWeight || 'normal',
-                        lineHeight: elStyle.lineHeight || '1.5'
-                      };
-
                       return (
-                        <div key={el.id} className="relative group/el w-full">
-                          {commonControls}
-                          <div style={textStyles} className="relative p-10 rounded-[3rem] bg-white/5 border border-white/10 backdrop-blur-sm shadow-inner h-full flex flex-col items-center justify-center">
-                            {isEditMode && <TextElementEditor element={el} onUpdateStyle={(upd) => updateElementStyle(section.id, el.id, upd)} />}
+                        <div key={el.id} style={transformStyle} className="group/el">
+                          {removeControl}
+                          <div className="relative p-8 rounded-[3rem] bg-white/5 border border-white/10 backdrop-blur-sm shadow-inner flex flex-col items-center justify-center" style={{ textAlign: elStyle.textAlign as any, color: elStyle.color, fontSize: elStyle.fontSize, fontWeight: elStyle.fontWeight, lineHeight: elStyle.lineHeight, textShadow: elStyle.textShadow }}>
+                            {isEditMode && <TextElementEditor element={el} onUpdateStyle={(upd) => updateElementStyle(section.id, el.id, upd)} onDuplicate={() => duplicateElement(section.id, el)} />}
                             {isEditMode ? (
-                              <textarea value={el.content} onChange={e => updateElement(section.id, el.id, e.target.value, false)} className="w-full bg-transparent outline-none italic opacity-80 resize-none h-32" />
+                              <textarea value={el.content} onChange={e => updateElement(section.id, el.id, e.target.value, false)} className="w-full bg-transparent outline-none italic opacity-80 resize-none h-32 text-center" />
                             ) : (
                               <p className="italic opacity-80 whitespace-pre-wrap">{el.content}</p>
                             )}
@@ -843,44 +792,27 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
 
                     if (el.type === 'image') {
                       const filters = `brightness(${elStyle.brightness || 1}) contrast(${elStyle.contrast || 1}) grayscale(${elStyle.grayscale || 0}) sepia(${elStyle.sepia || 0}) blur(${elStyle.blur || 0}px) hue-rotate(${elStyle.hueRotate || 0}deg) saturate(${elStyle.saturate || 1}) invert(${elStyle.invert || 0})`;
-                      
-                      const hoverClasses = {
-                        none: '',
-                        zoom: 'hover:scale-110',
-                        lift: 'hover:-translate-y-6 hover:shadow-2xl',
-                        brighten: 'hover:brightness-125'
-                      };
+                      const hoverClasses = { none: '', zoom: 'hover:scale-110', lift: 'hover:-translate-y-6 hover:shadow-2xl', brighten: 'hover:brightness-125' };
 
                       return (
-                        <div key={el.id} className="relative group/el w-full">
-                          {commonControls}
+                        <div key={el.id} style={transformStyle} className="group/el">
+                          {removeControl}
                           <div 
                             style={{ 
-                              ...transformStyle, 
                               borderRadius: elStyle.borderRadius || '3rem', 
-                              opacity: elStyle.opacity || 1,
-                              width: elStyle.width || '100%',
                               height: elStyle.height || '400px',
                               overflow: 'hidden',
-                              aspectRatio: elStyle.aspectRatio !== 'auto' ? elStyle.aspectRatio : undefined,
-                              border: elStyle.borderWidth ? `${elStyle.borderWidth}px solid ${elStyle.borderColor || '#A8D38E'}` : 'none',
                               boxShadow: elStyle.shadow || 'none'
                             }} 
-                            className={`relative cursor-pointer shadow-2xl transition-all duration-700 ease-out ${hoverClasses[elStyle.hoverEffect || 'none']}`} 
+                            className={`relative cursor-pointer transition-all duration-700 ease-out ${hoverClasses[elStyle.hoverEffect || 'none']}`} 
                             onClick={() => isEditMode && handleImageClick(section.id, el.id)}
                           >
-                            {isEditMode && <ImageElementEditor element={el} onUpdateStyle={(upd) => updateElementStyle(section.id, el.id, upd)} onReplace={() => handleImageClick(section.id, el.id)} />}
+                            {isEditMode && <ImageElementEditor element={el} onUpdateStyle={(upd) => updateElementStyle(section.id, el.id, upd)} onReplace={() => handleImageClick(section.id, el.id)} onDuplicate={() => duplicateElement(section.id, el)} />}
                             <img 
                               src={el.content} 
-                              style={{ 
-                                filter: filters,
-                                objectFit: elStyle.objectFit || 'cover',
-                                width: '100%',
-                                height: '100%',
-                                transition: 'filter 0.5s ease-out'
-                              }}
+                              style={{ filter: filters, objectFit: elStyle.objectFit || 'cover', width: '100%', height: '100%' }}
                               className="transition-transform duration-1000" 
-                              alt="Arena Asset"
+                              alt="Arena Design Asset"
                             />
                           </div>
                         </div>
@@ -890,38 +822,21 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                     if (el.type === 'logo') {
                       const logoUrl = el.content === 'primary' ? config.primaryLogoUrl : config.secondaryLogoUrl;
                       return (
-                        <div key={el.id} className="relative group/el">
-                          {commonControls}
-                          <div style={transformStyle} className="relative">
-                            {isEditMode && (
-                              <LogoElementEditor 
-                                element={el} 
-                                onUpdate={(content, styleUpdates) => {
-                                  const nextElements = section.elements?.map(e => e.id === el.id ? { ...e, content, style: { ...e.style, ...styleUpdates } } : e);
-                                  updateSection(section.id, { elements: nextElements });
-                                }} 
-                              />
-                            )}
-                            <div 
-                              style={{ 
-                                width: elStyle.width || '120px', 
-                                height: 'auto', 
-                                borderRadius: elStyle.borderRadius || '0%',
-                                boxShadow: elStyle.shadow || 'none'
-                              }} 
-                              className="bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl flex items-center justify-center p-4 overflow-hidden"
-                            >
-                              {logoUrl ? (
-                                <img src={logoUrl} className="w-full h-full object-contain" alt="Logo Element" />
-                              ) : (
-                                <div className="text-brand-blue/20 text-4xl"><i className="fas fa-star"></i></div>
-                              )}
-                            </div>
+                        <div key={el.id} style={transformStyle} className="group/el">
+                          {removeControl}
+                          {isEditMode && <LogoElementEditor element={el} onDuplicate={() => duplicateElement(section.id, el)} onUpdate={(content, styleUpdates) => {
+                            const nextElements = section.elements?.map(e => e.id === el.id ? { ...e, content, style: { ...e.style, ...styleUpdates } } : e);
+                            updateSection(section.id, { elements: nextElements });
+                          }} />}
+                          <div 
+                            style={{ width: elStyle.width || '120px', borderRadius: elStyle.borderRadius || '0%', boxShadow: elStyle.shadow || 'none' }} 
+                            className="bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl flex items-center justify-center p-4 overflow-hidden"
+                          >
+                            <img src={logoUrl || 'https://via.placeholder.com/150'} className="w-full h-full object-contain" alt="Logo Asset" />
                           </div>
                         </div>
                       );
                     }
-
                     return null;
                   })}
                 </div>
@@ -940,8 +855,8 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                 ...config,
                 sections: [...config.sections, { 
                   id, 
-                  title: 'Nuova Arena Area', 
-                  navLabel: 'Area', 
+                  title: 'Nuova Area Progetto', 
+                  navLabel: 'New Area', 
                   enabled: true, 
                   isCustom: true, 
                   elements: [],
@@ -949,14 +864,14 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                 }]
               });
             }}
-            className="group flex flex-col items-center gap-6 bg-white border-4 border-dashed border-brand-blue/10 px-24 py-16 rounded-[6rem] text-brand-blue/30 hover:text-brand-green hover:border-brand-green transition-all shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)]"
+            className="group flex flex-col items-center gap-6 bg-white border-4 border-dashed border-brand-blue/10 px-24 py-16 rounded-[6rem] text-brand-blue/30 hover:text-brand-green hover:border-brand-green transition-all shadow-xl"
           >
             <div className="w-24 h-24 bg-brand-light rounded-full flex items-center justify-center text-5xl group-hover:bg-brand-green group-hover:text-brand-blue transition-all">
               <i className="fas fa-plus"></i>
             </div>
             <div className="text-center">
-              <span className="block text-3xl font-black uppercase italic tracking-tighter">Espandi la tua Arena</span>
-              <span className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-60">Aggiungi una nuova sezione architettonica</span>
+              <span className="block text-3xl font-black uppercase italic tracking-tighter">Nuovo Spazio Arena</span>
+              <span className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-60">Aggiungi una sezione da modellare</span>
             </div>
           </button>
         </div>

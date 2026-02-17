@@ -111,6 +111,7 @@ export interface SiteConfig {
   heroSubtitle: string;
   heroVideoUrl: string;
   heroImageUrl: string;
+  heroBgOpacity: number;
   
   sportsImageUrl: string;
   tennisImageUrl: string;
