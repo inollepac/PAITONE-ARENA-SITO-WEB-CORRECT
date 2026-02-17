@@ -48,7 +48,7 @@ const App: React.FC = () => {
 
   const updateConfig = (newConfig: SiteConfig, saveToHistory = true) => {
     if (saveToHistory) {
-      const newHistory = [config, ...history].slice(0, 10); // Mantieni ultime 10 versioni
+      const newHistory = [config, ...history].slice(0, 10); 
       setHistory(newHistory);
       localStorage.setItem('arena_v2_history', JSON.stringify(newHistory));
     }
@@ -118,9 +118,9 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col selection:bg-brand-green selection:text-brand-blue ${isEditMode ? 'debug-screens' : ''}`}>
+    <div className={`min-h-screen flex flex-col selection:bg-brand-green selection:text-brand-blue`}>
       
-      {/* Visual CMS Toolbar (Solo Admin) */}
+      {/* Visual CMS Toolbar */}
       {isAuthenticated && (
         <div className="fixed top-0 left-0 w-full z-[100] bg-brand-blue text-white px-6 py-3 flex items-center justify-between shadow-2xl border-b border-white/10 backdrop-blur-md animate-in slide-in-from-top duration-500">
           <div className="flex items-center gap-6">
@@ -150,6 +150,45 @@ const App: React.FC = () => {
             <button onClick={handleLogout} className="bg-red-500/20 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">Logout</button>
           </div>
         </div>
+      )}
+
+      {/* Global Style Toolbar (Floating Bottom) */}
+      {isEditMode && (
+        <motion.div 
+          initial={{ y: 100 }}
+          animate={{ y: 0 }}
+          className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[110] bg-white/90 backdrop-blur-2xl px-10 py-6 rounded-[3rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)] border border-brand-blue/10 flex items-center gap-12"
+        >
+          <div className="flex items-center gap-4">
+            <span className="text-[9px] font-black uppercase opacity-40">Colore Primario</span>
+            <input 
+              type="color" 
+              value={config.primaryColor} 
+              onChange={(e) => updateConfig({ ...config, primaryColor: e.target.value })}
+              className="w-10 h-10 border-0 p-0 rounded-full cursor-pointer bg-transparent"
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-[9px] font-black uppercase opacity-40">Colore Accento</span>
+            <input 
+              type="color" 
+              value={config.accentColor} 
+              onChange={(e) => updateConfig({ ...config, accentColor: e.target.value })}
+              className="w-10 h-10 border-0 p-0 rounded-full cursor-pointer bg-transparent"
+            />
+          </div>
+          <div className="h-8 w-px bg-brand-blue/10"></div>
+          <button 
+            onClick={() => {
+              if (confirm("Vuoi resettare i colori del brand?")) {
+                updateConfig({ ...config, primaryColor: '#4E5B83', accentColor: '#A8D38E' });
+              }
+            }}
+            className="text-[9px] font-black uppercase text-brand-blue/40 hover:text-brand-blue transition"
+          >
+            Reset Design
+          </button>
+        </motion.div>
       )}
 
       <Navbar 
@@ -212,7 +251,7 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="text-right">
-               <span className="text-[10px] opacity-20 uppercase font-black tracking-widest italic">Visual Experience System v2.0</span>
+               <span className="text-[10px] opacity-20 uppercase font-black tracking-widest italic">Visual Experience System v2.1</span>
             </div>
           </div>
         </div>
