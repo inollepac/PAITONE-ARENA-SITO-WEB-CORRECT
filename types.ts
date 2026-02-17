@@ -18,8 +18,38 @@ export interface Event {
 export interface SectionElement {
   id: string;
   type: 'text' | 'image' | 'logo';
-  content: string; // Testo o URL/Base64 immagine
-  label?: string; // Etichetta opzionale (es. didascalia)
+  content: string; 
+  label?: string;
+  style?: {
+    width?: string;
+    height?: string;
+    rotation?: number;
+    opacity?: number;
+    borderRadius?: string;
+    shadow?: string;
+    color?: string;
+    fontSize?: string;
+    fontWeight?: string | number;
+    lineHeight?: string | number;
+    textShadow?: string;
+    textAlign?: 'left' | 'center' | 'right';
+    x?: number;
+    y?: number;
+    zIndex?: number;
+    scale?: number;
+  };
+}
+
+export interface SectionStyle {
+  variant: 'glass' | 'solid' | 'transparent' | 'dark' | 'brand' | 'image-bg';
+  shape: 'rounded' | 'sharp' | 'pill' | 'oval' | 'arc-top' | 'arc-bottom';
+  padding: 'none' | 'small' | 'medium' | 'large' | 'huge';
+  width: 'narrow' | 'contained' | 'full';
+  shadow: 'none' | 'soft' | 'medium' | 'heavy' | 'extra';
+  borderWidth: number;
+  borderColor: string;
+  bgImageUrl?: string;
+  bgOpacity?: number;
 }
 
 export interface SectionContent {
@@ -30,8 +60,8 @@ export interface SectionContent {
   enabled: boolean;
   navLabel: string;
   isCustom?: boolean;
-  showLogo?: boolean;
-  elements?: SectionElement[]; // Lista di elementi aggiuntivi (immagini, didascalie, loghi)
+  elements?: SectionElement[];
+  style?: SectionStyle;
 }
 
 export interface LogoPlacementConfig {
@@ -44,6 +74,8 @@ export interface LogoPlacementConfig {
   scale: number;
   x: number;
   y: number;
+  rotation?: number;
+  filter?: string;
   objectFit: 'cover' | 'contain';
   showName: boolean; 
 }
@@ -77,12 +109,6 @@ export interface SiteConfig {
   workingHours: string;
   externalBookingUrl: string;
   sections: SectionContent[]; 
-}
-
-export interface Slot {
-  time: string;
-  available: boolean;
-  courtId: string;
 }
 
 export type Page = string;

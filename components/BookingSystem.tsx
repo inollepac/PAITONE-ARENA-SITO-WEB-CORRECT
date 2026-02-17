@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { SiteConfig, Court, Slot } from '../types';
+// Fixed: Removed non-existent Slot type from imports
+import { SiteConfig, Court } from '../types';
 
 interface BookingSystemProps {
   config: SiteConfig;
