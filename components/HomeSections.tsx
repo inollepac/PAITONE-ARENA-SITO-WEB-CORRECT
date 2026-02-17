@@ -5,7 +5,7 @@ import { SiteConfig, Page, SectionContent, SectionElement, SectionStyle } from '
 const STYLE_MAPS = {
   variant: {
     glass: 'glass border border-white/20',
-    solid: 'bg-white',
+    solid: '',
     transparent: 'bg-transparent',
     dark: 'bg-brand-blue text-white',
     brand: 'bg-brand-green text-brand-blue',
@@ -37,13 +37,14 @@ const STYLE_MAPS = {
 };
 
 const GRADIENTS = [
-  { name: 'None', value: '' },
-  { name: 'Arena Night', value: 'linear-gradient(135deg, #4E5B83 0%, #2A334D 100%)' },
-  { name: 'Sunset Match', value: 'linear-gradient(135deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%)' },
-  { name: 'Padel Green', value: 'linear-gradient(135deg, #A8D38E 0%, #7CB342 100%)' },
-  { name: 'Cool Glass', value: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)' },
-  { name: 'Deep Sea', value: 'radial-gradient(circle, #4E5B83 0%, #1A2238 100%)' },
-  { name: 'Tennis Clay', value: 'linear-gradient(135deg, #D35400 0%, #E67E22 100%)' }
+  { name: 'Nessuno', value: '' },
+  { name: 'Clay Court', value: 'linear-gradient(135deg, #D35400 0%, #E67E22 100%)' },
+  { name: 'Padel Night', value: 'linear-gradient(135deg, #1A2238 0%, #4E5B83 100%)' },
+  { name: 'Forest Green', value: 'linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%)' },
+  { name: 'Electric Padel', value: 'linear-gradient(135deg, #2D3142 0%, #4E5B83 50%, #A8D38E 100%)' },
+  { name: 'Soft Glass', value: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)' },
+  { name: 'Morning Match', value: 'linear-gradient(135deg, #FDFCFB 0%, #E2D1C3 100%)' },
+  { name: 'Deep Arena', value: 'radial-gradient(circle, #4E5B83 0%, #0F172A 100%)' }
 ];
 
 const TEXT_SHADOWS = {
@@ -210,37 +211,37 @@ const SectionEditorPanel: React.FC<SectionEditorPanelProps> = ({ section, onUpda
               {s.variant === 'image-bg' ? (
                 <div className="space-y-4">
                   <button onClick={onImageUpload} className="w-full py-3 bg-brand-light text-brand-blue rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-brand-green transition">Cambia Immagine Sfondo</button>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                     <span className="text-[9px] font-black opacity-40 uppercase">Effetto Parallasse</span>
                     <button 
                       onClick={() => updateStyle('parallax', !s.parallax)}
-                      className={`w-12 h-6 rounded-full transition-all relative ${s.parallax ? 'bg-brand-green' : 'bg-gray-200'}`}
+                      className={`w-12 h-6 rounded-full transition-all relative ${s.parallax ? 'bg-brand-green shadow-[0_0_10px_rgba(168,211,142,0.5)]' : 'bg-gray-300'}`}
                     >
-                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${s.parallax ? 'right-1' : 'left-1'}`}></div>
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${s.parallax ? 'left-7' : 'left-1'}`}></div>
                     </button>
                   </div>
                   <div>
-                    <label className="text-[8px] font-black opacity-30 uppercase block mb-2 text-left">Opacità Sfondo ({s.bgOpacity || 1})</label>
+                    <label className="text-[8px] font-black opacity-30 uppercase block mb-2 text-left">Luminosità Sfondo ({s.bgOpacity || 1})</label>
                     <input type="range" min="0" max="1" step="0.1" value={s.bgOpacity || 1} onChange={e => updateStyle('bgOpacity', +e.target.value)} className="w-full accent-brand-blue" />
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1 no-scrollbar">
                   <div>
-                    <label className="text-[8px] font-black opacity-30 uppercase block mb-3 text-left">Colore Solido</label>
-                    <div className="flex items-center gap-3">
+                    <label className="text-[8px] font-black opacity-30 uppercase block mb-3 text-left">Colore di Sfondo</label>
+                    <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl">
                       <input type="color" value={s.bgColor || '#FFFFFF'} onChange={e => updateStyle('bgColor', e.target.value)} className="w-10 h-10 p-0 border-0 rounded-lg cursor-pointer bg-transparent" />
-                      <span className="text-[10px] font-mono opacity-40">{s.bgColor}</span>
+                      <span className="text-[10px] font-mono opacity-40 uppercase">{s.bgColor}</span>
                     </div>
                   </div>
                   <div>
-                    <label className="text-[8px] font-black opacity-30 uppercase block mb-3 text-left">Gradiente Preset</label>
-                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto no-scrollbar">
+                    <label className="text-[8px] font-black opacity-30 uppercase block mb-3 text-left">Libreria Gradienti</label>
+                    <div className="grid grid-cols-2 gap-2">
                       {GRADIENTS.map(g => (
                         <button 
                           key={g.name} 
                           onClick={() => updateStyle('bgGradient', g.value)}
-                          className={`p-2 rounded-lg text-[7px] font-black uppercase border transition ${s.bgGradient === g.value ? 'border-brand-blue shadow-md' : 'border-gray-100 opacity-60'}`}
+                          className={`p-3 rounded-xl text-[7px] font-black uppercase border transition-all ${s.bgGradient === g.value ? 'ring-2 ring-brand-blue shadow-lg scale-[1.02]' : 'border-gray-100 opacity-60 hover:opacity-100'}`}
                           style={{ background: g.value || '#f3f4f6' }}
                         >
                           {g.name}
@@ -660,8 +661,8 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
           borderWidth: `${s.borderWidth}px`,
           borderColor: s.borderColor,
           borderStyle: s.borderWidth > 0 ? 'solid' : 'none',
-          backgroundColor: s.variant === 'custom' ? s.bgColor : undefined,
-          backgroundImage: s.variant === 'image-bg' ? `url(${s.bgImageUrl})` : s.bgGradient || 'none',
+          backgroundColor: (s.variant === 'solid' || s.variant === 'custom') ? s.bgColor : undefined,
+          backgroundImage: s.variant === 'image-bg' ? `url(${s.bgImageUrl})` : (s.bgGradient || 'none'),
           backgroundAttachment: s.parallax ? 'fixed' : 'scroll',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -683,10 +684,10 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
               ${isEditMode ? 'ring-2 ring-dashed ring-brand-blue/10 m-6' : ''}
             `}
           >
-            {/* Overlay per l'opacità dello sfondo se è image-bg */}
+            {/* Overlay per l'opacità/luminosità dello sfondo se è image-bg */}
             {s.variant === 'image-bg' && s.bgOpacity !== undefined && (
               <div 
-                className="absolute inset-0 pointer-events-none" 
+                className="absolute inset-0 pointer-events-none transition-all duration-500" 
                 style={{ backgroundColor: `rgba(0,0,0,${1 - (s.bgOpacity || 1)})` }}
               ></div>
             )}
