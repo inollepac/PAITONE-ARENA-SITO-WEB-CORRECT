@@ -507,6 +507,16 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
                     <input type="range" min="0" max="1" step="0.1" value={style.invert || 0} onChange={e => onUpdateStyle({ invert: +e.target.value })} className="w-full accent-brand-blue" />
                   </div>
                 </div>
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                   <div>
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Luminosità ({style.brightness || 1})</label>
+                    <input type="range" min="0" max="2" step="0.1" value={style.brightness || 1} onChange={e => onUpdateStyle({ brightness: +e.target.value })} className="w-full accent-brand-blue" />
+                  </div>
+                  <div>
+                    <label className="text-[7px] font-bold opacity-30 block mb-1">Contrasto ({style.contrast || 1})</label>
+                    <input type="range" min="0" max="2" step="0.1" value={style.contrast || 1} onChange={e => onUpdateStyle({ contrast: +e.target.value })} className="w-full accent-brand-blue" />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-gray-100">
@@ -568,7 +578,7 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
                 </div>
               </div>
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Metodo di Ritaglio</label>
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Metodo di Ritaglio (Crop Mode)</label>
                 <select 
                   value={style.objectFit || 'cover'} 
                   onChange={e => onUpdateStyle({ objectFit: e.target.value as any })} 
@@ -579,6 +589,17 @@ const ImageElementEditor: React.FC<ImageElementEditorProps> = ({ element, onUpda
                   <option value="fill">Stira (Fill)</option>
                   <option value="none">Originale</option>
                 </select>
+              </div>
+              <div className="space-y-4 pt-4 border-t border-gray-100">
+                <label className="text-[8px] font-black opacity-40 uppercase block mb-2">Opacità & Arrotondamento</label>
+                <div>
+                   <label className="text-[7px] font-bold opacity-30 block mb-1">Arrotondamento</label>
+                   <input type="range" min="0" max="200" value={parseInt(style.borderRadius || '48')} onChange={e => onUpdateStyle({ borderRadius: `${e.target.value}px` })} className="w-full accent-brand-blue" />
+                </div>
+                <div>
+                   <label className="text-[7px] font-bold opacity-30 block mb-1">Opacità ({style.opacity || 1})</label>
+                   <input type="range" min="0" max="1" step="0.1" value={style.opacity || 1} onChange={e => onUpdateStyle({ opacity: +e.target.value })} className="w-full accent-brand-blue" />
+                </div>
               </div>
               <ElementPositionEditor style={style} onUpdate={onUpdateStyle} />
             </div>
