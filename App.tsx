@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Page, SiteConfig, Court, Event, SectionContent } from './types';
 import { INITIAL_SITE_CONFIG, INITIAL_COURTS, INITIAL_EVENTS } from './constants';
 import Navbar from './components/Navbar';
@@ -164,18 +165,28 @@ const App: React.FC = () => {
       />
       
       <main className={`flex-grow ${isAuthenticated ? 'pt-12' : 'pt-24'}`}>
-        {activePage === 'home' && (
-            <Hero 
-                config={config} 
-                isEditMode={isEditMode}
-                onUpdateConfig={updateConfig}
-                onBookingClick={() => navigateTo('booking')} 
-                onDiscoverClick={() => navigateTo('space')} 
-            />
-        )}
-        <div className={isEditMode ? 'relative' : ''}>
-          {renderPage()}
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activePage}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            {activePage === 'home' && (
+                <Hero 
+                    config={config} 
+                    isEditMode={isEditMode}
+                    onUpdateConfig={updateConfig}
+                    onBookingClick={() => navigateTo('booking')} 
+                    onDiscoverClick={() => navigateTo('space')} 
+                />
+            )}
+            <div className={isEditMode ? 'relative' : ''}>
+              {renderPage()}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       <footer className="bg-brand-blue text-white py-24 relative overflow-hidden">
