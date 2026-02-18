@@ -11,6 +11,21 @@ interface HomeSectionsProps {
   courts: Court[];
 }
 
+const DEFAULT_SECTION_STYLE: SectionStyle = {
+  variant: 'solid',
+  shape: 'rounded',
+  padding: 'medium',
+  width: 'contained',
+  shadow: 'none',
+  borderWidth: 0,
+  borderColor: '#A8D38E',
+  bgColor: '#FFFFFF',
+  bgGradient: '',
+  bgImageUrl: '',
+  bgOpacity: 1,
+  parallax: false
+};
+
 const STYLE_MAPS = {
   variant: {
     glass: 'glass border border-white/20',
@@ -47,32 +62,36 @@ const STYLE_MAPS = {
 
 const SectionEditorPanel = ({ section, onUpdate, onDelete, onMove, onAddElement, onImageUpload }: any) => {
   const [isOpen, setIsOpen] = useState(false);
-  const s = section.style || { variant: 'solid', shape: 'rounded', padding: 'medium', width: 'contained' };
+  const s = { ...DEFAULT_SECTION_STYLE, ...section.style };
 
   return (
-    <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-full shadow-2xl z-[999]" onClick={e => e.stopPropagation()}>
-      <button onClick={() => onMove('up')} className="p-2 hover:text-brand-green"><i className="fas fa-arrow-up"></i></button>
-      <button onClick={() => onMove('down')} className="p-2 hover:text-brand-green"><i className="fas fa-arrow-down"></i></button>
+    <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-full shadow-2xl z-[9999]" onClick={e => e.stopPropagation()}>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onMove('up'); }} className="p-2 hover:text-brand-green cursor-pointer transition-transform active:scale-90"><i className="fas fa-arrow-up"></i></button>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onMove('down'); }} className="p-2 hover:text-brand-green cursor-pointer transition-transform active:scale-90"><i className="fas fa-arrow-down"></i></button>
       <div className="w-px h-4 bg-white/20 mx-2"></div>
-      <button onClick={() => setIsOpen(!isOpen)} className={`p-2 ${isOpen ? 'text-brand-green' : ''}`}><i className="fas fa-paint-brush"></i></button>
-      <button onClick={() => onAddElement('text')} className="p-2 hover:text-brand-green"><i className="fas fa-font"></i></button>
-      <button onClick={() => onAddElement('image')} className="p-2 hover:text-brand-green"><i className="fas fa-image"></i></button>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsOpen(!isOpen); }} className={`p-2 cursor-pointer transition-all ${isOpen ? 'text-brand-green scale-110' : ''}`}><i className="fas fa-paint-brush"></i></button>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onAddElement('text'); }} className="p-2 hover:text-brand-green cursor-pointer transition-transform active:scale-90"><i className="fas fa-font"></i></button>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onAddElement('image'); }} className="p-2 hover:text-brand-green cursor-pointer transition-transform active:scale-90"><i className="fas fa-image"></i></button>
       <div className="w-px h-4 bg-white/20 mx-2"></div>
-      <button onClick={onDelete} className="p-2 hover:text-red-400"><i className="fas fa-trash"></i></button>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(); }} className="p-2 hover:text-red-400 cursor-pointer transition-transform active:scale-90"><i className="fas fa-trash"></i></button>
 
       {isOpen && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 bg-white text-brand-blue p-8 rounded-3xl shadow-2xl w-80 z-[1000] text-left">
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 bg-white text-brand-blue p-8 rounded-3xl shadow-2xl w-80 z-[10000] text-left border border-gray-100 animate-in fade-in zoom-in duration-200">
           <h4 className="text-[10px] font-black uppercase mb-4 opacity-40">Opzioni Sezione</h4>
           <div className="space-y-4">
-            <select value={s.variant} onChange={e => onUpdate({ style: { ...s, variant: e.target.value } })} className="w-full bg-gray-50 p-2 rounded-lg text-xs font-bold">
+            <select value={s.variant} onChange={e => onUpdate({ style: { ...s, variant: e.target.value } })} className="w-full bg-gray-50 p-2 rounded-lg text-xs font-bold outline-none border border-gray-200">
               <option value="solid">Solido</option>
               <option value="glass">Vetro</option>
               <option value="dark">Dark</option>
               <option value="image-bg">Immagine Sfondo</option>
             </select>
             {s.variant === 'image-bg' && (
-              <button onClick={onImageUpload} className="w-full py-2 bg-brand-light text-[9px] font-black uppercase rounded-lg">Cambia Immagine</button>
+              <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onImageUpload(); }} className="w-full py-3 bg-brand-light text-brand-blue text-[9px] font-black uppercase rounded-lg hover:bg-brand-green transition">Cambia Immagine</button>
             )}
+            <div className="pt-4 border-t border-gray-50">
+               <label className="text-[9px] font-black opacity-40 uppercase block mb-2">Colore Sfondo</label>
+               <input type="color" value={s.bgColor || '#FFFFFF'} onChange={e => onUpdate({ style: { ...s, bgColor: e.target.value } })} className="w-full h-8 p-0 border-0 rounded cursor-pointer" />
+            </div>
           </div>
         </div>
       )}
@@ -85,17 +104,17 @@ const ElementEditor = ({ el, onUpdate, onDuplicate, onReplace }: any) => {
   const color = el.type === 'text' ? 'bg-brand-green text-brand-blue' : 'bg-brand-blue text-white';
 
   return (
-    <div className={`absolute -top-10 left-1/2 -translate-x-1/2 flex gap-2 ${color} px-4 py-1.5 rounded-full shadow-lg z-[999]`} onClick={e => e.stopPropagation()}>
-      <button onClick={() => setIsOpen(!isOpen)} className="text-[9px] font-black uppercase"><i className="fas fa-edit mr-1"></i> Modifica</button>
-      <button onClick={onDuplicate} className="text-[9px] font-black border-l border-current/20 pl-2"><i className="fas fa-clone"></i></button>
+    <div className={`absolute -top-10 left-1/2 -translate-x-1/2 flex gap-2 ${color} px-4 py-1.5 rounded-full shadow-lg z-[9999]`} onClick={e => e.stopPropagation()}>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsOpen(!isOpen); }} className="text-[9px] font-black uppercase cursor-pointer transition-all hover:opacity-80"><i className="fas fa-edit mr-1"></i> Modifica</button>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDuplicate(); }} className="text-[9px] font-black border-l border-current/20 pl-2 cursor-pointer transition-all hover:opacity-80"><i className="fas fa-clone"></i></button>
       {isOpen && (
-        <div className="absolute top-12 left-1/2 -translate-x-1/2 bg-white p-6 rounded-3xl shadow-2xl w-64 text-left text-brand-blue z-[1000]">
+        <div className="absolute top-12 left-1/2 -translate-x-1/2 bg-white p-6 rounded-3xl shadow-2xl w-64 text-left text-brand-blue z-[10000] border border-gray-100 animate-in fade-in zoom-in duration-200">
           {el.type === 'image' && (
-            <button onClick={onReplace} className="w-full py-2 bg-brand-light text-[9px] font-black uppercase rounded-lg mb-4">Sostituisci Foto</button>
+            <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onReplace(); }} className="w-full py-2 bg-brand-light text-[9px] font-black uppercase rounded-lg mb-4 hover:bg-brand-green transition">Sostituisci Foto</button>
           )}
           <div className="space-y-4">
             <label className="text-[8px] font-black opacity-30 uppercase block">Scala ({el.style?.scale || 1})</label>
-            <input type="range" min="0.1" max="3" step="0.1" value={el.style?.scale || 1} onChange={e => onUpdate({ scale: +e.target.value })} className="w-full accent-brand-blue" />
+            <input type="range" min="0.1" max="3" step="0.1" value={el.style?.scale || 1} onChange={e => onUpdate({ scale: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
           </div>
         </div>
       )}
@@ -161,7 +180,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         const { sId, elId, isBg } = uploadTarget.current!;
         if (isBg) {
           const section = config.sections.find(s => s.id === sId);
-          if (section) updateSection(sId, { style: { ...(section.style || {}), bgImageUrl: b64 } as any });
+          if (section) updateSection(sId, { style: { ...(section.style || DEFAULT_SECTION_STYLE), bgImageUrl: b64 } as any });
         } else if (elId) {
           updateElement(sId, elId, { content: b64 });
         }
@@ -176,12 +195,12 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
       
       {config.sections.map((section, idx) => {
         if (!section.enabled && !isEditMode) return null;
-        const s = section.style || { variant: 'solid', shape: 'rounded', padding: 'medium', width: 'contained' };
+        const s = { ...DEFAULT_SECTION_STYLE, ...section.style };
         
         return (
           <div 
             key={section.id} 
-            className={`relative transition-all mx-auto ${STYLE_MAPS.variant[s.variant || 'solid']} ${STYLE_MAPS.shape[s.shape || 'rounded']} ${STYLE_MAPS.padding[s.padding || 'medium']} ${isEditMode ? 'ring-2 ring-dashed ring-brand-blue/10 m-6' : ''}`}
+            className={`relative transition-all mx-auto ${STYLE_MAPS.variant[s.variant || 'solid']} ${STYLE_MAPS.shape[s.shape || 'rounded']} ${STYLE_MAPS.padding[s.padding || 'medium']} ${isEditMode ? 'ring-2 ring-dashed ring-brand-blue/20 m-6' : ''}`}
             style={{ 
               backgroundColor: s.variant === 'solid' ? s.bgColor : undefined,
               backgroundImage: s.variant === 'image-bg' ? `url(${s.bgImageUrl})` : undefined,
@@ -203,10 +222,10 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
             <div className={`mx-auto px-6 relative z-10 ${s.width === 'full' ? 'w-full' : 'max-w-7xl'}`}>
               <div className="text-center space-y-6">
                 {isEditMode ? (
-                  <>
-                    <input value={section.title} onChange={e => updateSection(section.id, { title: e.target.value })} className="text-4xl md:text-6xl font-black uppercase text-center w-full bg-transparent outline-none italic" />
-                    <textarea value={section.description} onChange={e => updateSection(section.id, { description: e.target.value })} className="text-lg opacity-60 italic text-center w-full bg-transparent outline-none resize-none" />
-                  </>
+                  <div className="space-y-4">
+                    <input value={section.title} onChange={e => updateSection(section.id, { title: e.target.value })} className="text-4xl md:text-6xl font-black uppercase text-center w-full bg-transparent outline-none italic border-b border-brand-blue/5 focus:border-brand-green/50 transition-colors" />
+                    <textarea value={section.description} onChange={e => updateSection(section.id, { description: e.target.value })} className="text-lg opacity-60 italic text-center w-full bg-transparent outline-none resize-none border-b border-brand-blue/5 focus:border-brand-green/50 transition-colors" />
+                  </div>
                 ) : (
                   <>
                     <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter">{section.title}</h2>
@@ -224,7 +243,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                         {isEditMode && <ElementEditor el={el} onUpdate={(upd: any) => updateElementStyle(section.id, el.id, upd)} onDuplicate={() => addElement(section.id, 'text')} />}
                         <div className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-inner">
                           {isEditMode ? (
-                            <textarea value={el.content} onChange={e => updateElement(section.id, el.id, { content: e.target.value })} className="w-full bg-transparent outline-none italic resize-none text-center" />
+                            <textarea value={el.content} onChange={e => updateElement(section.id, el.id, { content: e.target.value })} className="w-full bg-transparent outline-none italic resize-none text-center border-none focus:ring-0" />
                           ) : (
                             <p className="italic opacity-80 whitespace-pre-wrap text-center">{el.content}</p>
                           )}
@@ -235,7 +254,12 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                     if (el.type === 'image') return (
                       <div key={el.id} className="relative group" style={{ transform, zIndex: st.zIndex || 5, width: st.width || '300px' }}>
                         {isEditMode && <ElementEditor el={el} onUpdate={(upd: any) => updateElementStyle(section.id, el.id, upd)} onReplace={() => triggerUpload(section.id, el.id)} onDuplicate={() => addElement(section.id, 'image')} />}
-                        <img src={el.content} className="rounded-3xl shadow-xl w-full h-full object-cover cursor-pointer" alt="Arena" onClick={() => isEditMode && triggerUpload(section.id, el.id)} />
+                        <img 
+                          src={el.content} 
+                          className={`rounded-3xl shadow-xl w-full h-full object-cover transition-all ${isEditMode ? 'hover:ring-4 hover:ring-brand-green/50 cursor-pointer' : ''}`} 
+                          alt="Arena" 
+                          onClick={(e) => { e.stopPropagation(); isEditMode && triggerUpload(section.id, el.id); }} 
+                        />
                       </div>
                     );
                     

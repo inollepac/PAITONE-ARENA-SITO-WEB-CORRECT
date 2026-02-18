@@ -82,7 +82,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <h2 className="text-5xl font-black text-brand-blue uppercase italic tracking-tighter">Control Center</h2>
           <p className="text-gray-500 font-medium italic mt-2">Personalizza l'estetica della tua arena.</p>
         </div>
-        <button onClick={handleSave} className="bg-brand-blue text-white px-16 py-6 rounded-full font-black uppercase tracking-widest hover:bg-brand-green hover:text-brand-blue transition-all shadow-2xl">
+        <button onClick={handleSave} className="bg-brand-blue text-white px-16 py-6 rounded-full font-black uppercase tracking-widest hover:bg-brand-green hover:text-brand-blue transition-all shadow-2xl cursor-pointer active:scale-95">
           Salva Modifiche Globali
         </button>
       </div>
@@ -98,7 +98,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <button 
               key={t.id}
               onClick={() => setActiveTab(t.id as any)}
-              className={`w-full text-left px-10 py-6 rounded-[2.5rem] font-black uppercase text-xs tracking-widest transition-all flex items-center gap-6 ${activeTab === t.id ? 'bg-brand-blue text-white shadow-2xl translate-x-2' : 'bg-white text-gray-400 hover:bg-brand-light border border-gray-100'}`}
+              className={`w-full text-left px-10 py-6 rounded-[2.5rem] font-black uppercase text-xs tracking-widest transition-all flex items-center gap-6 cursor-pointer ${activeTab === t.id ? 'bg-brand-blue text-white shadow-2xl translate-x-2' : 'bg-white text-gray-400 hover:bg-brand-light border border-gray-100'}`}
             >
               <i className={`fas ${t.icon} text-lg`}></i> {t.label}
             </button>
@@ -113,14 +113,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
               <div className="flex justify-between items-center border-b border-gray-100 pb-8">
                 <h3 className="text-4xl font-black text-brand-blue uppercase italic tracking-tighter">Logo Lab</h3>
                 <div className="flex gap-4">
-                  <button onClick={() => { setUploadField('logo1'); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green">Carica Logo 1</button>
-                  <button onClick={() => { setUploadField('logo2'); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green">Carica Logo 2</button>
+                  <button onClick={() => { setUploadField('logo1'); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green cursor-pointer">Carica Logo 1</button>
+                  <button onClick={() => { setUploadField('logo2'); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green cursor-pointer">Carica Logo 2</button>
                 </div>
               </div>
 
               <div className="flex gap-4 p-3 bg-gray-50 rounded-[2.5rem]">
                 {(['navbar', 'hero', 'footer'] as const).map(tab => (
-                  <button key={tab} onClick={() => setLogoTab(tab)} className={`flex-1 py-4 rounded-[1.8rem] font-black text-[10px] uppercase tracking-widest transition-all ${logoTab === tab ? 'bg-brand-blue text-white shadow-xl' : 'text-gray-400 hover:text-brand-blue'}`}>{tab.toUpperCase()}</button>
+                  <button key={tab} onClick={() => setLogoTab(tab)} className={`flex-1 py-4 rounded-[1.8rem] font-black text-[10px] uppercase tracking-widest transition-all cursor-pointer ${logoTab === tab ? 'bg-brand-blue text-white shadow-xl' : 'text-gray-400 hover:text-brand-blue'}`}>{tab.toUpperCase()}</button>
                 ))}
               </div>
 
@@ -148,7 +148,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <label className="text-[9px] font-black opacity-30 uppercase mb-3 block">Sorgente Logo</label>
-                      <select value={curLogoConfig.logoSource} onChange={e => updateLogo(curLogoKey, { logoSource: e.target.value as any })} className="w-full bg-gray-50 p-4 rounded-2xl font-bold text-xs outline-none">
+                      <select value={curLogoConfig.logoSource} onChange={e => updateLogo(curLogoKey, { logoSource: e.target.value as any })} className="w-full bg-gray-50 p-4 rounded-2xl font-bold text-xs outline-none border border-gray-100 cursor-pointer">
                         <option value="primary">Logo Primario</option>
                         <option value="secondary">Logo Secondario</option>
                       </select>
@@ -157,11 +157,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   <div className="space-y-6 bg-gray-50 p-8 rounded-[3rem]">
                     <div>
                       <label className="text-[9px] font-black opacity-30 uppercase mb-3 block">Asse X ({curLogoConfig.x}px)</label>
-                      <input type="range" min="-200" max="200" value={curLogoConfig.x} onChange={e => updateLogo(curLogoKey, { x: +e.target.value })} className="w-full accent-brand-blue" />
+                      <input type="range" min="-200" max="200" value={curLogoConfig.x} onChange={e => updateLogo(curLogoKey, { x: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
                     </div>
                     <div>
                       <label className="text-[9px] font-black opacity-30 uppercase mb-3 block">Scala ({curLogoConfig.scale})</label>
-                      <input type="range" min="0.1" max="3" step="0.1" value={curLogoConfig.scale} onChange={e => updateLogo(curLogoKey, { scale: +e.target.value })} className="w-full accent-brand-blue" />
+                      <input type="range" min="0.1" max="3" step="0.1" value={curLogoConfig.scale} onChange={e => updateLogo(curLogoKey, { scale: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
                     </div>
                   </div>
                 </div>
@@ -173,15 +173,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="space-y-12 text-center py-10">
               <div className="max-w-2xl mx-auto">
                 <h3 className="text-5xl font-black text-brand-blue uppercase italic tracking-tighter mb-6">Cloud Sync</h3>
-                <button onClick={generateSyncCode} className="bg-brand-blue text-white px-12 py-5 rounded-full font-black uppercase text-xs tracking-widest shadow-2xl">Genera Chiave Arena</button>
+                <button onClick={generateSyncCode} className="bg-brand-blue text-white px-12 py-5 rounded-full font-black uppercase text-xs tracking-widest shadow-2xl cursor-pointer active:scale-95">Genera Chiave Arena</button>
                 {syncCode && (
-                  <div className="mt-10">
-                    <textarea readOnly value={syncCode} className="w-full h-48 p-6 bg-white border border-brand-blue/10 rounded-3xl text-[10px] font-mono break-all" />
+                  <div className="mt-10 animate-in fade-in slide-in-from-bottom-2">
+                    <textarea readOnly value={syncCode} className="w-full h-48 p-6 bg-white border border-brand-blue/10 rounded-3xl text-[10px] font-mono break-all focus:outline-none" />
+                    <p className="text-[8px] font-black uppercase opacity-40 mt-2 tracking-widest italic">Copia questo codice per importarlo su un altro dispositivo</p>
                   </div>
                 )}
                 <div className="mt-10 bg-white p-12 rounded-[4rem] border border-gray-100 shadow-2xl">
-                  <textarea placeholder="Incolla la Chiave Arena qui..." onChange={e => setSyncCode(e.target.value)} className="w-full h-32 p-6 bg-gray-50 border border-gray-100 rounded-3xl text-[10px] font-mono mb-8" />
-                  <button onClick={importSyncCode} className="w-full bg-brand-green text-brand-blue py-6 rounded-full font-black uppercase text-xs tracking-widest shadow-2xl">Sincronizza Dispositivo</button>
+                  <textarea placeholder="Incolla la Chiave Arena qui..." onChange={e => setSyncCode(e.target.value)} className="w-full h-32 p-6 bg-gray-50 border border-gray-100 rounded-3xl text-[10px] font-mono mb-8 focus:outline-none focus:ring-2 focus:ring-brand-green/30" />
+                  <button onClick={importSyncCode} className="w-full bg-brand-green text-brand-blue py-6 rounded-full font-black uppercase text-xs tracking-widest shadow-2xl cursor-pointer active:scale-95 transition-all">Sincronizza Dispositivo</button>
                 </div>
               </div>
             </div>

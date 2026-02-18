@@ -19,7 +19,6 @@ export interface SectionElement {
   id: string;
   type: 'text' | 'image' | 'logo';
   content: string; 
-  label?: string;
   style?: {
     width?: string;
     height?: string;
@@ -71,8 +70,7 @@ export interface SectionStyle {
 export interface SectionContent {
   id: string;
   title: string;
-  subtitle?: string;
-  description?: string;
+  description: string;
   enabled: boolean;
   navLabel: string;
   isCustom?: boolean;
@@ -100,11 +98,9 @@ export interface SiteConfig {
   centerName: string;
   primaryLogoUrl: string; 
   secondaryLogoUrl: string;
-  
   navbarLogo: LogoPlacementConfig;
   heroLogo: LogoPlacementConfig;
   footerLogo: LogoPlacementConfig;
-  
   primaryColor: string;
   accentColor: string;
   heroTitle: string;
@@ -112,13 +108,11 @@ export interface SiteConfig {
   heroVideoUrl: string;
   heroImageUrl: string;
   heroBgOpacity: number;
-  
   sportsImageUrl: string;
   tennisImageUrl: string;
   padelImageUrl: string;
   communityImageUrl: string;
   spaceImageUrls: string[]; 
-  
   address: string;
   phone: string;
   whatsapp: string;
