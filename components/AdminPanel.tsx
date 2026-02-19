@@ -25,29 +25,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   const [syncCode, setSyncCode] = useState('');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadField, setUploadField] = useState<string | null>(null);
+  const [uploadField, setUploadField] = useState<{type: string, index?: number} | null>(null);
 
   const handleSave = () => {
     onUpdateConfig(tempConfig);
     alert('Configurazione Arena salvata con successo!');
-  };
-
-  const generateSyncCode = () => {
-    const json = JSON.stringify(tempConfig);
-    const code = btoa(unescape(encodeURIComponent(json)));
-    setSyncCode(code);
-  };
-
-  const importSyncCode = () => {
-    try {
-      const json = decodeURIComponent(escape(atob(syncCode)));
-      const newConfig = JSON.parse(json);
-      setTempConfig(newConfig);
-      onUpdateConfig(newConfig);
-      alert("Configurazione importata e sincronizzata!");
-    } catch (e) {
-      alert("Codice di sincronizzazione non valido.");
-    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,8 +40,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         const b64 = reader.result as string;
         setTempConfig(prev => {
           const next = { ...prev };
-          if (uploadField === 'logo1') next.primaryLogoUrl = b64;
-          else if (uploadField === 'logo2') next.secondaryLogoUrl = b64;
+          if (uploadField.type === 'logo1') next.primaryLogoUrl = b64;
+          else if (uploadField.type === 'logo2') next.secondaryLogoUrl = b64;
+          else if (uploadField.type === 'hero') next.heroImageUrl = b64;
+          else if (uploadField.type === 'space' && uploadField.index !== undefined) {
+            const nextSpace = [...prev.spaceImageUrls];
+            nextSpace[uploadField.index] = b64;
+            next.spaceImageUrls = nextSpace;
+          }
           return next;
         });
       };
@@ -71,12 +59,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     setTempConfig(p => ({ ...p, [key]: { ...p[key], ...updates } }));
   };
 
+  const generateSyncCode = () => {
+    const json = JSON.stringify(tempConfig);
+    setSyncCode(btoa(unescape(encodeURIComponent(json))));
+  };
+
+  const importSyncCode = () => {
+    try {
+      const json = decodeURIComponent(escape(atob(syncCode)));
+      onUpdateConfig(JSON.parse(json));
+      alert("Configurazione importata!");
+    } catch (e) { alert("Codice non valido."); }
+  };
+
   const curLogoKey = logoTab === 'navbar' ? 'navbarLogo' : logoTab === 'hero' ? 'heroLogo' : 'footerLogo';
   const curLogoConfig = tempConfig[curLogoKey];
   const activeLogoUrl = curLogoConfig.logoSource === 'primary' ? tempConfig.primaryLogoUrl : tempConfig.secondaryLogoUrl;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">
+      <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+      
       <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8 bg-white p-10 rounded-[4rem] shadow-xl border border-brand-blue/5">
         <div>
           <h2 className="text-5xl font-black text-brand-blue uppercase italic tracking-tighter">Control Center</h2>
@@ -90,9 +93,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
         <div className="space-y-4">
           {[
-            { id: 'general', icon: 'fa-cog', label: 'Impostazioni' },
+            { id: 'general', icon: 'fa-cog', label: 'Generale' },
             { id: 'brand', icon: 'fa-fingerprint', label: 'Logo Designer' },
-            { id: 'media', icon: 'fa-images', label: 'Libreria Media' },
+            { id: 'media', icon: 'fa-images', label: 'Media' },
             { id: 'sync', icon: 'fa-sync-alt', label: 'Cloud Sync' },
           ].map((t) => (
             <button 
@@ -106,15 +109,37 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         </div>
 
         <div className="lg:col-span-3 bg-white p-12 rounded-[5rem] shadow-2xl border border-gray-50 min-h-[700px]">
-          <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+          {activeTab === 'general' && (
+            <div className="space-y-12">
+              <h3 className="text-4xl font-black text-brand-blue uppercase italic tracking-tighter">Impostazioni Base</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">Nome Centro</label>
+                  <input value={tempConfig.centerName} onChange={e => setTempConfig({...tempConfig, centerName: e.target.value})} className="w-full bg-gray-50 p-4 rounded-2xl font-bold outline-none border border-gray-100" />
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">Email Contatto</label>
+                  <input value={tempConfig.email} onChange={e => setTempConfig({...tempConfig, email: e.target.value})} className="w-full bg-gray-50 p-4 rounded-2xl font-bold outline-none border border-gray-100" />
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">WhatsApp</label>
+                  <input value={tempConfig.whatsapp} onChange={e => setTempConfig({...tempConfig, whatsapp: e.target.value})} className="w-full bg-gray-50 p-4 rounded-2xl font-bold outline-none border border-gray-100" />
+                </div>
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">Orari di Lavoro</label>
+                  <input value={tempConfig.workingHours} onChange={e => setTempConfig({...tempConfig, workingHours: e.target.value})} className="w-full bg-gray-50 p-4 rounded-2xl font-bold outline-none border border-gray-100" />
+                </div>
+              </div>
+            </div>
+          )}
 
           {activeTab === 'brand' && (
             <div className="space-y-16">
               <div className="flex justify-between items-center border-b border-gray-100 pb-8">
                 <h3 className="text-4xl font-black text-brand-blue uppercase italic tracking-tighter">Logo Lab</h3>
                 <div className="flex gap-4">
-                  <button onClick={() => { setUploadField('logo1'); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green cursor-pointer">Carica Logo 1</button>
-                  <button onClick={() => { setUploadField('logo2'); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green cursor-pointer">Carica Logo 2</button>
+                  <button onClick={() => { setUploadField({type:'logo1'}); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green cursor-pointer">Carica Logo 1</button>
+                  <button onClick={() => { setUploadField({type:'logo2'}); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green cursor-pointer">Carica Logo 2</button>
                 </div>
               </div>
 
@@ -145,24 +170,45 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
 
                 <div className="space-y-10">
-                  <div className="grid grid-cols-2 gap-6">
+                   <div className="space-y-6 bg-gray-50 p-8 rounded-[3rem]">
                     <div>
-                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block">Sorgente Logo</label>
-                      <select value={curLogoConfig.logoSource} onChange={e => updateLogo(curLogoKey, { logoSource: e.target.value as any })} className="w-full bg-gray-50 p-4 rounded-2xl font-bold text-xs outline-none border border-gray-100 cursor-pointer">
-                        <option value="primary">Logo Primario</option>
-                        <option value="secondary">Logo Secondario</option>
-                      </select>
+                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block text-left">Scala ({curLogoConfig.scale})</label>
+                      <input type="range" min="0.1" max="3" step="0.1" value={curLogoConfig.scale} onChange={e => updateLogo(curLogoKey, { scale: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
                     </div>
-                  </div>
-                  <div className="space-y-6 bg-gray-50 p-8 rounded-[3rem]">
                     <div>
-                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block">Asse X ({curLogoConfig.x}px)</label>
+                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block text-left">Posizione X ({curLogoConfig.x}px)</label>
                       <input type="range" min="-200" max="200" value={curLogoConfig.x} onChange={e => updateLogo(curLogoKey, { x: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
                     </div>
                     <div>
-                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block">Scala ({curLogoConfig.scale})</label>
-                      <input type="range" min="0.1" max="3" step="0.1" value={curLogoConfig.scale} onChange={e => updateLogo(curLogoKey, { scale: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
+                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block text-left">Posizione Y ({curLogoConfig.y}px)</label>
+                      <input type="range" min="-200" max="200" value={curLogoConfig.y} onChange={e => updateLogo(curLogoKey, { y: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'media' && (
+            <div className="space-y-12 text-left">
+              <h3 className="text-4xl font-black text-brand-blue uppercase italic tracking-tighter">Libreria Media</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-black uppercase opacity-40">Immagine Hero</h4>
+                  <div className="relative h-60 rounded-3xl overflow-hidden border border-gray-200">
+                    <img src={tempConfig.heroImageUrl} className="w-full h-full object-cover" />
+                    <button onClick={() => { setUploadField({type:'hero'}); fileInputRef.current?.click(); }} className="absolute inset-0 bg-brand-blue/60 text-white font-black uppercase text-[10px] opacity-0 hover:opacity-100 transition-opacity">Sostituisci</button>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-black uppercase opacity-40">Foto Spazio (4 Immagini)</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    {tempConfig.spaceImageUrls.map((url, i) => (
+                      <div key={i} className="relative h-28 rounded-2xl overflow-hidden border border-gray-200">
+                        <img src={url} className="w-full h-full object-cover" />
+                        <button onClick={() => { setUploadField({type:'space', index: i}); fileInputRef.current?.click(); }} className="absolute inset-0 bg-brand-blue/60 text-white font-black uppercase text-[8px] opacity-0 hover:opacity-100 transition-opacity">Sostituisci</button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -177,12 +223,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 {syncCode && (
                   <div className="mt-10 animate-in fade-in slide-in-from-bottom-2">
                     <textarea readOnly value={syncCode} className="w-full h-48 p-6 bg-white border border-brand-blue/10 rounded-3xl text-[10px] font-mono break-all focus:outline-none" />
-                    <p className="text-[8px] font-black uppercase opacity-40 mt-2 tracking-widest italic">Copia questo codice per importarlo su un altro dispositivo</p>
                   </div>
                 )}
                 <div className="mt-10 bg-white p-12 rounded-[4rem] border border-gray-100 shadow-2xl">
-                  <textarea placeholder="Incolla la Chiave Arena qui..." onChange={e => setSyncCode(e.target.value)} className="w-full h-32 p-6 bg-gray-50 border border-gray-100 rounded-3xl text-[10px] font-mono mb-8 focus:outline-none focus:ring-2 focus:ring-brand-green/30" />
-                  <button onClick={importSyncCode} className="w-full bg-brand-green text-brand-blue py-6 rounded-full font-black uppercase text-xs tracking-widest shadow-2xl cursor-pointer active:scale-95 transition-all">Sincronizza Dispositivo</button>
+                  <textarea placeholder="Incolla la Chiave Arena qui..." onChange={e => setSyncCode(e.target.value)} className="w-full h-32 p-6 bg-gray-50 border border-gray-100 rounded-3xl text-[10px] font-mono mb-8 focus:outline-none" />
+                  <button onClick={importSyncCode} className="w-full bg-brand-green text-brand-blue py-6 rounded-full font-black uppercase text-xs tracking-widest shadow-2xl cursor-pointer active:scale-95">Sincronizza Dispositivo</button>
                 </div>
               </div>
             </div>
