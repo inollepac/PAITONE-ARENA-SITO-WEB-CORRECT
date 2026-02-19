@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SiteConfig, LogoPlacementConfig, Court, Event } from '../types';
 
 export interface AdminPanelProps {
@@ -26,6 +26,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadField, setUploadField] = useState<{type: string, index?: number} | null>(null);
+
+  // Sincronizza lo stato locale se la config esterna cambia (es. restore)
+  useEffect(() => {
+    setTempConfig({ ...config });
+  }, [config]);
 
   const handleSave = () => {
     onUpdateConfig(tempConfig);
@@ -68,8 +73,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     try {
       const json = decodeURIComponent(escape(atob(syncCode)));
       onUpdateConfig(JSON.parse(json));
-      alert("Configurazione importata!");
-    } catch (e) { alert("Codice non valido."); }
+      alert("Configurazione importata correttamente!");
+    } catch (e) { 
+      alert("Errore: il codice inserito non è valido."); 
+    }
   };
 
   const curLogoKey = logoTab === 'navbar' ? 'navbarLogo' : logoTab === 'hero' ? 'heroLogo' : 'footerLogo';
@@ -80,108 +87,109 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     <div className="max-w-7xl mx-auto px-6 py-16">
       <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
       
-      <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8 bg-white p-10 rounded-[4rem] shadow-xl border border-brand-blue/5">
-        <div>
+      {/* Header Admin */}
+      <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-8 bg-white p-10 rounded-[3rem] shadow-xl border border-brand-blue/5">
+        <div className="text-left">
           <h2 className="text-5xl font-black text-brand-blue uppercase italic tracking-tighter">Control Center</h2>
-          <p className="text-gray-500 font-medium italic mt-2">Personalizza l'estetica della tua arena.</p>
+          <p className="text-gray-500 font-medium italic mt-2">Gestione totale del Paitone Arena Tennis & Padel.</p>
         </div>
-        <button onClick={handleSave} className="bg-brand-blue text-white px-16 py-6 rounded-full font-black uppercase tracking-widest hover:bg-brand-green hover:text-brand-blue transition-all shadow-2xl cursor-pointer active:scale-95">
-          Salva Modifiche Globali
+        <button onClick={handleSave} className="bg-brand-blue text-white px-12 py-5 rounded-full font-black uppercase tracking-widest hover:bg-brand-green hover:text-brand-blue transition-all shadow-2xl active:scale-95">
+          Salva Tutto
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-        <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Sidebar Nav */}
+        <div className="flex flex-col gap-3">
           {[
-            { id: 'general', icon: 'fa-cog', label: 'Generale' },
+            { id: 'general', icon: 'fa-cog', label: 'Impostazioni' },
             { id: 'brand', icon: 'fa-fingerprint', label: 'Logo Designer' },
-            { id: 'media', icon: 'fa-images', label: 'Media' },
+            { id: 'media', icon: 'fa-images', label: 'Libreria Media' },
             { id: 'sync', icon: 'fa-sync-alt', label: 'Cloud Sync' },
           ].map((t) => (
             <button 
               key={t.id}
               onClick={() => setActiveTab(t.id as any)}
-              className={`w-full text-left px-10 py-6 rounded-[2.5rem] font-black uppercase text-xs tracking-widest transition-all flex items-center gap-6 cursor-pointer ${activeTab === t.id ? 'bg-brand-blue text-white shadow-2xl translate-x-2' : 'bg-white text-gray-400 hover:bg-brand-light border border-gray-100'}`}
+              className={`w-full text-left px-8 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center gap-4 ${activeTab === t.id ? 'bg-brand-blue text-white shadow-lg' : 'bg-white text-gray-400 hover:bg-brand-light'}`}
             >
-              <i className={`fas ${t.icon} text-lg`}></i> {t.label}
+              <i className={`fas ${t.icon} text-lg w-6 text-center`}></i> {t.label}
             </button>
           ))}
         </div>
 
-        <div className="lg:col-span-3 bg-white p-12 rounded-[5rem] shadow-2xl border border-gray-50 min-h-[700px]">
+        {/* Content Area */}
+        <div className="lg:col-span-3 bg-white p-10 rounded-[3rem] shadow-2xl border border-gray-50 min-h-[600px]">
           {activeTab === 'general' && (
-            <div className="space-y-12">
-              <h3 className="text-4xl font-black text-brand-blue uppercase italic tracking-tighter">Impostazioni Base</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase opacity-40">Nome Centro</label>
-                  <input value={tempConfig.centerName} onChange={e => setTempConfig({...tempConfig, centerName: e.target.value})} className="w-full bg-gray-50 p-4 rounded-2xl font-bold outline-none border border-gray-100" />
-                </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase opacity-40">Email Contatto</label>
-                  <input value={tempConfig.email} onChange={e => setTempConfig({...tempConfig, email: e.target.value})} className="w-full bg-gray-50 p-4 rounded-2xl font-bold outline-none border border-gray-100" />
-                </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase opacity-40">WhatsApp</label>
-                  <input value={tempConfig.whatsapp} onChange={e => setTempConfig({...tempConfig, whatsapp: e.target.value})} className="w-full bg-gray-50 p-4 rounded-2xl font-bold outline-none border border-gray-100" />
-                </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase opacity-40">Orari di Lavoro</label>
-                  <input value={tempConfig.workingHours} onChange={e => setTempConfig({...tempConfig, workingHours: e.target.value})} className="w-full bg-gray-50 p-4 rounded-2xl font-bold outline-none border border-gray-100" />
-                </div>
+            <div className="space-y-10 animate-in fade-in duration-300 text-left">
+              <h3 className="text-3xl font-black text-brand-blue uppercase italic tracking-tighter border-b pb-4">Impostazioni Base</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { label: 'Nome Centro', key: 'centerName' },
+                  { label: 'Indirizzo', key: 'address' },
+                  { label: 'Telefono', key: 'phone' },
+                  { label: 'Email', key: 'email' },
+                  { label: 'WhatsApp', key: 'whatsapp' },
+                  { label: 'Orari', key: 'workingHours' },
+                  { label: 'Titolo Hero', key: 'heroTitle' },
+                  { label: 'Sottotitolo Hero', key: 'heroSubtitle' },
+                ].map((field) => (
+                  <div key={field.key} className="space-y-2">
+                    <label className="text-[10px] font-black uppercase opacity-40">{field.label}</label>
+                    <input 
+                      value={(tempConfig as any)[field.key] || ''} 
+                      onChange={e => setTempConfig({...tempConfig, [field.key]: e.target.value})} 
+                      className="w-full bg-gray-50 p-4 rounded-xl font-bold border border-gray-100 focus:ring-2 focus:ring-brand-green/30 outline-none"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
           {activeTab === 'brand' && (
-            <div className="space-y-16">
-              <div className="flex justify-between items-center border-b border-gray-100 pb-8">
-                <h3 className="text-4xl font-black text-brand-blue uppercase italic tracking-tighter">Logo Lab</h3>
-                <div className="flex gap-4">
-                  <button onClick={() => { setUploadField({type:'logo1'}); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green cursor-pointer">Carica Logo 1</button>
-                  <button onClick={() => { setUploadField({type:'logo2'}); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-6 py-3 bg-brand-light rounded-full hover:bg-brand-green cursor-pointer">Carica Logo 2</button>
+            <div className="space-y-12 animate-in fade-in duration-300 text-left">
+              <div className="flex justify-between items-center border-b pb-4">
+                <h3 className="text-3xl font-black text-brand-blue uppercase italic tracking-tighter">Branding Tool</h3>
+                <div className="flex gap-2">
+                  <button onClick={() => { setUploadField({type:'logo1'}); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-4 py-2 bg-brand-light rounded-lg hover:bg-brand-green">Logo 1</button>
+                  <button onClick={() => { setUploadField({type:'logo2'}); fileInputRef.current?.click(); }} className="text-[9px] font-black uppercase px-4 py-2 bg-brand-light rounded-lg hover:bg-brand-green">Logo 2</button>
                 </div>
               </div>
 
-              <div className="flex gap-4 p-3 bg-gray-50 rounded-[2.5rem]">
+              <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
                 {(['navbar', 'hero', 'footer'] as const).map(tab => (
-                  <button key={tab} onClick={() => setLogoTab(tab)} className={`flex-1 py-4 rounded-[1.8rem] font-black text-[10px] uppercase tracking-widest transition-all cursor-pointer ${logoTab === tab ? 'bg-brand-blue text-white shadow-xl' : 'text-gray-400 hover:text-brand-blue'}`}>{tab.toUpperCase()}</button>
+                  <button key={tab} onClick={() => setLogoTab(tab)} className={`flex-1 py-3 rounded-lg font-black text-[9px] uppercase tracking-widest transition-all ${logoTab === tab ? 'bg-white text-brand-blue shadow' : 'text-gray-400'}`}>{tab}</button>
                 ))}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                <div className="bg-gray-100 rounded-[4rem] h-[500px] flex items-center justify-center relative overflow-hidden shadow-inner border border-gray-200">
-                  <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#4E5B83 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="bg-gray-100 rounded-3xl h-80 flex items-center justify-center relative overflow-hidden shadow-inner">
                   {activeLogoUrl && curLogoConfig.enabled && (
                     <div style={{
                       width: `${curLogoConfig.width}px`,
                       height: `${curLogoConfig.height}px`,
                       borderRadius: `${curLogoConfig.borderRadius}%`,
-                      border: curLogoConfig.borderWidth > 0 ? `${curLogoConfig.borderWidth}px solid #A8D38E` : 'none',
-                      overflow: 'hidden',
-                      transform: `translate(${curLogoConfig.x}px, ${curLogoConfig.y}px) rotate(${curLogoConfig.rotation || 0}deg) scale(${curLogoConfig.scale})`,
-                      filter: curLogoConfig.filter || 'none',
+                      transform: `translate(${curLogoConfig.x}px, ${curLogoConfig.y}px) scale(${curLogoConfig.scale})`,
                       transition: 'all 0.1s ease-out'
                     }}>
-                      <img src={activeLogoUrl} className="w-full h-full" style={{ objectFit: curLogoConfig.objectFit }} />
+                      <img src={activeLogoUrl} className="w-full h-full object-contain" />
                     </div>
                   )}
-                  {curLogoConfig.showName && <span className="ml-6 font-black text-2xl uppercase italic text-brand-blue relative z-10">{tempConfig.centerName}</span>}
+                  {curLogoConfig.showName && <span className="ml-4 font-black text-xl uppercase italic text-brand-blue">{tempConfig.centerName}</span>}
                 </div>
-
-                <div className="space-y-10">
-                   <div className="space-y-6 bg-gray-50 p-8 rounded-[3rem]">
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-[9px] font-black opacity-30 uppercase mb-2 block">Scala ({curLogoConfig.scale})</label>
+                    <input type="range" min="0.1" max="3" step="0.1" value={curLogoConfig.scale} onChange={e => updateLogo(curLogoKey, { scale: +e.target.value })} className="w-full accent-brand-blue" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block text-left">Scala ({curLogoConfig.scale})</label>
-                      <input type="range" min="0.1" max="3" step="0.1" value={curLogoConfig.scale} onChange={e => updateLogo(curLogoKey, { scale: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
+                      <label className="text-[9px] font-black opacity-30 uppercase mb-2 block">X ({curLogoConfig.x})</label>
+                      <input type="range" min="-100" max="100" value={curLogoConfig.x} onChange={e => updateLogo(curLogoKey, { x: +e.target.value })} className="w-full accent-brand-blue" />
                     </div>
                     <div>
-                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block text-left">Posizione X ({curLogoConfig.x}px)</label>
-                      <input type="range" min="-200" max="200" value={curLogoConfig.x} onChange={e => updateLogo(curLogoKey, { x: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
-                    </div>
-                    <div>
-                      <label className="text-[9px] font-black opacity-30 uppercase mb-3 block text-left">Posizione Y ({curLogoConfig.y}px)</label>
-                      <input type="range" min="-200" max="200" value={curLogoConfig.y} onChange={e => updateLogo(curLogoKey, { y: +e.target.value })} className="w-full accent-brand-blue cursor-pointer" />
+                      <label className="text-[9px] font-black opacity-30 uppercase mb-2 block">Y ({curLogoConfig.y})</label>
+                      <input type="range" min="-100" max="100" value={curLogoConfig.y} onChange={e => updateLogo(curLogoKey, { y: +e.target.value })} className="w-full accent-brand-blue" />
                     </div>
                   </div>
                 </div>
@@ -190,23 +198,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           )}
 
           {activeTab === 'media' && (
-            <div className="space-y-12 text-left">
-              <h3 className="text-4xl font-black text-brand-blue uppercase italic tracking-tighter">Libreria Media</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="space-y-10 animate-in fade-in duration-300 text-left">
+              <h3 className="text-3xl font-black text-brand-blue uppercase italic tracking-tighter border-b pb-4">Gestione Immagini</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black uppercase opacity-40">Immagine Hero</h4>
-                  <div className="relative h-60 rounded-3xl overflow-hidden border border-gray-200">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg group">
                     <img src={tempConfig.heroImageUrl} className="w-full h-full object-cover" />
-                    <button onClick={() => { setUploadField({type:'hero'}); fileInputRef.current?.click(); }} className="absolute inset-0 bg-brand-blue/60 text-white font-black uppercase text-[10px] opacity-0 hover:opacity-100 transition-opacity">Sostituisci</button>
+                    <button onClick={() => { setUploadField({type:'hero'}); fileInputRef.current?.click(); }} className="absolute inset-0 bg-brand-blue/80 text-white font-black uppercase text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">Sostituisci</button>
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase opacity-40">Foto Spazio (4 Immagini)</h4>
-                  <div className="grid grid-cols-2 gap-4">
+                  <h4 className="text-[10px] font-black uppercase opacity-40">Libreria Spazi (4 Foto)</h4>
+                  <div className="grid grid-cols-2 gap-3">
                     {tempConfig.spaceImageUrls.map((url, i) => (
-                      <div key={i} className="relative h-28 rounded-2xl overflow-hidden border border-gray-200">
+                      <div key={i} className="relative aspect-square rounded-xl overflow-hidden shadow group">
                         <img src={url} className="w-full h-full object-cover" />
-                        <button onClick={() => { setUploadField({type:'space', index: i}); fileInputRef.current?.click(); }} className="absolute inset-0 bg-brand-blue/60 text-white font-black uppercase text-[8px] opacity-0 hover:opacity-100 transition-opacity">Sostituisci</button>
+                        <button onClick={() => { setUploadField({type:'space', index: i}); fileInputRef.current?.click(); }} className="absolute inset-0 bg-brand-blue/80 text-white font-black uppercase text-[8px] opacity-0 group-hover:opacity-100 transition-opacity">Update</button>
                       </div>
                     ))}
                   </div>
@@ -216,18 +224,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           )}
 
           {activeTab === 'sync' && (
-            <div className="space-y-12 text-center py-10">
-              <div className="max-w-2xl mx-auto">
-                <h3 className="text-5xl font-black text-brand-blue uppercase italic tracking-tighter mb-6">Cloud Sync</h3>
-                <button onClick={generateSyncCode} className="bg-brand-blue text-white px-12 py-5 rounded-full font-black uppercase text-xs tracking-widest shadow-2xl cursor-pointer active:scale-95">Genera Chiave Arena</button>
+            <div className="space-y-10 animate-in fade-in duration-300">
+              <h3 className="text-3xl font-black text-brand-blue uppercase italic tracking-tighter border-b pb-4 text-left">Sincronizzazione Cloud</h3>
+              <div className="max-w-xl mx-auto space-y-8 py-8">
+                <button onClick={generateSyncCode} className="w-full bg-brand-blue text-white py-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl hover:bg-brand-green hover:text-brand-blue transition-all">Genera Chiave d'Esportazione</button>
                 {syncCode && (
-                  <div className="mt-10 animate-in fade-in slide-in-from-bottom-2">
-                    <textarea readOnly value={syncCode} className="w-full h-48 p-6 bg-white border border-brand-blue/10 rounded-3xl text-[10px] font-mono break-all focus:outline-none" />
+                  <div className="space-y-4 text-left">
+                    <label className="text-[9px] font-black uppercase opacity-40">Tua Chiave Arena:</label>
+                    <textarea readOnly value={syncCode} className="w-full h-32 p-4 bg-gray-50 border rounded-xl text-[10px] font-mono break-all outline-none" />
                   </div>
                 )}
-                <div className="mt-10 bg-white p-12 rounded-[4rem] border border-gray-100 shadow-2xl">
-                  <textarea placeholder="Incolla la Chiave Arena qui..." onChange={e => setSyncCode(e.target.value)} className="w-full h-32 p-6 bg-gray-50 border border-gray-100 rounded-3xl text-[10px] font-mono mb-8 focus:outline-none" />
-                  <button onClick={importSyncCode} className="w-full bg-brand-green text-brand-blue py-6 rounded-full font-black uppercase text-xs tracking-widest shadow-2xl cursor-pointer active:scale-95">Sincronizza Dispositivo</button>
+                <div className="pt-8 border-t border-gray-100 space-y-6">
+                  <textarea placeholder="Incolla qui la chiave Arena per importarla..." onChange={e => setSyncCode(e.target.value)} className="w-full h-24 p-4 bg-gray-50 border rounded-xl text-[10px] font-mono outline-none" />
+                  <button onClick={importSyncCode} className="w-full bg-brand-green text-brand-blue py-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-lg active:scale-95">Importa Configurazione</button>
                 </div>
               </div>
             </div>
