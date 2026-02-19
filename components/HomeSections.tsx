@@ -54,26 +54,9 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
     updateSection(sId, { elements: [...(s?.elements || []), newEl] });
   };
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && uploadTarget) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const b64 = reader.result as string;
-        if (uploadTarget.isBg) {
-          const s = config.sections.find(sec => sec.id === uploadTarget.sId);
-          updateSection(uploadTarget.sId, { style: { ...(s?.style || DEFAULT_STYLE), bgImageUrl: b64 } });
-        } else if (uploadTarget.elId) {
-          updateElement(uploadTarget.sId, uploadTarget.elId, { content: b64 });
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <div className="space-y-32 pb-48">
-      <input type="file" ref={fileInputRef} className="hidden" onChange={handleFile} accept="image/*" />
+      <input type="file" ref={fileInputRef} className="hidden" onChange={() => {}} />
 
       {config.sections.filter(s => s.enabled || isEditMode).map((section) => {
         const sStyle = { ...DEFAULT_STYLE, ...section.style };
@@ -81,7 +64,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         return (
           <section 
             key={section.id} 
-            className={`relative mx-auto transition-all ${isEditMode ? 'ring-2 ring-brand-green/20 ring-dashed m-10 p-10 rounded-[4rem]' : ''}`}
+            className={`relative mx-auto transition-all ${isEditMode ? 'ring-4 ring-brand-green/40 ring-dashed m-10 p-12 rounded-[4rem] bg-brand-green/5' : ''}`}
             style={{ 
               backgroundColor: sStyle.variant === 'solid' ? sStyle.bgColor : 'transparent',
               backgroundImage: sStyle.variant === 'image-bg' ? `url(${sStyle.bgImageUrl})` : 'none',
@@ -89,13 +72,11 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
               backgroundPosition: 'center',
             }}
           >
-            {/* Toolbar Sezione (Edit Mode) */}
             {isEditMode && (
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-brand-blue text-white px-6 py-2 rounded-full flex gap-4 shadow-2xl z-50">
-                <span className="text-[10px] font-black uppercase tracking-widest border-r pr-4">Sezione: {section.id}</span>
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-brand-blue text-white px-8 py-3 rounded-full flex gap-6 shadow-2xl z-50 animate-bounce">
+                <span className="text-[10px] font-black uppercase tracking-widest border-r pr-6">EDITING: {section.title}</span>
                 <button onClick={() => addElement(section.id, 'text')} className="hover:text-brand-green"><i className="fas fa-font"></i></button>
                 <button onClick={() => addElement(section.id, 'image')} className="hover:text-brand-green"><i className="fas fa-image"></i></button>
-                <button onClick={() => { setUploadTarget({sId: section.id, isBg: true}); fileInputRef.current?.click(); }} className="hover:text-brand-green"><i className="fas fa-paint-roller"></i></button>
                 <button onClick={() => updateSection(section.id, { enabled: false })} className="hover:text-red-400"><i className="fas fa-trash"></i></button>
               </div>
             )}
@@ -104,14 +85,14 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
               {isEditMode ? (
                 <div className="max-w-4xl mx-auto space-y-4">
                   <input 
-                    value={section.title} 
+                    value={section.title || ''} 
                     onChange={e => updateSection(section.id, { title: e.target.value })} 
-                    className="w-full text-5xl font-black uppercase italic text-center bg-white/10 border-b-2 border-brand-green/30 outline-none p-2 focus:bg-white/20"
+                    className="w-full text-5xl font-black uppercase italic text-center bg-white border-2 border-brand-green rounded-2xl p-4 text-brand-blue outline-none"
                   />
                   <textarea 
-                    value={section.description} 
+                    value={section.description || ''} 
                     onChange={e => updateSection(section.id, { description: e.target.value })} 
-                    className="w-full text-xl opacity-60 italic text-center bg-white/10 border-b-2 border-brand-green/30 outline-none p-2 resize-none h-24"
+                    className="w-full text-xl opacity-60 italic text-center bg-white border-2 border-brand-green rounded-2xl p-4 text-brand-blue outline-none h-32"
                   />
                 </div>
               ) : (
@@ -121,50 +102,38 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                 </>
               )}
 
-              {/* Elementi dinamici della sezione */}
-              <div className="flex flex-wrap justify-center gap-10 mt-16 min-h-[100px]">
+              <div className="flex flex-wrap justify-center gap-10 mt-16">
                 {section.elements?.map(el => (
                   <div 
                     key={el.id} 
-                    className={`relative group transition-all ${isEditMode ? 'ring-2 ring-brand-green p-4 rounded-3xl bg-white/5' : ''}`}
+                    className={`relative transition-all ${isEditMode ? 'ring-2 ring-brand-green p-4 rounded-3xl bg-white shadow-xl' : ''}`}
                     style={{ width: el.type === 'text' ? '100%' : '320px' }}
                   >
                     {isEditMode && (
-                      <div className="absolute -top-4 -right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                        <button onClick={() => updateElement(section.id, el.id, { style: { ...(el.style || {}), scale: (el.style?.scale || 1) + 0.1 } })} className="w-8 h-8 bg-brand-green rounded-full text-brand-blue shadow-lg"><i className="fas fa-plus text-xs"></i></button>
-                        <button 
-                          onClick={() => {
-                            const nextEls = section.elements?.filter(item => item.id !== el.id);
-                            updateSection(section.id, { elements: nextEls });
-                          }} 
-                          className="w-8 h-8 bg-red-500 rounded-full text-white shadow-lg"
-                        ><i className="fas fa-times text-xs"></i></button>
-                      </div>
+                      <button 
+                        onClick={() => {
+                          const nextEls = section.elements?.filter(item => item.id !== el.id);
+                          updateSection(section.id, { elements: nextEls });
+                        }} 
+                        className="absolute -top-4 -right-4 w-10 h-10 bg-red-500 rounded-full text-white shadow-lg z-50 flex items-center justify-center"
+                      ><i className="fas fa-times"></i></button>
                     )}
 
                     {el.type === 'text' ? (
-                      <div className="p-10 rounded-[3rem] bg-white/5 border border-white/10 backdrop-blur-lg">
+                      <div className="p-8">
                         {isEditMode ? (
                           <textarea 
-                            value={el.content} 
+                            value={el.content || ''} 
                             onChange={e => updateElement(section.id, el.id, { content: e.target.value })} 
-                            className="w-full bg-transparent outline-none italic text-center resize-none h-32 focus:ring-0"
+                            className="w-full bg-gray-50 border-2 border-brand-green rounded-2xl p-4 text-brand-blue outline-none h-40 text-center font-bold"
                           />
                         ) : (
-                          <p className="italic opacity-80 whitespace-pre-wrap text-lg leading-relaxed">{el.content}</p>
+                          <p className="italic opacity-80 whitespace-pre-wrap text-lg">{el.content}</p>
                         )}
                       </div>
                     ) : (
-                      <div 
-                        className="relative rounded-[3rem] overflow-hidden shadow-2xl aspect-square cursor-pointer"
-                        onClick={() => { if(isEditMode) { setUploadTarget({sId: section.id, elId: el.id}); fileInputRef.current?.click(); } }}
-                      >
-                        <img src={el.content} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Arena Element" />
-                        {isEditMode && (
-                          <div className="absolute inset-0 bg-brand-blue/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="text-[10px] font-black uppercase text-white tracking-widest">Cambia Foto</span>
-                          </div>
-                        )}
+                      <div className="rounded-[3rem] overflow-hidden shadow-2xl aspect-square">
+                        <img src={el.content} className="w-full h-full object-cover" alt="Arena" />
                       </div>
                     )}
                   </div>

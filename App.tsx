@@ -30,13 +30,11 @@ const App: React.FC = () => {
     const savedCourts = localStorage.getItem('arena_v2_courts');
     const savedEvents = localStorage.getItem('arena_v2_events');
     const savedAuth = sessionStorage.getItem('arena_v2_auth');
-    const savedHistory = localStorage.getItem('arena_v2_history');
 
     if (savedConfig) setConfig(JSON.parse(savedConfig));
     if (savedCourts) setCourts(JSON.parse(savedCourts));
     if (savedEvents) setEvents(JSON.parse(savedEvents));
     if (savedAuth === 'true') setIsAuthenticated(true);
-    if (savedHistory) setHistory(JSON.parse(savedHistory));
   }, []);
 
   useEffect(() => {
@@ -45,24 +43,10 @@ const App: React.FC = () => {
     document.documentElement.style.setProperty('--brand-green-opaque', `${config.accentColor}33`);
   }, [config.primaryColor, config.accentColor]);
 
-  const updateConfig = (newConfig: SiteConfig, saveToHistory = true) => {
-    if (saveToHistory) {
-      const newHistory = [config, ...history].slice(0, 10); 
-      setHistory(newHistory);
-      localStorage.setItem('arena_v2_history', JSON.stringify(newHistory));
-    }
+  const updateConfig = (newConfig: SiteConfig) => {
     setConfig(newConfig);
     localStorage.setItem('arena_v2_config', JSON.stringify(newConfig));
-  };
-
-  const restoreVersion = () => {
-    if (history.length === 0) return;
-    const previous = history[0];
-    const newHistory = history.slice(1);
-    setHistory(newHistory);
-    setConfig(previous);
-    localStorage.setItem('arena_v2_config', JSON.stringify(previous));
-    localStorage.setItem('arena_v2_history', JSON.stringify(newHistory));
+    console.log("Config updated and saved to localStorage");
   };
 
   const handleLogin = (success: boolean) => {
@@ -93,15 +77,15 @@ const App: React.FC = () => {
           courts={courts} 
           events={events} 
           onUpdateConfig={updateConfig} 
-          onUpdateCourts={(c: Court[]) => { setCourts(c); localStorage.setItem('arena_v2_courts', JSON.stringify(c)); }}
-          onUpdateEvents={(e: Event[]) => { setEvents(e); localStorage.setItem('arena_v2_events', JSON.stringify(e)); }}
+          onUpdateCourts={(c) => { setCourts(c); localStorage.setItem('arena_v2_courts', JSON.stringify(c)); }}
+          onUpdateEvents={(e) => { setEvents(e); localStorage.setItem('arena_v2_events', JSON.stringify(e)); }}
         />
       );
     }
 
     switch (activePage) {
       case 'home': return <HomeSections config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} onNavigate={navigateTo} events={events} courts={courts} />;
-      case 'space': return <OurSpace config={config} />;
+      case 'space': return <OurSpace config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} />;
       case 'sports': return <SportsPage config={config} courts={courts} />;
       case 'courses': return <CoursesPage />;
       case 'community': return <CommunityPage events={events} config={config} />;
@@ -117,39 +101,21 @@ const App: React.FC = () => {
         <div className="fixed top-0 left-0 w-full z-[100] bg-brand-blue text-white px-6 py-3 flex items-center justify-between shadow-2xl border-b border-white/10 backdrop-blur-md">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${isEditMode ? 'bg-brand-green animate-pulse shadow-[0_0_10px_#A8D38E]' : 'bg-white/20'}`}></div>
+              <div className={`w-3 h-3 rounded-full ${isEditMode ? 'bg-brand-green animate-pulse' : 'bg-white/20'}`}></div>
               <span className="text-[10px] font-black uppercase tracking-widest italic">Visual Control Arena</span>
             </div>
             <button 
               onClick={() => setIsEditMode(!isEditMode)}
-              className={`px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${isEditMode ? 'bg-brand-green text-brand-blue' : 'bg-white/10 hover:bg-white/20'}`}
+              className={`px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${isEditMode ? 'bg-brand-green text-brand-blue shadow-[0_0_15px_#A8D38E]' : 'bg-white/10'}`}
             >
-              {isEditMode ? 'Esci dall\'Editing' : 'Attiva Modifiche Live'}
+              {isEditMode ? 'MODALITÀ EDITING ATTIVA' : 'Attiva Modifiche Live'}
             </button>
           </div>
           <div className="flex items-center gap-4">
-            {isEditMode && history.length > 0 && (
-              <button onClick={restoreVersion} className="text-[10px] font-black uppercase text-white/40 hover:text-white transition-all">
-                <i className="fas fa-undo mr-2"></i> Ripristina ({history.length})
-              </button>
-            )}
-            <button onClick={() => navigateTo('admin')} className="text-white/60 hover:text-white p-2 transition"><i className="fas fa-cog"></i></button>
+            <button onClick={() => navigateTo('admin')} className={`text-white/60 hover:text-white p-2 transition ${activePage === 'admin' ? 'text-brand-green' : ''}`}><i className="fas fa-cog"></i></button>
             <button onClick={handleLogout} className="bg-red-500/20 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">Logout</button>
           </div>
         </div>
-      )}
-
-      {isEditMode && (
-        <motion.div initial={{ y: 100 }} animate={{ y: 0 }} className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[1000] bg-brand-blue/90 backdrop-blur-2xl px-10 py-6 rounded-full shadow-2xl border border-white/10 flex items-center gap-12 text-white">
-          <div className="flex items-center gap-4">
-            <span className="text-[9px] font-black uppercase opacity-60">Colore Primario</span>
-            <input type="color" value={config.primaryColor} onChange={(e) => updateConfig({ ...config, primaryColor: e.target.value })} className="w-10 h-10 border-0 p-0 rounded-full cursor-pointer bg-transparent" />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-[9px] font-black uppercase opacity-60">Colore Accento</span>
-            <input type="color" value={config.accentColor} onChange={(e) => updateConfig({ ...config, accentColor: e.target.value })} className="w-10 h-10 border-0 p-0 rounded-full cursor-pointer bg-transparent" />
-          </div>
-        </motion.div>
       )}
 
       <Navbar 
@@ -166,19 +132,17 @@ const App: React.FC = () => {
       
       <main className={`flex-grow ${isAuthenticated ? 'pt-12' : 'pt-24'}`}>
         <AnimatePresence mode="wait">
-          <motion.div key={activePage} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.4 }}>
+          <motion.div key={activePage} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             {activePage === 'home' && <Hero config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} onBookingClick={() => navigateTo('booking')} onDiscoverClick={() => navigateTo('space')} />}
             {renderPage()}
           </motion.div>
         </AnimatePresence>
       </main>
 
-      <footer className="bg-brand-blue text-white py-24">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-16">
-          <div><h3 className="text-3xl font-black uppercase italic tracking-tighter leading-none mb-4">{config.centerName}</h3></div>
-          <div><h4 className="font-black mb-8 text-brand-green uppercase tracking-widest text-[10px]">Navigazione</h4></div>
-          <div><h4 className="font-black mb-8 text-brand-green uppercase tracking-widest text-[10px]">Contatti</h4></div>
-          <div className="text-right text-[10px] opacity-20 uppercase font-black tracking-widest italic">v2.5 Full Edit Mode</div>
+      <footer className="bg-brand-blue text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center opacity-40 italic font-black uppercase tracking-widest text-[9px]">
+          <span>{config.centerName}</span>
+          <span>Powered by Next v2.8</span>
         </div>
       </footer>
 
