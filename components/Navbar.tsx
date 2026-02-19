@@ -33,9 +33,9 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const logoUrl = navbarLogo.logoSource === 'primary' ? config.primaryLogoUrl : config.secondaryLogoUrl;
 
-  // Reset states when URL changes
+  // Reset states when URL changes to show loading feedback
   useEffect(() => {
-    if (logoUrl) {
+    if (logoUrl && logoUrl.trim() !== '') {
       setLogoLoading(true);
       setLogoError(false);
     } else {
@@ -84,10 +84,9 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
             {navbarLogo.enabled && (
               <motion.div 
-                className="relative overflow-hidden transition-shadow bg-gray-50 flex items-center justify-center"
+                className="relative overflow-hidden bg-gray-100 flex items-center justify-center shadow-inner"
                 whileHover={{ 
-                  scale: 1.08,
-                  boxShadow: '0 10px 25px -5px rgba(168, 211, 142, 0.4)' 
+                  scale: 1.05,
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 style={{ 
@@ -97,42 +96,57 @@ const Navbar: React.FC<NavbarProps> = ({
                   border: navbarLogo.borderWidth > 0 ? `${navbarLogo.borderWidth}px solid var(--brand-green)` : 'none'
                 }}
               >
-                {/* Shimmer Effect */}
-                <AnimatePresence>
+                <AnimatePresence mode="wait">
+                  {/* Shimmer state while loading */}
                   {logoLoading && !logoError && (
                     <motion.div 
-                      key="shimmer"
-                      initial={{ opacity: 1 }}
+                      key="loading-shimmer"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 z-10 overflow-hidden"
+                      className="absolute inset-0 z-20"
                     >
-                      <div className="w-full h-full bg-gradient-to-r from-gray-100 via-brand-green/20 to-gray-100 animate-[shimmer_1.5s_infinite] bg-[length:200%_100%]"></div>
+                      <div className="w-full h-full bg-gradient-to-r from-gray-100 via-white/80 to-gray-100 animate-[shimmer_2s_infinite] bg-[length:200%_100%]"></div>
                     </motion.div>
                   )}
+
+                  {/* Fallback / Error Animated Placeholder */}
+                  {(logoError || !logoUrl || logoUrl.trim() === '') ? (
+                    <motion.div 
+                      key="error-placeholder"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute inset-0 flex items-center justify-center text-brand-green/40 bg-gray-50"
+                    >
+                      <motion.i 
+                        animate={{ 
+                          scale: [1, 1.2, 1],
+                          opacity: [0.4, 0.8, 0.4] 
+                        }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        className="fas fa-baseball-ball text-2xl"
+                      ></motion.i>
+                    </motion.div>
+                  ) : (
+                    /* Actual Image */
+                    <motion.img 
+                      key="actual-logo"
+                      src={logoUrl} 
+                      onLoad={() => setLogoLoading(false)}
+                      onError={() => { setLogoLoading(false); setLogoError(true); }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: logoLoading ? 0 : 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-full h-full object-contain relative z-10" 
+                      alt="Logo Paitone Arena" 
+                    />
+                  )}
                 </AnimatePresence>
-
-                {/* Error / Empty State Placeholder */}
-                {(logoError || !logoUrl) && (
-                  <div className="absolute inset-0 flex items-center justify-center text-brand-blue/20">
-                    <i className="fas fa-baseball-ball text-2xl animate-pulse"></i>
-                  </div>
-                )}
-
-                {/* Actual Image */}
-                {logoUrl && (
-                  <img 
-                    src={logoUrl} 
-                    onLoad={() => setLogoLoading(false)}
-                    onError={() => { setLogoLoading(false); setLogoError(true); }}
-                    className={`w-full h-full object-contain transition-opacity duration-500 ${logoLoading ? 'opacity-0' : 'opacity-100'}`} 
-                    alt="Logo" 
-                  />
-                )}
               </motion.div>
             )}
             
             {navbarLogo.showName && (
-              <span className="text-xl font-bold text-brand-blue uppercase tracking-tighter transition-colors group-hover:text-brand-green">
+              <span className="text-xl font-black text-brand-blue uppercase tracking-tighter transition-colors group-hover:text-brand-green">
                 {config.centerName}
               </span>
             )}
