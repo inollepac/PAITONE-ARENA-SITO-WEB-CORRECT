@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Page, SiteConfig } from '../types';
 
 interface NavbarProps {
@@ -27,7 +27,22 @@ const Navbar: React.FC<NavbarProps> = ({
   onUpdateConfig
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [logoLoading, setLogoLoading] = useState(true);
+  const [logoError, setLogoError] = useState(false);
   const { navbarLogo } = config;
+
+  const logoUrl = navbarLogo.logoSource === 'primary' ? config.primaryLogoUrl : config.secondaryLogoUrl;
+
+  // Reset states when URL changes
+  useEffect(() => {
+    if (logoUrl) {
+      setLogoLoading(true);
+      setLogoError(false);
+    } else {
+      setLogoLoading(false);
+      setLogoError(true);
+    }
+  }, [logoUrl]);
 
   const moveItem = (index: number, direction: 'left' | 'right') => {
     const newSections = [...config.sections];
@@ -62,16 +77,14 @@ const Navbar: React.FC<NavbarProps> = ({
     .map((s, idx) => ({ ...s, originalIndex: idx }))
     .filter(s => s.enabled && s.navLabel && s.id !== 'booking');
 
-  const logoUrl = navbarLogo.logoSource === 'primary' ? config.primaryLogoUrl : config.secondaryLogoUrl;
-
   return (
     <nav className={`fixed w-full z-50 transition-all ${isEditMode ? 'top-12' : 'top-0'}`}>
       <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 glass ${isEditMode ? 'rounded-b-[2rem] border-x border-b border-brand-green/30 shadow-2xl' : 'border-b border-brand-green/20'}`}>
         <div className="flex justify-between h-24 items-center">
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
-            {navbarLogo.enabled && logoUrl && (
+            {navbarLogo.enabled && (
               <motion.div 
-                className="relative overflow-hidden transition-shadow"
+                className="relative overflow-hidden transition-shadow bg-gray-50 flex items-center justify-center"
                 whileHover={{ 
                   scale: 1.08,
                   boxShadow: '0 10px 25px -5px rgba(168, 211, 142, 0.4)' 
@@ -84,9 +97,40 @@ const Navbar: React.FC<NavbarProps> = ({
                   border: navbarLogo.borderWidth > 0 ? `${navbarLogo.borderWidth}px solid var(--brand-green)` : 'none'
                 }}
               >
-                <img src={logoUrl} className="w-full h-full object-contain" alt="Logo" />
+                {/* Shimmer Effect */}
+                <AnimatePresence>
+                  {logoLoading && !logoError && (
+                    <motion.div 
+                      key="shimmer"
+                      initial={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 z-10 overflow-hidden"
+                    >
+                      <div className="w-full h-full bg-gradient-to-r from-gray-100 via-brand-green/20 to-gray-100 animate-[shimmer_1.5s_infinite] bg-[length:200%_100%]"></div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Error / Empty State Placeholder */}
+                {(logoError || !logoUrl) && (
+                  <div className="absolute inset-0 flex items-center justify-center text-brand-blue/20">
+                    <i className="fas fa-baseball-ball text-2xl animate-pulse"></i>
+                  </div>
+                )}
+
+                {/* Actual Image */}
+                {logoUrl && (
+                  <img 
+                    src={logoUrl} 
+                    onLoad={() => setLogoLoading(false)}
+                    onError={() => { setLogoLoading(false); setLogoError(true); }}
+                    className={`w-full h-full object-contain transition-opacity duration-500 ${logoLoading ? 'opacity-0' : 'opacity-100'}`} 
+                    alt="Logo" 
+                  />
+                )}
               </motion.div>
             )}
+            
             {navbarLogo.showName && (
               <span className="text-xl font-bold text-brand-blue uppercase tracking-tighter transition-colors group-hover:text-brand-green">
                 {config.centerName}
@@ -158,6 +202,13 @@ const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+      `}</style>
     </nav>
   );
 };
