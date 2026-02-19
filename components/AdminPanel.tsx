@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SiteConfig, Court, Event } from '../types';
 
 export interface AdminPanelProps {
@@ -14,6 +14,9 @@ export interface AdminPanelProps {
 const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
   const [activeTab, setActiveTab] = useState('general');
   const [localConfig, setLocalConfig] = useState<SiteConfig>({ ...config });
+  
+  const primaryLogoInputRef = useRef<HTMLInputElement>(null);
+  const secondaryLogoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setLocalConfig({ ...config });
@@ -23,6 +26,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
     const updated = { ...localConfig, [key]: value };
     setLocalConfig(updated);
     onUpdateConfig(updated);
+  };
+
+  const handleFileUpload = (key: 'primaryLogoUrl' | 'secondaryLogoUrl', e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleChange(key, reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const tabs = [
@@ -86,26 +100,93 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
           )}
 
           {activeTab === 'colors' && (
-            <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="space-y-12 animate-in fade-in duration-300">
               <h3 className="text-3xl font-black text-brand-blue uppercase italic tracking-tighter">Branding</h3>
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-2 text-center">
-                  <label className="text-[10px] font-black uppercase opacity-40 block mb-4">Colore Primario</label>
-                  <input 
-                    type="color" 
-                    value={localConfig.primaryColor || '#4E5B83'} 
-                    onChange={e => handleChange('primaryColor', e.target.value)}
-                    className="w-24 h-24 rounded-full border-0 p-0 cursor-pointer mx-auto block overflow-hidden shadow-xl"
-                  />
+              
+              {/* Logo Management */}
+              <div className="space-y-6">
+                <h4 className="text-[10px] font-black uppercase opacity-30 tracking-widest">Asset Loghi</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Primary Logo */}
+                  <div className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 text-center space-y-4">
+                    <label className="text-[10px] font-black uppercase opacity-40 block">Logo Principale</label>
+                    <div 
+                      onClick={() => primaryLogoInputRef.current?.click()}
+                      className="w-32 h-32 mx-auto bg-white rounded-full shadow-inner border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:border-brand-green transition-all overflow-hidden"
+                    >
+                      {localConfig.primaryLogoUrl ? (
+                        <img src={localConfig.primaryLogoUrl} alt="Primary" className="w-full h-full object-contain p-4" />
+                      ) : (
+                        <i className="fas fa-cloud-upload-alt text-2xl text-gray-300"></i>
+                      )}
+                    </div>
+                    <input 
+                      type="file" 
+                      ref={primaryLogoInputRef} 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={(e) => handleFileUpload('primaryLogoUrl', e)} 
+                    />
+                    <button 
+                      onClick={() => primaryLogoInputRef.current?.click()}
+                      className="text-[10px] font-black uppercase tracking-widest text-brand-blue hover:text-brand-green transition"
+                    >
+                      Carica Nuovo Logo
+                    </button>
+                  </div>
+
+                  {/* Secondary Logo */}
+                  <div className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 text-center space-y-4">
+                    <label className="text-[10px] font-black uppercase opacity-40 block">Logo Secondario</label>
+                    <div 
+                      onClick={() => secondaryLogoInputRef.current?.click()}
+                      className="w-32 h-32 mx-auto bg-white rounded-full shadow-inner border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:border-brand-green transition-all overflow-hidden"
+                    >
+                      {localConfig.secondaryLogoUrl ? (
+                        <img src={localConfig.secondaryLogoUrl} alt="Secondary" className="w-full h-full object-contain p-4" />
+                      ) : (
+                        <i className="fas fa-image text-2xl text-gray-300"></i>
+                      )}
+                    </div>
+                    <input 
+                      type="file" 
+                      ref={secondaryLogoInputRef} 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={(e) => handleFileUpload('secondaryLogoUrl', e)} 
+                    />
+                    <button 
+                      onClick={() => secondaryLogoInputRef.current?.click()}
+                      className="text-[10px] font-black uppercase tracking-widest text-brand-blue hover:text-brand-green transition"
+                    >
+                      Carica Versione Alternativa
+                    </button>
+                  </div>
                 </div>
-                <div className="space-y-2 text-center">
-                  <label className="text-[10px] font-black uppercase opacity-40 block mb-4">Colore Accento</label>
-                  <input 
-                    type="color" 
-                    value={localConfig.accentColor || '#A8D38E'} 
-                    onChange={e => handleChange('accentColor', e.target.value)}
-                    className="w-24 h-24 rounded-full border-0 p-0 cursor-pointer mx-auto block overflow-hidden shadow-xl"
-                  />
+              </div>
+
+              {/* Color Management */}
+              <div className="space-y-6 pt-8 border-t border-gray-100">
+                <h4 className="text-[10px] font-black uppercase opacity-30 tracking-widest">Tavolozza Colori</h4>
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-2 text-center">
+                    <label className="text-[10px] font-black uppercase opacity-40 block mb-4">Colore Primario</label>
+                    <input 
+                      type="color" 
+                      value={localConfig.primaryColor || '#4E5B83'} 
+                      onChange={e => handleChange('primaryColor', e.target.value)}
+                      className="w-24 h-24 rounded-full border-0 p-0 cursor-pointer mx-auto block overflow-hidden shadow-xl"
+                    />
+                  </div>
+                  <div className="space-y-2 text-center">
+                    <label className="text-[10px] font-black uppercase opacity-40 block mb-4">Colore Accento</label>
+                    <input 
+                      type="color" 
+                      value={localConfig.accentColor || '#A8D38E'} 
+                      onChange={e => handleChange('accentColor', e.target.value)}
+                      className="w-24 h-24 rounded-full border-0 p-0 cursor-pointer mx-auto block overflow-hidden shadow-xl"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
