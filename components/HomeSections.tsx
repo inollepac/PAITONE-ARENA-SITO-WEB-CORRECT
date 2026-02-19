@@ -111,7 +111,11 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         objectFit: 'cover',
         imageZoom: 1,
         objectX: 50,
-        objectY: 50
+        objectY: 50,
+        color: '#4E5B83',
+        fontSize: '18px',
+        fontWeight: '700',
+        textAlign: 'center'
       }
     };
     const s = config.sections.find(sec => sec.id === sId);
@@ -191,6 +195,62 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                   <i className="fas fa-trash mr-2"></i> Elimina
                 </button>
               </div>
+
+              {/* Text Specific Controls */}
+              {activeElement.type === 'text' && (
+                <div className="space-y-4 pt-4 border-t border-gray-100">
+                  <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Stile Testo</h4>
+                  
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Allineamento</label>
+                    <div className="flex bg-gray-50 rounded-xl p-1">
+                      {(['left', 'center', 'right'] as const).map((align) => (
+                        <button
+                          key={align}
+                          onClick={() => updateElementStyle(activeEditor.sId, activeEditor.elId, { textAlign: align })}
+                          className={`flex-1 py-2 rounded-lg text-xs transition-all ${activeElement.style?.textAlign === align ? 'bg-brand-blue text-white shadow-md' : 'text-brand-blue/40 hover:bg-white'}`}
+                        >
+                          <i className={`fas fa-align-${align}`}></i>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <label className="text-[8px] font-bold uppercase text-brand-blue opacity-60">Grassetto</label>
+                    <button
+                      onClick={() => updateElementStyle(activeEditor.sId, activeEditor.elId, { fontWeight: activeElement.style?.fontWeight === '700' ? '400' : '700' })}
+                      className={`w-12 h-6 rounded-full transition-all relative ${activeElement.style?.fontWeight === '700' ? 'bg-brand-green' : 'bg-gray-200'}`}
+                    >
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${activeElement.style?.fontWeight === '700' ? 'left-7' : 'left-1'}`}></div>
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Dimensione Font ({activeElement.style?.fontSize || '18px'})</label>
+                    <input 
+                      type="range" 
+                      min="12" max="120" step="1" 
+                      value={parseInt(activeElement.style?.fontSize || '18')} 
+                      onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { fontSize: `${e.target.value}px` })} 
+                      className="w-full accent-brand-blue" 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Colore Testo</label>
+                    <div className="flex gap-2 items-center">
+                      <input 
+                        type="color" 
+                        value={activeElement.style?.color || '#4E5B83'} 
+                        onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { color: e.target.value })} 
+                        className="w-10 h-10 rounded-lg cursor-pointer border-none p-0"
+                      />
+                      <span className="text-[10px] font-mono opacity-50">{activeElement.style?.color || '#4E5B83'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Basic Cropping & Zooming for Images */}
               {(activeElement.type === 'image' || activeElement.type === 'logo') && (
@@ -455,11 +515,27 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                               <textarea 
                                 value={el.content || ''} 
                                 onChange={e => updateElement(section.id, el.id, { content: e.target.value })} 
-                                className="w-full bg-transparent border-none text-brand-blue outline-none h-auto text-center font-bold text-lg resize-none overflow-hidden"
-                                style={{ height: 'auto' }}
+                                className="w-full bg-transparent border-none outline-none h-auto resize-none overflow-hidden transition-all duration-200"
+                                style={{ 
+                                  height: 'auto',
+                                  color: st.color || '#4E5B83',
+                                  fontSize: st.fontSize || '18px',
+                                  fontWeight: st.fontWeight || '700',
+                                  textAlign: st.textAlign || 'center'
+                                }}
                               />
                             ) : (
-                              <p className="italic opacity-80 whitespace-pre-wrap text-lg">{el.content}</p>
+                              <p 
+                                className="italic opacity-80 whitespace-pre-wrap transition-all duration-200"
+                                style={{ 
+                                  color: st.color || '#4E5B83',
+                                  fontSize: st.fontSize || '18px',
+                                  fontWeight: st.fontWeight || '700',
+                                  textAlign: st.textAlign || 'center'
+                                }}
+                              >
+                                {el.content}
+                              </p>
                             )}
                           </div>
                         ) : (
