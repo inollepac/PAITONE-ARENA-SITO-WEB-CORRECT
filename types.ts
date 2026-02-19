@@ -49,6 +49,10 @@ export interface SectionElement {
     hoverEffect?: 'none' | 'zoom' | 'lift' | 'brighten';
     aspectRatio?: string;
     objectFit?: 'cover' | 'contain' | 'fill' | 'none';
+    /* Fix: Adding missing style properties for image adjustment and positioning */
+    imageZoom?: number;
+    objectX?: number;
+    objectY?: number;
   };
 }
 

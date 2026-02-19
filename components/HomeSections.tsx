@@ -108,7 +108,10 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         sepia: 0,
         blur: 0,
         aspectRatio: type === 'text' ? 'auto' : '1/1',
-        objectFit: 'cover'
+        objectFit: 'cover',
+        imageZoom: 1,
+        objectX: 50,
+        objectY: 50
       }
     };
     const s = config.sections.find(sec => sec.id === sId);
@@ -189,9 +192,65 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                 </button>
               </div>
 
+              {/* Basic Cropping & Zooming for Images */}
+              {(activeElement.type === 'image' || activeElement.type === 'logo') && (
+                <div className="space-y-4 pt-4 border-t border-gray-100">
+                  <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Ritaglio e Zoom Immagine</h4>
+                  
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Zoom Ritaglio ({Math.round((activeElement.style?.imageZoom || 1) * 100)}%)</label>
+                    <input 
+                      type="range" 
+                      min="1" max="3" step="0.05" 
+                      value={activeElement.style?.imageZoom || 1} 
+                      onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { imageZoom: +e.target.value })} 
+                      className="w-full accent-brand-green" 
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Spostamento X ({activeElement.style?.objectX ?? 50}%)</label>
+                      <input 
+                        type="range" 
+                        min="0" max="100" step="1" 
+                        value={activeElement.style?.objectX ?? 50} 
+                        onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { objectX: +e.target.value })} 
+                        className="w-full accent-brand-blue" 
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Spostamento Y ({activeElement.style?.objectY ?? 50}%)</label>
+                      <input 
+                        type="range" 
+                        min="0" max="100" step="1" 
+                        value={activeElement.style?.objectY ?? 50} 
+                        onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { objectY: +e.target.value })} 
+                        className="w-full accent-brand-blue" 
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Rapporto Aspetto</label>
+                    <select 
+                      value={activeElement.style?.aspectRatio || '1/1'} 
+                      onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { aspectRatio: e.target.value })}
+                      className="w-full bg-gray-50 p-2 rounded-xl text-[10px] font-black border-none outline-none"
+                    >
+                      <option value="1/1">1:1 Quadrato</option>
+                      <option value="4/3">4:3 Fotografia</option>
+                      <option value="16/9">16:9 Panoramico</option>
+                      <option value="3/2">3:2 Classico</option>
+                      <option value="auto">Libero</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
               {/* Positioning */}
               <div className="space-y-4 pt-4 border-t border-gray-100">
-                <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Posizionamento Relativo</h4>
+                <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Posizionamento Elemento</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-[8px] font-bold uppercase block mb-2 text-left">Offset X ({activeElement.style?.x || 0}px)</label>
@@ -203,7 +262,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                   </div>
                 </div>
                 <div>
-                  <label className="text-[8px] font-bold uppercase block mb-2 text-left">Scala ({activeElement.style?.scale || 1})</label>
+                  <label className="text-[8px] font-bold uppercase block mb-2 text-left">Dimensione Totale ({activeElement.style?.scale || 1})</label>
                   <input type="range" min="0.1" max="2" step="0.1" value={activeElement.style?.scale || 1} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { scale: +e.target.value })} className="w-full accent-brand-green" />
                 </div>
               </div>
@@ -211,7 +270,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
               {/* Visual Filters */}
               {(activeElement.type === 'image' || activeElement.type === 'logo') && (
                 <div className="space-y-4 pt-4 border-t border-gray-100">
-                  <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Effetti Visivi</h4>
+                  <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Filtri Fotografici</h4>
                   {[
                     { label: 'Luminosità', key: 'brightness', min: 0, max: 2, step: 0.1 },
                     { label: 'Contrasto', key: 'contrast', min: 0, max: 2, step: 0.1 },
@@ -234,15 +293,15 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                   ))}
 
                   <div className="pt-4">
-                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Adattamento</label>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Adattamento (Object Fit)</label>
                     <select 
                       value={activeElement.style?.objectFit || 'cover'} 
                       onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { objectFit: e.target.value as any })}
                       className="w-full bg-gray-50 p-2 rounded-xl text-[10px] font-black border-none outline-none"
                     >
-                      <option value="cover">Copri</option>
-                      <option value="contain">Contieni</option>
-                      <option value="fill">Riempi</option>
+                      <option value="cover">Copri (Consigliato)</option>
+                      <option value="contain">Contieni Tutto</option>
+                      <option value="fill">Riempi Area</option>
                     </select>
                   </div>
                   
@@ -366,7 +425,12 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                   {section.elements?.map(el => {
                     const st = el.style || {};
                     const isSelected = activeEditor?.elId === el.id;
+                    
+                    // Construct Visual Filters
                     const filterStr = `brightness(${st.brightness ?? 1}) contrast(${st.contrast ?? 1}) grayscale(${st.grayscale ?? 0}) sepia(${st.sepia ?? 0}) blur(${st.blur ?? 0}px)`;
+                    
+                    // Construct Object Position for Cropping
+                    const objectPosStr = `${st.objectX ?? 50}% ${st.objectY ?? 50}%`;
                     
                     return (
                       <motion.div 
@@ -400,7 +464,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                           </div>
                         ) : (
                           <div 
-                            className="rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-500"
+                            className="rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-500 bg-gray-100"
                             style={{ 
                               aspectRatio: st.aspectRatio || '1/1',
                             }}
@@ -410,6 +474,8 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                               className="w-full h-full" 
                               style={{ 
                                 objectFit: st.objectFit || 'cover',
+                                objectPosition: objectPosStr,
+                                transform: `scale(${st.imageZoom || 1})`,
                                 filter: filterStr
                               }}
                               alt="Arena Element" 
