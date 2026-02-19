@@ -29,10 +29,19 @@ const DEFAULT_STYLE: SectionStyle = {
 const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdateConfig }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeEditor, setActiveEditor] = useState<{ sId: string, elId: string } | null>(null);
+  const [activeSectionEditor, setActiveSectionEditor] = useState<string | null>(null);
   const [uploadTarget, setUploadTarget] = useState<{ sId: string, elId?: string, isBg?: boolean } | null>(null);
 
   const updateSection = (id: string, updates: Partial<SectionContent>) => {
     const nextSections = config.sections.map(s => s.id === id ? { ...s, ...updates } : s);
+    onUpdateConfig({ ...config, sections: nextSections });
+  };
+
+  const updateSectionStyle = (id: string, styleUpdates: Partial<SectionStyle>) => {
+    const nextSections = config.sections.map(s => s.id === id ? {
+      ...s,
+      style: { ...(s.style || DEFAULT_STYLE), ...styleUpdates }
+    } : s);
     onUpdateConfig({ ...config, sections: nextSections });
   };
 
@@ -84,6 +93,11 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
     return config.sections.find(s => s.id === activeEditor.sId)?.elements?.find(el => el.id === activeEditor.elId);
   }, [activeEditor, config.sections]);
 
+  const activeSection = useMemo(() => {
+    if (!activeSectionEditor) return null;
+    return config.sections.find(s => s.id === activeSectionEditor);
+  }, [activeSectionEditor, config.sections]);
+
   return (
     <div className="space-y-32 pb-48">
       <input 
@@ -113,7 +127,6 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
           </div>
 
           <div className="space-y-8">
-            {/* General Transformations */}
             <div className="space-y-4">
               <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Trasformazione</h4>
               <div>
@@ -124,7 +137,6 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
 
             {activeElement.type === 'image' && (
               <>
-                {/* Visual Filters */}
                 <div className="space-y-4 pt-4 border-t border-gray-100">
                   <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Filtri Immagine</h4>
                   
@@ -150,7 +162,6 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                   ))}
                 </div>
 
-                {/* Cropping and Layout */}
                 <div className="space-y-4 pt-4 border-t border-gray-100">
                   <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Formato e Ritaglio</h4>
                   
@@ -206,18 +217,84 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         </div>
       )}
 
+      {/* Section Editor Panel */}
+      {isEditMode && activeSectionEditor && activeSection && (
+        <div className="fixed left-8 top-32 w-80 bg-white shadow-2xl rounded-[3rem] p-8 z-[100] border border-brand-green/20 max-h-[75vh] overflow-y-auto animate-in slide-in-from-left-10 duration-300">
+          <div className="flex justify-between items-center mb-6 border-b pb-4">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-blue opacity-50">Section Style</h3>
+            <button onClick={() => setActiveSectionEditor(null)} className="text-brand-blue hover:text-red-500 transition-colors">
+              <i className="fas fa-times text-xl"></i>
+            </button>
+          </div>
+
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Bordi Sezione</h4>
+              
+              <div>
+                <label className="text-[8px] font-bold uppercase block mb-2 text-left">Spessore Bordo ({activeSection.style?.borderWidth || 0}px)</label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="20" 
+                  step="1" 
+                  value={activeSection.style?.borderWidth || 0} 
+                  onChange={e => updateSectionStyle(activeSection.id, { borderWidth: +e.target.value })} 
+                  className="w-full accent-brand-blue" 
+                />
+              </div>
+
+              <div>
+                <label className="text-[8px] font-bold uppercase block mb-2 text-left">Colore Bordo</label>
+                <div className="flex gap-4 items-center">
+                  <input 
+                    type="color" 
+                    value={activeSection.style?.borderColor || '#A8D38E'} 
+                    onChange={e => updateSectionStyle(activeSection.id, { borderColor: e.target.value })}
+                    className="w-12 h-12 rounded-full border-none p-0 cursor-pointer shadow-md overflow-hidden"
+                  />
+                  <input 
+                    type="text" 
+                    value={activeSection.style?.borderColor || '#A8D38E'} 
+                    onChange={e => updateSectionStyle(activeSection.id, { borderColor: e.target.value })}
+                    className="flex-grow bg-gray-50 p-2 rounded-xl text-[10px] font-black uppercase border-none outline-none"
+                    placeholder="#HEX"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-4 border-t border-gray-100">
+              <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Sfondo</h4>
+              <div>
+                <label className="text-[8px] font-bold uppercase block mb-2 text-left">Colore Sfondo</label>
+                <input 
+                  type="color" 
+                  value={activeSection.style?.bgColor || '#FFFFFF'} 
+                  onChange={e => updateSectionStyle(activeSection.id, { bgColor: e.target.value })}
+                  className="w-full h-10 rounded-xl border-none p-0 cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {config.sections.filter(s => s.enabled || isEditMode).map((section) => {
         const sStyle = { ...DEFAULT_STYLE, ...section.style };
         
         return (
           <section 
             key={section.id} 
-            className={`relative mx-auto transition-all ${isEditMode ? 'ring-4 ring-brand-green/20 ring-dashed m-10 p-12 rounded-[4rem] bg-brand-green/5' : ''}`}
+            className={`relative mx-auto transition-all ${isEditMode ? 'm-10 p-12 rounded-[4rem]' : ''}`}
             style={{ 
               backgroundColor: sStyle.variant === 'solid' ? sStyle.bgColor : 'transparent',
               backgroundImage: sStyle.variant === 'image-bg' ? `url(${sStyle.bgImageUrl})` : 'none',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
+              borderWidth: `${sStyle.borderWidth}px`,
+              borderColor: sStyle.borderColor,
+              borderStyle: sStyle.borderWidth > 0 ? 'solid' : 'none'
             }}
           >
             {isEditMode && (
@@ -225,6 +302,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                 <span className="text-[10px] font-black uppercase tracking-widest border-r pr-6">EDITING: {section.title}</span>
                 <button onClick={() => addElement(section.id, 'text')} className="hover:text-brand-green" title="Aggiungi Testo"><i className="fas fa-font"></i></button>
                 <button onClick={() => addElement(section.id, 'image')} className="hover:text-brand-green" title="Aggiungi Immagine"><i className="fas fa-image"></i></button>
+                <button onClick={() => setActiveSectionEditor(section.id)} className="hover:text-brand-green" title="Stile Sezione"><i className="fas fa-palette"></i></button>
                 <button onClick={() => updateSection(section.id, { enabled: false })} className="hover:text-red-400" title="Elimina Sezione"><i className="fas fa-trash"></i></button>
               </div>
             )}
@@ -255,7 +333,6 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                   const st = el.style || {};
                   const isSelected = activeEditor?.elId === el.id;
                   
-                  // Construct CSS Filter string
                   const filterStr = `brightness(${st.brightness ?? 1}) contrast(${st.contrast ?? 1}) grayscale(${st.grayscale ?? 0}) sepia(${st.sepia ?? 0}) blur(${st.blur ?? 0}px)`;
                   
                   return (
