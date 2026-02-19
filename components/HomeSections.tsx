@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { SiteConfig, Page, SectionContent, SectionElement, SectionStyle, Court, Event } from '../types';
 
 interface HomeSectionsProps {
@@ -28,6 +28,7 @@ const DEFAULT_STYLE: SectionStyle = {
 
 const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdateConfig }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [activeEditor, setActiveEditor] = useState<{ sId: string, elId: string } | null>(null);
   const [uploadTarget, setUploadTarget] = useState<{ sId: string, elId?: string, isBg?: boolean } | null>(null);
 
   const updateSection = (id: string, updates: Partial<SectionContent>) => {
@@ -43,20 +44,167 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
     onUpdateConfig({ ...config, sections: nextSections });
   };
 
+  const updateElementStyle = (sId: string, elId: string, styleUpdates: any) => {
+    const nextSections = config.sections.map(s => s.id === sId ? {
+      ...s,
+      elements: s.elements?.map(el => el.id === elId ? { 
+        ...el, 
+        style: { ...(el.style || {}), ...styleUpdates } 
+      } : el)
+    } : s);
+    onUpdateConfig({ ...config, sections: nextSections });
+  };
+
   const addElement = (sId: string, type: 'text' | 'image') => {
     const newEl: SectionElement = {
       id: `el_${Date.now()}`,
       type,
       content: type === 'text' ? 'Modifica questo testo...' : 'https://images.unsplash.com/photo-1595435063785-547bb7c2c537?auto=format&fit=crop&q=80&w=800',
-      style: { width: '100%', scale: 1, zIndex: 5, x: 0, y: 0 }
+      style: { 
+        width: '100%', 
+        scale: 1, 
+        zIndex: 5, 
+        x: 0, 
+        y: 0,
+        brightness: 1,
+        contrast: 1,
+        grayscale: 0,
+        sepia: 0,
+        blur: 0,
+        aspectRatio: '1/1',
+        objectFit: 'cover'
+      }
     };
     const s = config.sections.find(sec => sec.id === sId);
     updateSection(sId, { elements: [...(s?.elements || []), newEl] });
   };
 
+  const activeElement = useMemo(() => {
+    if (!activeEditor) return null;
+    return config.sections.find(s => s.id === activeEditor.sId)?.elements?.find(el => el.id === activeEditor.elId);
+  }, [activeEditor, config.sections]);
+
   return (
     <div className="space-y-32 pb-48">
-      <input type="file" ref={fileInputRef} className="hidden" onChange={() => {}} />
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        className="hidden" 
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file && uploadTarget?.elId) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              updateElement(uploadTarget.sId, uploadTarget.elId!, { content: reader.result as string });
+            };
+            reader.readAsDataURL(file);
+          }
+        }} 
+      />
+
+      {/* Advanced Image/Element Editor Sidebar */}
+      {isEditMode && activeEditor && activeElement && (
+        <div className="fixed right-8 top-32 w-80 bg-white shadow-2xl rounded-[3rem] p-8 z-[100] border border-brand-green/20 max-h-[75vh] overflow-y-auto animate-in slide-in-from-right-10 duration-300">
+          <div className="flex justify-between items-center mb-6 border-b pb-4">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-blue opacity-50">Element Editor</h3>
+            <button onClick={() => setActiveEditor(null)} className="text-brand-blue hover:text-red-500 transition-colors">
+              <i className="fas fa-times text-xl"></i>
+            </button>
+          </div>
+
+          <div className="space-y-8">
+            {/* General Transformations */}
+            <div className="space-y-4">
+              <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Trasformazione</h4>
+              <div>
+                <label className="text-[8px] font-bold uppercase block mb-2 text-left">Scala ({activeElement.style?.scale || 1})</label>
+                <input type="range" min="0.1" max="2" step="0.1" value={activeElement.style?.scale || 1} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { scale: +e.target.value })} className="w-full accent-brand-green" />
+              </div>
+            </div>
+
+            {activeElement.type === 'image' && (
+              <>
+                {/* Visual Filters */}
+                <div className="space-y-4 pt-4 border-t border-gray-100">
+                  <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Filtri Immagine</h4>
+                  
+                  {[
+                    { label: 'Luminosità', key: 'brightness', min: 0, max: 2, step: 0.1 },
+                    { label: 'Contrasto', key: 'contrast', min: 0, max: 2, step: 0.1 },
+                    { label: 'Grigio', key: 'grayscale', min: 0, max: 1, step: 0.1 },
+                    { label: 'Seppia', key: 'sepia', min: 0, max: 1, step: 0.1 },
+                    { label: 'Sfocatura', key: 'blur', min: 0, max: 10, step: 1 },
+                  ].map(filter => (
+                    <div key={filter.key}>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">{filter.label}</label>
+                      <input 
+                        type="range" 
+                        min={filter.min} 
+                        max={filter.max} 
+                        step={filter.step} 
+                        value={activeElement.style?.[filter.key as keyof typeof activeElement.style] ?? (filter.key === 'blur' || filter.key === 'grayscale' || filter.key === 'sepia' ? 0 : 1)} 
+                        onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { [filter.key]: +e.target.value })} 
+                        className="w-full accent-brand-green" 
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Cropping and Layout */}
+                <div className="space-y-4 pt-4 border-t border-gray-100">
+                  <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Formato e Ritaglio</h4>
+                  
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Rapporto Aspetto</label>
+                    <select 
+                      value={activeElement.style?.aspectRatio || '1/1'} 
+                      onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { aspectRatio: e.target.value })}
+                      className="w-full bg-gray-50 p-2 rounded-xl text-[10px] font-black border-none outline-none"
+                    >
+                      <option value="1/1">1:1 Quadrato</option>
+                      <option value="4/3">4:3 Standard</option>
+                      <option value="16/9">16:9 Wide</option>
+                      <option value="9/16">9:16 Portrait</option>
+                      <option value="auto">Libero</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Adattamento (Object Fit)</label>
+                    <select 
+                      value={activeElement.style?.objectFit || 'cover'} 
+                      onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { objectFit: e.target.value as any })}
+                      className="w-full bg-gray-50 p-2 rounded-xl text-[10px] font-black border-none outline-none"
+                    >
+                      <option value="cover">Copri (Ritaglia)</option>
+                      <option value="contain">Contieni</option>
+                      <option value="fill">Riempi</option>
+                    </select>
+                  </div>
+
+                  <button 
+                    onClick={() => { setUploadTarget({sId: activeEditor.sId, elId: activeEditor.elId}); fileInputRef.current?.click(); }}
+                    className="w-full py-3 bg-brand-light text-brand-blue rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-brand-green transition-all"
+                  >
+                    Sostituisci Immagine
+                  </button>
+                </div>
+              </>
+            )}
+
+            <button 
+              onClick={() => {
+                const nextEls = config.sections.find(s => s.id === activeEditor.sId)?.elements?.filter(item => item.id !== activeEditor.elId);
+                updateSection(activeEditor.sId, { elements: nextEls });
+                setActiveEditor(null);
+              }}
+              className="w-full py-3 text-red-500 text-[9px] font-black uppercase border-2 border-red-50 rounded-xl hover:bg-red-50 transition-all mt-4"
+            >
+              Elimina Elemento
+            </button>
+          </div>
+        </div>
+      )}
 
       {config.sections.filter(s => s.enabled || isEditMode).map((section) => {
         const sStyle = { ...DEFAULT_STYLE, ...section.style };
@@ -64,7 +212,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         return (
           <section 
             key={section.id} 
-            className={`relative mx-auto transition-all ${isEditMode ? 'ring-4 ring-brand-green/40 ring-dashed m-10 p-12 rounded-[4rem] bg-brand-green/5' : ''}`}
+            className={`relative mx-auto transition-all ${isEditMode ? 'ring-4 ring-brand-green/20 ring-dashed m-10 p-12 rounded-[4rem] bg-brand-green/5' : ''}`}
             style={{ 
               backgroundColor: sStyle.variant === 'solid' ? sStyle.bgColor : 'transparent',
               backgroundImage: sStyle.variant === 'image-bg' ? `url(${sStyle.bgImageUrl})` : 'none',
@@ -75,9 +223,9 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
             {isEditMode && (
               <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-brand-blue text-white px-8 py-3 rounded-full flex gap-6 shadow-2xl z-50 animate-bounce">
                 <span className="text-[10px] font-black uppercase tracking-widest border-r pr-6">EDITING: {section.title}</span>
-                <button onClick={() => addElement(section.id, 'text')} className="hover:text-brand-green"><i className="fas fa-font"></i></button>
-                <button onClick={() => addElement(section.id, 'image')} className="hover:text-brand-green"><i className="fas fa-image"></i></button>
-                <button onClick={() => updateSection(section.id, { enabled: false })} className="hover:text-red-400"><i className="fas fa-trash"></i></button>
+                <button onClick={() => addElement(section.id, 'text')} className="hover:text-brand-green" title="Aggiungi Testo"><i className="fas fa-font"></i></button>
+                <button onClick={() => addElement(section.id, 'image')} className="hover:text-brand-green" title="Aggiungi Immagine"><i className="fas fa-image"></i></button>
+                <button onClick={() => updateSection(section.id, { enabled: false })} className="hover:text-red-400" title="Elimina Sezione"><i className="fas fa-trash"></i></button>
               </div>
             )}
 
@@ -103,41 +251,61 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
               )}
 
               <div className="flex flex-wrap justify-center gap-10 mt-16">
-                {section.elements?.map(el => (
-                  <div 
-                    key={el.id} 
-                    className={`relative transition-all ${isEditMode ? 'ring-2 ring-brand-green p-4 rounded-3xl bg-white shadow-xl' : ''}`}
-                    style={{ width: el.type === 'text' ? '100%' : '320px' }}
-                  >
-                    {isEditMode && (
-                      <button 
-                        onClick={() => {
-                          const nextEls = section.elements?.filter(item => item.id !== el.id);
-                          updateSection(section.id, { elements: nextEls });
-                        }} 
-                        className="absolute -top-4 -right-4 w-10 h-10 bg-red-500 rounded-full text-white shadow-lg z-50 flex items-center justify-center"
-                      ><i className="fas fa-times"></i></button>
-                    )}
-
-                    {el.type === 'text' ? (
-                      <div className="p-8">
-                        {isEditMode ? (
-                          <textarea 
-                            value={el.content || ''} 
-                            onChange={e => updateElement(section.id, el.id, { content: e.target.value })} 
-                            className="w-full bg-gray-50 border-2 border-brand-green rounded-2xl p-4 text-brand-blue outline-none h-40 text-center font-bold"
+                {section.elements?.map(el => {
+                  const st = el.style || {};
+                  const isSelected = activeEditor?.elId === el.id;
+                  
+                  // Construct CSS Filter string
+                  const filterStr = `brightness(${st.brightness ?? 1}) contrast(${st.contrast ?? 1}) grayscale(${st.grayscale ?? 0}) sepia(${st.sepia ?? 0}) blur(${st.blur ?? 0}px)`;
+                  
+                  return (
+                    <div 
+                      key={el.id} 
+                      onClick={(e) => {
+                        if (isEditMode) {
+                          e.stopPropagation();
+                          setActiveEditor({ sId: section.id, elId: el.id });
+                        }
+                      }}
+                      className={`relative transition-all duration-300 ${isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-brand-green/50 p-4 rounded-[3.5rem] bg-white shadow-xl' : ''} ${isSelected ? 'ring-4 ring-brand-green z-50' : ''}`}
+                      style={{ 
+                        width: el.type === 'text' ? '100%' : '320px',
+                        transform: `scale(${st.scale || 1})`
+                      }}
+                    >
+                      {el.type === 'text' ? (
+                        <div className="p-8">
+                          {isEditMode ? (
+                            <textarea 
+                              value={el.content || ''} 
+                              onChange={e => updateElement(section.id, el.id, { content: e.target.value })} 
+                              className="w-full bg-gray-50 border-2 border-brand-green rounded-2xl p-4 text-brand-blue outline-none h-40 text-center font-bold"
+                            />
+                          ) : (
+                            <p className="italic opacity-80 whitespace-pre-wrap text-lg">{el.content}</p>
+                          )}
+                        </div>
+                      ) : (
+                        <div 
+                          className="rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-500"
+                          style={{ 
+                            aspectRatio: st.aspectRatio || '1/1',
+                          }}
+                        >
+                          <img 
+                            src={el.content} 
+                            className="w-full h-full" 
+                            style={{ 
+                              objectFit: st.objectFit || 'cover',
+                              filter: filterStr
+                            }}
+                            alt="Arena" 
                           />
-                        ) : (
-                          <p className="italic opacity-80 whitespace-pre-wrap text-lg">{el.content}</p>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="rounded-[3rem] overflow-hidden shadow-2xl aspect-square">
-                        <img src={el.content} className="w-full h-full object-cover" alt="Arena" />
-                      </div>
-                    )}
-                  </div>
-                ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </section>
