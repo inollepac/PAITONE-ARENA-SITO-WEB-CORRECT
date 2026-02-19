@@ -140,13 +140,13 @@ const App: React.FC = () => {
       )}
 
       {isEditMode && (
-        <motion.div initial={{ y: 100 }} animate={{ y: 0 }} className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[110] bg-white/90 backdrop-blur-2xl px-10 py-6 rounded-[3rem] shadow-2xl border border-brand-blue/10 flex items-center gap-12">
+        <motion.div initial={{ y: 100 }} animate={{ y: 0 }} className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[1000] bg-brand-blue/90 backdrop-blur-2xl px-10 py-6 rounded-full shadow-2xl border border-white/10 flex items-center gap-12 text-white">
           <div className="flex items-center gap-4">
-            <span className="text-[9px] font-black uppercase opacity-40">Colore Primario</span>
+            <span className="text-[9px] font-black uppercase opacity-60">Colore Primario</span>
             <input type="color" value={config.primaryColor} onChange={(e) => updateConfig({ ...config, primaryColor: e.target.value })} className="w-10 h-10 border-0 p-0 rounded-full cursor-pointer bg-transparent" />
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-[9px] font-black uppercase opacity-40">Colore Accento</span>
+            <span className="text-[9px] font-black uppercase opacity-60">Colore Accento</span>
             <input type="color" value={config.accentColor} onChange={(e) => updateConfig({ ...config, accentColor: e.target.value })} className="w-10 h-10 border-0 p-0 rounded-full cursor-pointer bg-transparent" />
           </div>
         </motion.div>
@@ -178,7 +178,7 @@ const App: React.FC = () => {
           <div><h3 className="text-3xl font-black uppercase italic tracking-tighter leading-none mb-4">{config.centerName}</h3></div>
           <div><h4 className="font-black mb-8 text-brand-green uppercase tracking-widest text-[10px]">Navigazione</h4></div>
           <div><h4 className="font-black mb-8 text-brand-green uppercase tracking-widest text-[10px]">Contatti</h4></div>
-          <div className="text-right text-[10px] opacity-20 uppercase font-black tracking-widest italic">v2.5 Corrected</div>
+          <div className="text-right text-[10px] opacity-20 uppercase font-black tracking-widest italic">v2.5 Full Edit Mode</div>
         </div>
       </footer>
 
