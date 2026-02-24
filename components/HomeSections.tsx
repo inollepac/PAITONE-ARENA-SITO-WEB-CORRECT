@@ -256,6 +256,26 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                 <div className="space-y-4 pt-4 border-t border-gray-100">
                   <h4 className="text-[9px] font-black uppercase text-brand-blue opacity-30 text-left">Ritaglio e Zoom Immagine</h4>
                   
+                  {activeElement.type === 'logo' && (
+                    <div className="space-y-2">
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Sorgente Logo</label>
+                      <div className="flex bg-gray-50 rounded-xl p-1">
+                        <button 
+                          onClick={() => updateElement(activeEditor.sId, activeElement.id, { content: config.primaryLogoUrl })}
+                          className={`flex-1 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${activeElement.content === config.primaryLogoUrl ? 'bg-brand-blue text-white shadow-md' : 'text-brand-blue/40 hover:bg-white'}`}
+                        >
+                          Primario
+                        </button>
+                        <button 
+                          onClick={() => updateElement(activeEditor.sId, activeElement.id, { content: config.secondaryLogoUrl })}
+                          className={`flex-1 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${activeElement.content === config.secondaryLogoUrl ? 'bg-brand-blue text-white shadow-md' : 'text-brand-blue/40 hover:bg-white'}`}
+                        >
+                          Secondario
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <label className="text-[8px] font-bold uppercase block mb-2 text-left">Zoom Ritaglio ({Math.round((activeElement.style?.imageZoom || 1) * 100)}%)</label>
                     <input 

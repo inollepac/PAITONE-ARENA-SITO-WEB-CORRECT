@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { SiteConfig, Court, Event } from '../types';
+import { SiteConfig, Court, Event, LogoPlacementConfig } from '../types';
 
 export interface AdminPanelProps {
   config: SiteConfig;
@@ -41,9 +41,73 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
 
   const tabs = [
     { id: 'general', label: 'Impostazioni Base', icon: 'fa-cog' },
+    { id: 'logos', label: 'Loghi e Visual', icon: 'fa-copyright' },
     { id: 'colors', label: 'Colori e Brand', icon: 'fa-palette' },
     { id: 'contacts', label: 'Contatti e Orari', icon: 'fa-phone' }
   ];
+
+  const renderLogoConfig = (key: 'navbarLogo' | 'heroLogo' | 'footerLogo', title: string) => {
+    const logoConfig = localConfig[key];
+    
+    const updateLogoPlacement = (updates: Partial<LogoPlacementConfig>) => {
+      handleChange(key, { ...logoConfig, ...updates });
+    };
+
+    return (
+      <div className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 space-y-6">
+        <div className="flex justify-between items-center border-b pb-4">
+          <h4 className="text-xs font-black uppercase tracking-widest text-brand-blue">{title}</h4>
+          <button 
+            onClick={() => updateLogoPlacement({ enabled: !logoConfig.enabled })}
+            className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all ${logoConfig.enabled ? 'bg-brand-green text-brand-blue' : 'bg-gray-200 text-gray-400'}`}
+          >
+            {logoConfig.enabled ? 'Abilitato' : 'Disabilitato'}
+          </button>
+        </div>
+
+        {logoConfig.enabled && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase opacity-40">Sorgente Logo</label>
+              <select 
+                value={logoConfig.logoSource} 
+                onChange={e => updateLogoPlacement({ logoSource: e.target.value as any })}
+                className="w-full p-3 bg-white border border-gray-100 rounded-xl text-[10px] font-black outline-none"
+              >
+                <option value="primary">Logo Principale</option>
+                <option value="secondary">Logo Secondario</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase opacity-40">Mostra Nome Centro</label>
+              <button 
+                onClick={() => updateLogoPlacement({ showName: !logoConfig.showName })}
+                className={`w-full p-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${logoConfig.showName ? 'bg-brand-blue text-white' : 'bg-white border border-gray-100 text-gray-400'}`}
+              >
+                {logoConfig.showName ? 'Sì' : 'No'}
+              </button>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase opacity-40">Larghezza ({logoConfig.width}px)</label>
+              <input type="range" min="20" max="400" value={logoConfig.width} onChange={e => updateLogoPlacement({ width: +e.target.value })} className="w-full accent-brand-blue" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase opacity-40">Altezza ({logoConfig.height}px)</label>
+              <input type="range" min="20" max="400" value={logoConfig.height} onChange={e => updateLogoPlacement({ height: +e.target.value })} className="w-full accent-brand-blue" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase opacity-40">Arrotondamento ({logoConfig.borderRadius}%)</label>
+              <input type="range" min="0" max="100" value={logoConfig.borderRadius} onChange={e => updateLogoPlacement({ borderRadius: +e.target.value })} className="w-full accent-brand-blue" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[9px] font-black uppercase opacity-40">Bordo ({logoConfig.borderWidth}px)</label>
+              <input type="range" min="0" max="20" value={logoConfig.borderWidth} onChange={e => updateLogoPlacement({ borderWidth: +e.target.value })} className="w-full accent-brand-blue" />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 text-left">
@@ -94,6 +158,74 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
                     onChange={e => handleChange('heroImageUrl', e.target.value)}
                     className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl font-bold outline-none focus:ring-2 focus:ring-brand-green"
                   />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'logos' && (
+            <div className="space-y-12 animate-in fade-in duration-300">
+              <h3 className="text-3xl font-black text-brand-blue uppercase italic tracking-tighter">Gestione Loghi</h3>
+              
+              <div className="grid grid-cols-1 gap-12">
+                {/* Global Logo Assets */}
+                <div className="space-y-6">
+                  <h4 className="text-[10px] font-black uppercase opacity-30 tracking-widest">Asset Sorgente</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Primary Logo */}
+                    <div className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 text-center space-y-4">
+                      <label className="text-[10px] font-black uppercase opacity-40 block">Logo Principale (URL)</label>
+                      <input 
+                        type="text"
+                        value={localConfig.primaryLogoUrl || ''} 
+                        onChange={e => handleChange('primaryLogoUrl', e.target.value)}
+                        className="w-full p-3 bg-white border border-gray-100 rounded-xl text-[10px] font-black outline-none"
+                        placeholder="https://..."
+                      />
+                      <div 
+                        onClick={() => primaryLogoInputRef.current?.click()}
+                        className="w-24 h-24 mx-auto bg-white rounded-full shadow-inner border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:border-brand-green transition-all overflow-hidden"
+                      >
+                        {localConfig.primaryLogoUrl ? (
+                          <img src={localConfig.primaryLogoUrl} alt="Primary" className="w-full h-full object-contain p-2" />
+                        ) : (
+                          <i className="fas fa-cloud-upload-alt text-xl text-gray-300"></i>
+                        )}
+                      </div>
+                      <input type="file" ref={primaryLogoInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload('primaryLogoUrl', e)} />
+                    </div>
+
+                    {/* Secondary Logo */}
+                    <div className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 text-center space-y-4">
+                      <label className="text-[10px] font-black uppercase opacity-40 block">Logo Secondario (URL)</label>
+                      <input 
+                        type="text"
+                        value={localConfig.secondaryLogoUrl || ''} 
+                        onChange={e => handleChange('secondaryLogoUrl', e.target.value)}
+                        className="w-full p-3 bg-white border border-gray-100 rounded-xl text-[10px] font-black outline-none"
+                        placeholder="https://..."
+                      />
+                      <div 
+                        onClick={() => secondaryLogoInputRef.current?.click()}
+                        className="w-24 h-24 mx-auto bg-white rounded-full shadow-inner border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:border-brand-green transition-all overflow-hidden"
+                      >
+                        {localConfig.secondaryLogoUrl ? (
+                          <img src={localConfig.secondaryLogoUrl} alt="Secondary" className="w-full h-full object-contain p-2" />
+                        ) : (
+                          <i className="fas fa-image text-xl text-gray-300"></i>
+                        )}
+                      </div>
+                      <input type="file" ref={secondaryLogoInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload('secondaryLogoUrl', e)} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Placements */}
+                <div className="space-y-8">
+                  <h4 className="text-[10px] font-black uppercase opacity-30 tracking-widest">Posizionamenti</h4>
+                  {renderLogoConfig('navbarLogo', 'Logo Navbar')}
+                  {renderLogoConfig('footerLogo', 'Logo Footer')}
+                  {renderLogoConfig('heroLogo', 'Logo Hero (Opzionale)')}
                 </div>
               </div>
             </div>

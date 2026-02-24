@@ -1,5 +1,6 @@
 
 import React, { useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { SiteConfig } from '../types';
 
 interface HeroProps {
@@ -114,6 +115,25 @@ const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBooki
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7">
+            {config.heroLogo.enabled && (
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-md"
+                style={{ 
+                  width: `${config.heroLogo.width}px`, 
+                  height: `${config.heroLogo.height}px`,
+                  borderRadius: `${config.heroLogo.borderRadius}%`,
+                  border: config.heroLogo.borderWidth > 0 ? `${config.heroLogo.borderWidth}px solid var(--brand-green)` : 'none'
+                }}
+              >
+                <img 
+                  src={config.heroLogo.logoSource === 'primary' ? config.primaryLogoUrl : config.secondaryLogoUrl} 
+                  className="w-full h-full object-contain p-2" 
+                  alt="Hero Logo" 
+                />
+              </motion.div>
+            )}
             {isEditMode ? (
               <div className="space-y-6">
                 <textarea 
