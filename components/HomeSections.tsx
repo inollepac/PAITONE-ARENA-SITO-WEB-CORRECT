@@ -487,8 +487,12 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         };
 
         return (
-          <section 
+          <motion.section 
             key={section.id} 
+            initial={isEditMode ? {} : { opacity: 0, y: 30 }}
+            whileInView={isEditMode ? {} : { opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className={`relative mx-auto transition-all ${isEditMode ? 'm-10 p-12 group/section' : ''}`}
             style={{ 
               ...bgStyles,
@@ -608,6 +612,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                           >
                             <img 
                               src={el.content} 
+                              loading="lazy"
                               className="w-full h-full" 
                               style={{ 
                                 objectFit: st.objectFit || 'cover',
@@ -625,7 +630,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                 </AnimatePresence>
               </div>
             </div>
-          </section>
+          </motion.section>
         );
       })}
     </div>
