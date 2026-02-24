@@ -248,6 +248,56 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                       <span className="text-[10px] font-mono opacity-50">{activeElement.style?.color || '#4E5B83'}</span>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Interlinea ({activeElement.style?.lineHeight || 1.2})</label>
+                      <input type="range" min="0.8" max="3" step="0.1" value={activeElement.style?.lineHeight || 1.2} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { lineHeight: +e.target.value })} className="w-full accent-brand-blue" />
+                    </div>
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Spaziatura ({activeElement.style?.letterSpacing || '0px'})</label>
+                      <input type="range" min="-5" max="20" step="1" value={parseInt(activeElement.style?.letterSpacing || '0')} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { letterSpacing: `${e.target.value}px` })} className="w-full accent-brand-blue" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Trasformazione</label>
+                    <div className="flex bg-gray-50 rounded-xl p-1">
+                      {(['none', 'uppercase', 'lowercase', 'capitalize'] as const).map((trans) => (
+                        <button
+                          key={trans}
+                          onClick={() => updateElementStyle(activeEditor.sId, activeEditor.elId, { textTransform: trans })}
+                          className={`flex-1 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${activeElement.style?.textTransform === trans ? 'bg-brand-blue text-white shadow-md' : 'text-brand-blue/40 hover:bg-white'}`}
+                        >
+                          {trans === 'none' ? 'T' : trans.charAt(0)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Padding ({activeElement.style?.padding || '0px'})</label>
+                      <input type="range" min="0" max="100" step="4" value={parseInt(activeElement.style?.padding || '0')} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { padding: `${e.target.value}px` })} className="w-full accent-brand-blue" />
+                    </div>
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Arrotondamento ({activeElement.style?.borderRadius || '0px'})</label>
+                      <input type="range" min="0" max="100" step="4" value={parseInt(activeElement.style?.borderRadius || '0')} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { borderRadius: `${e.target.value}px` })} className="w-full accent-brand-blue" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Sfondo Testo</label>
+                    <div className="flex gap-2 items-center">
+                      <input 
+                        type="color" 
+                        value={activeElement.style?.backgroundColor || 'transparent'} 
+                        onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { backgroundColor: e.target.value })} 
+                        className="w-10 h-10 rounded-lg cursor-pointer border-none p-0"
+                      />
+                      <button onClick={() => updateElementStyle(activeEditor.sId, activeEditor.elId, { backgroundColor: 'transparent' })} className="text-[8px] font-black uppercase opacity-40 hover:opacity-100">Reset</button>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -322,6 +372,84 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                       <option value="16/9">16:9 Panoramico</option>
                       <option value="3/2">3:2 Classico</option>
                       <option value="auto">Libero</option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Opacità ({Math.round((activeElement.style?.opacity ?? 1) * 100)}%)</label>
+                      <input type="range" min="0" max="1" step="0.1" value={activeElement.style?.opacity ?? 1} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { opacity: +e.target.value })} className="w-full accent-brand-blue" />
+                    </div>
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Rotazione ({activeElement.style?.rotation || 0}°)</label>
+                      <input type="range" min="-180" max="180" step="1" value={activeElement.style?.rotation || 0} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { rotation: +e.target.value })} className="w-full accent-brand-blue" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Bordo ({activeElement.style?.borderWidth || 0}px)</label>
+                      <input type="range" min="0" max="20" step="1" value={activeElement.style?.borderWidth || 0} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { borderWidth: +e.target.value })} className="w-full accent-brand-blue" />
+                    </div>
+                    <div>
+                      <label className="text-[8px] font-bold uppercase block mb-2 text-left">Colore Bordo</label>
+                      <input type="color" value={activeElement.style?.borderColor || '#A8D38E'} onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { borderColor: e.target.value })} className="w-full h-8 rounded-lg cursor-pointer border-none p-0" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h5 className="text-[7px] font-black uppercase opacity-30 mt-4">Filtri Avanzati</h5>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      {[
+                        { label: 'Luminosità', key: 'brightness', min: 0, max: 2 },
+                        { label: 'Contrasto', key: 'contrast', min: 0, max: 2 },
+                        { label: 'Grigio', key: 'grayscale', min: 0, max: 1 },
+                        { label: 'Seppia', key: 'sepia', min: 0, max: 1 },
+                        { label: 'Sfocatura', key: 'blur', min: 0, max: 20 },
+                        { label: 'Saturazione', key: 'saturate', min: 0, max: 3 },
+                        { label: 'Inverti', key: 'invert', min: 0, max: 1 },
+                        { label: 'Hue', key: 'hueRotate', min: 0, max: 360 },
+                      ].map(f => (
+                        <div key={f.key}>
+                          <label className="text-[7px] font-bold uppercase block mb-1">{f.label}</label>
+                          <input 
+                            type="range" 
+                            min={f.min} max={f.max} step={f.key === 'hueRotate' ? 1 : 0.1} 
+                            value={(activeElement.style as any)[f.key] ?? (f.key === 'hueRotate' ? 0 : 1)} 
+                            onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { [f.key]: +e.target.value })} 
+                            className="w-full accent-brand-green h-1" 
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Effetto Hover</label>
+                    <select 
+                      value={activeElement.style?.hoverEffect || 'none'} 
+                      onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { hoverEffect: e.target.value as any })}
+                      className="w-full bg-gray-50 p-2 rounded-xl text-[10px] font-black border-none outline-none"
+                    >
+                      <option value="none">Nessuno</option>
+                      <option value="zoom">Zoom</option>
+                      <option value="lift">Sollevamento</option>
+                      <option value="brighten">Illumina</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[8px] font-bold uppercase block mb-2 text-left">Ombra</label>
+                    <select 
+                      value={activeElement.style?.shadow || 'none'} 
+                      onChange={e => updateElementStyle(activeEditor.sId, activeEditor.elId, { shadow: e.target.value })}
+                      className="w-full bg-gray-50 p-2 rounded-xl text-[10px] font-black border-none outline-none"
+                    >
+                      <option value="none">Nessuna</option>
+                      <option value="soft">Morbida</option>
+                      <option value="medium">Media</option>
+                      <option value="heavy">Pesante</option>
+                      <option value="colored">Colorata (Brand)</option>
                     </select>
                   </div>
                 </div>
@@ -572,15 +700,32 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                     const isSelected = activeEditor?.elId === el.id;
                     
                     // Construct Visual Filters
-                    const filterStr = `brightness(${st.brightness ?? 1}) contrast(${st.contrast ?? 1}) grayscale(${st.grayscale ?? 0}) sepia(${st.sepia ?? 0}) blur(${st.blur ?? 0}px)`;
+                    const filterStr = `brightness(${st.brightness ?? 1}) contrast(${st.contrast ?? 1}) grayscale(${st.grayscale ?? 0}) sepia(${st.sepia ?? 0}) blur(${st.blur ?? 0}px) hue-rotate(${st.hueRotate ?? 0}deg) saturate(${st.saturate ?? 1}) invert(${st.invert ?? 0})`;
                     
                     // Construct Object Position for Cropping
                     const objectPosStr = `${st.objectX ?? 50}% ${st.objectY ?? 50}%`;
+
+                    // Hover variants
+                    const hoverVariants = {
+                      none: {},
+                      zoom: { scale: (st.scale || 1) * 1.05 },
+                      lift: { y: (st.y || 0) - 10 },
+                      brighten: { filter: filterStr.replace(/brightness\([^)]+\)/, 'brightness(1.2)') }
+                    };
+                    
+                    const shadowMap = {
+                      none: 'none',
+                      soft: '0 10px 30px rgba(0,0,0,0.05)',
+                      medium: '0 20px 50px rgba(0,0,0,0.1)',
+                      heavy: '0 30px 70px rgba(0,0,0,0.2)',
+                      colored: '0 20px 50px rgba(168, 211, 142, 0.3)'
+                    };
                     
                     return (
                       <motion.div 
                         layout
                         key={el.id} 
+                        whileHover={st.hoverEffect && st.hoverEffect !== 'none' ? hoverVariants[st.hoverEffect] : {}}
                         onClick={(e) => {
                           if (isEditMode) {
                             e.stopPropagation();
@@ -590,12 +735,21 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                         className={`relative transition-all duration-300 ${isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-brand-green/50 p-6 rounded-[3.5rem] bg-white shadow-xl' : ''} ${isSelected ? 'ring-4 ring-brand-green z-[50] shadow-[0_0_30px_#A8D38E]' : ''}`}
                         style={{ 
                           width: el.type === 'text' ? '100%' : st.width || '320px',
-                          transform: `scale(${st.scale || 1}) translate(${st.x || 0}px, ${st.y || 0}px)`,
-                          zIndex: isSelected ? 100 : st.zIndex || 5
+                          transform: `scale(${st.scale || 1}) translate(${st.x || 0}px, ${st.y || 0}px) rotate(${st.rotation || 0}deg)`,
+                          zIndex: isSelected ? 100 : st.zIndex || 5,
+                          opacity: st.opacity ?? 1,
+                          boxShadow: st.shadow ? shadowMap[st.shadow as keyof typeof shadowMap] : 'none'
                         }}
                       >
                         {el.type === 'text' ? (
-                          <div className="p-8">
+                          <div 
+                            className="p-8 transition-all duration-300"
+                            style={{
+                              backgroundColor: st.backgroundColor || 'transparent',
+                              borderRadius: st.borderRadius || '0px',
+                              padding: st.padding || '2rem'
+                            }}
+                          >
                             {isEditMode ? (
                               <textarea 
                                 value={el.content || ''} 
@@ -606,17 +760,25 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                                   color: st.color || '#4E5B83',
                                   fontSize: st.fontSize || '18px',
                                   fontWeight: st.fontWeight || '700',
-                                  textAlign: st.textAlign || 'center'
+                                  textAlign: st.textAlign || 'center',
+                                  lineHeight: st.lineHeight || 1.2,
+                                  letterSpacing: st.letterSpacing || '0px',
+                                  textTransform: st.textTransform || 'none',
+                                  fontStyle: st.fontStyle || 'italic'
                                 }}
                               />
                             ) : (
                               <p 
-                                className="italic opacity-80 whitespace-pre-wrap transition-all duration-200"
+                                className="whitespace-pre-wrap transition-all duration-200"
                                 style={{ 
                                   color: st.color || '#4E5B83',
                                   fontSize: st.fontSize || '18px',
                                   fontWeight: st.fontWeight || '700',
-                                  textAlign: st.textAlign || 'center'
+                                  textAlign: st.textAlign || 'center',
+                                  lineHeight: st.lineHeight || 1.2,
+                                  letterSpacing: st.letterSpacing || '0px',
+                                  textTransform: st.textTransform || 'none',
+                                  fontStyle: st.fontStyle || 'italic'
                                 }}
                               >
                                 {el.content}
@@ -628,6 +790,8 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                             className="rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-500 bg-gray-100"
                             style={{ 
                               aspectRatio: st.aspectRatio || '1/1',
+                              borderRadius: st.borderRadius || '3rem',
+                              border: st.borderWidth ? `${st.borderWidth}px solid ${st.borderColor || '#A8D38E'}` : 'none'
                             }}
                           >
                             <img 

@@ -49,7 +49,12 @@ export interface SectionElement {
     hoverEffect?: 'none' | 'zoom' | 'lift' | 'brighten';
     aspectRatio?: string;
     objectFit?: 'cover' | 'contain' | 'fill' | 'none';
-    /* Fix: Adding missing style properties for image adjustment and positioning */
+    /* Advanced styling properties */
+    letterSpacing?: string;
+    textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
+    fontStyle?: 'normal' | 'italic';
+    padding?: string;
+    backgroundColor?: string;
     imageZoom?: number;
     objectX?: number;
     objectY?: number;
