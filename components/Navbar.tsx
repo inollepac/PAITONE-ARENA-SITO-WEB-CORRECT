@@ -97,8 +97,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 }}
               >
                 <AnimatePresence mode="wait">
-                  {/* Shimmer state while loading */}
-                  {logoLoading && !logoError && (
+                  {logoLoading && !logoError ? (
                     <motion.div 
                       key="loading-shimmer"
                       initial={{ opacity: 0 }}
@@ -108,14 +107,12 @@ const Navbar: React.FC<NavbarProps> = ({
                     >
                       <div className="w-full h-full bg-gradient-to-r from-gray-100 via-white/80 to-gray-100 animate-[shimmer_2s_infinite] bg-[length:200%_100%]"></div>
                     </motion.div>
-                  )}
-
-                  {/* Fallback / Error Animated Placeholder */}
-                  {(logoError || !logoUrl || logoUrl.trim() === '') ? (
+                  ) : (logoError || !logoUrl || logoUrl.trim() === '') ? (
                     <motion.div 
                       key="error-placeholder"
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
+                      exit={{ opacity: 0 }}
                       className="absolute inset-0 flex items-center justify-center text-brand-green/40 bg-gray-50"
                     >
                       <motion.i 
@@ -128,14 +125,14 @@ const Navbar: React.FC<NavbarProps> = ({
                       ></motion.i>
                     </motion.div>
                   ) : (
-                    /* Actual Image */
                     <motion.img 
                       key="actual-logo"
                       src={logoUrl} 
                       onLoad={() => setLogoLoading(false)}
                       onError={() => { setLogoLoading(false); setLogoError(true); }}
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: logoLoading ? 0 : 1 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
                       transition={{ duration: 0.5 }}
                       className="w-full h-full object-contain relative z-10" 
                       alt="Logo Paitone Arena" 
