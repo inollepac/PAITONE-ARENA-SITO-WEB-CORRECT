@@ -24,6 +24,7 @@ const App: React.FC = () => {
   const [events, setEvents] = useState<Event[]>(INITIAL_EVENTS);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [adminTab, setAdminTab] = useState('general');
   const [history, setHistory] = useState<SiteConfig[]>([]);
 
   useEffect(() => {
@@ -77,6 +78,7 @@ const App: React.FC = () => {
           config={config} 
           courts={courts} 
           events={events} 
+          initialTab={adminTab}
           onUpdateConfig={updateConfig} 
           onUpdateCourts={(c) => { setCourts(c); localStorage.setItem('arena_v2_courts', JSON.stringify(c)); }}
           onUpdateEvents={(e) => { setEvents(e); localStorage.setItem('arena_v2_events', JSON.stringify(e)); }}
@@ -123,7 +125,10 @@ const App: React.FC = () => {
         activePage={activePage} 
         onNavigate={navigateTo} 
         config={config} 
-        onAdminToggle={() => navigateTo('admin')}
+        onAdminToggle={(tab) => {
+          if (tab) setAdminTab(tab);
+          navigateTo('admin');
+        }}
         isAdminActive={activePage === 'admin'}
         isAuthenticated={isAuthenticated}
         onLogout={handleLogout}

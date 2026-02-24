@@ -17,8 +17,8 @@ const DEFAULT_PLACEMENT: LogoPlacementConfig = {
 
 export const INITIAL_SITE_CONFIG: SiteConfig = {
   centerName: 'Paitone Arena',
-  primaryLogoUrl: '', 
-  secondaryLogoUrl: '',
+  primaryLogoUrl: 'https://picsum.photos/seed/paitone/200/200', 
+  secondaryLogoUrl: 'https://picsum.photos/seed/arena/200/200',
   
   navbarLogo: { ...DEFAULT_PLACEMENT, width: 60, height: 60, showName: true },
   heroLogo: { ...DEFAULT_PLACEMENT, enabled: false, width: 150, height: 100, borderRadius: 10, showName: false },

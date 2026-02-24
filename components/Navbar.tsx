@@ -7,7 +7,7 @@ interface NavbarProps {
   activePage: Page;
   onNavigate: (page: Page) => void;
   config: SiteConfig;
-  onAdminToggle: () => void;
+  onAdminToggle: (tab?: string) => void;
   isAdminActive: boolean;
   isAuthenticated: boolean;
   onLogout: () => void;
@@ -70,13 +70,27 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="flex justify-between h-24 items-center">
           <div className="flex items-center cursor-pointer gap-4 group" onClick={() => onNavigate('home')}>
             {navbarLogo.enabled && (
-              <LogoContainer 
-                url={logoUrl} 
-                width={navbarLogo.width} 
-                height={navbarLogo.height} 
-                borderRadius={navbarLogo.borderRadius}
-                borderWidth={navbarLogo.borderWidth}
-              />
+              <div className="relative group/logo">
+                <LogoContainer 
+                  url={logoUrl} 
+                  width={navbarLogo.width} 
+                  height={navbarLogo.height} 
+                  borderRadius={navbarLogo.borderRadius}
+                  borderWidth={navbarLogo.borderWidth}
+                />
+                {isEditMode && (
+                  <div 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAdminToggle('logos');
+                    }}
+                    className="absolute inset-0 bg-brand-green/80 opacity-0 group-hover/logo:opacity-100 transition-opacity flex items-center justify-center rounded-inherit cursor-pointer z-30"
+                    style={{ borderRadius: `${navbarLogo.borderRadius}%` }}
+                  >
+                    <i className="fas fa-edit text-brand-blue text-xs"></i>
+                  </div>
+                )}
+              </div>
             )}
             
             {navbarLogo.showName && (
@@ -135,7 +149,7 @@ const Navbar: React.FC<NavbarProps> = ({
             
             <div className="flex items-center gap-2 border-l pl-4 border-brand-blue/10">
               <button 
-                  onClick={onAdminToggle}
+                  onClick={() => onAdminToggle()}
                   className={`p-2.5 rounded-full transition ${isAdminActive ? 'bg-brand-green text-brand-blue' : 'text-brand-blue/30 hover:text-brand-blue'}`}
               >
                   <i className="fas fa-cog text-sm"></i>
@@ -179,6 +193,15 @@ const LogoContainer: React.FC<LogoContainerProps> = ({ url, width, height, borde
     if (url && url.trim() !== '') {
       setLoading(true);
       setError(false);
+      
+      // Preload image to handle loading state correctly
+      const img = new Image();
+      img.src = url;
+      img.onload = () => setLoading(false);
+      img.onerror = () => {
+        setLoading(false);
+        setError(true);
+      };
     } else {
       setLoading(false);
       setError(true);
@@ -187,8 +210,8 @@ const LogoContainer: React.FC<LogoContainerProps> = ({ url, width, height, borde
 
   return (
     <motion.div 
-      className="relative overflow-hidden bg-gray-100 flex items-center justify-center shadow-inner"
-      whileHover={{ scale: 1.05 }}
+      className="relative overflow-hidden bg-white/5 flex items-center justify-center shadow-sm"
+      whileHover={{ scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       style={{ 
         width: `${width}px`, 
@@ -198,7 +221,7 @@ const LogoContainer: React.FC<LogoContainerProps> = ({ url, width, height, borde
       }}
     >
       <AnimatePresence mode="wait">
-        {loading && !error ? (
+        {loading ? (
           <motion.div 
             key="shimmer"
             initial={{ opacity: 0 }}
@@ -216,19 +239,17 @@ const LogoContainer: React.FC<LogoContainerProps> = ({ url, width, height, borde
             exit={{ opacity: 0 }}
             className="absolute inset-0 flex flex-col items-center justify-center text-brand-green/30 bg-gray-50"
           >
-            <i className="fas fa-image text-xl mb-1"></i>
-            <span className="text-[6px] font-black uppercase tracking-widest opacity-50">Error</span>
+            <i className="fas fa-image text-lg mb-1"></i>
+            <span className="text-[5px] font-black uppercase tracking-widest opacity-50">No Logo</span>
           </motion.div>
         ) : (
           <motion.img 
             key="logo"
             src={url} 
-            onLoad={() => setLoading(false)}
-            onError={() => { setLoading(false); setError(true); }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.3 }}
             className="w-full h-full object-contain relative z-10 p-1" 
             alt="Logo" 
           />

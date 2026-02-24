@@ -6,13 +6,14 @@ export interface AdminPanelProps {
   config: SiteConfig;
   courts: Court[];
   events: Event[];
+  initialTab?: string;
   onUpdateConfig: (config: SiteConfig) => void;
   onUpdateCourts: (courts: Court[]) => void;
   onUpdateEvents: (events: Event[]) => void;
 }
 
-const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
-  const [activeTab, setActiveTab] = useState('general');
+const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig, initialTab = 'general' }) => {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [localConfig, setLocalConfig] = useState<SiteConfig>({ ...config });
   
   const primaryLogoInputRef = useRef<HTMLInputElement>(null);
@@ -21,6 +22,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
   useEffect(() => {
     setLocalConfig({ ...config });
   }, [config]);
+
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
 
   const handleChange = (key: keyof SiteConfig, value: any) => {
     const updated = { ...localConfig, [key]: value };
