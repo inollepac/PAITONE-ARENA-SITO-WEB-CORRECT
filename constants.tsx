@@ -47,6 +47,9 @@ export const INITIAL_SITE_CONFIG: SiteConfig = {
   phone: '+39 030 1234567',
   whatsapp: '+39 333 1234567',
   email: 'info@paitonearena.it',
+  instagram: 'https://instagram.com',
+  facebook: 'https://facebook.com',
+  twitter: 'https://twitter.com',
   workingHours: 'Lun-Dom: 07:30 - 23:30',
   externalBookingUrl: 'https://google.com',
   sections: [

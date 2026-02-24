@@ -15,6 +15,7 @@ import ContactsPage from './components/ContactsPage';
 import AdminPanel from './components/AdminPanel';
 import ChatBot from './components/ChatBot';
 import LoginPage from './components/LoginPage';
+import Footer from './components/Footer';
 
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page>('home');
@@ -139,12 +140,7 @@ const App: React.FC = () => {
         </AnimatePresence>
       </main>
 
-      <footer className="bg-brand-blue text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center opacity-40 italic font-black uppercase tracking-widest text-[9px]">
-          <span>{config.centerName}</span>
-          <span>Powered by Next v2.8</span>
-        </div>
-      </footer>
+      <Footer config={config} />
 
       <ChatBot config={config} onBookingClick={() => navigateTo('booking')} onNavigate={navigateTo} />
     </div>

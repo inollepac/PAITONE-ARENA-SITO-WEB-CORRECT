@@ -202,6 +202,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig }) => {
                   { label: 'WhatsApp', key: 'whatsapp' },
                   { label: 'Email', key: 'email' },
                   { label: 'Orari', key: 'workingHours' },
+                  { label: 'Instagram URL', key: 'instagram' },
+                  { label: 'Facebook URL', key: 'facebook' },
+                  { label: 'Twitter URL', key: 'twitter' },
                   { label: 'Link Prenotazione Esterno', key: 'externalBookingUrl' },
                 ].map(field => (
                   <div key={field.key} className="space-y-2">

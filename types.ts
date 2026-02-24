@@ -121,6 +121,9 @@ export interface SiteConfig {
   phone: string;
   whatsapp: string;
   email: string;
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
   workingHours: string;
   externalBookingUrl: string;
   sections: SectionContent[]; 
