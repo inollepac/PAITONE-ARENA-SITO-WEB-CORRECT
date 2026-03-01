@@ -62,6 +62,12 @@ export const INITIAL_SITE_CONFIG: SiteConfig = {
     { id: 'contacts', navLabel: 'Contatti', title: 'Sempre a tua disposizione.', description: 'Hai domande? Il nostro team è pronto ad aiutarti.', enabled: true },
     { id: 'staff', navLabel: '', title: 'Esperti del Movimento', description: 'Passione sportiva supportata da percorsi accademici e federali.', enabled: true },
   ],
+  design: {
+    fontFamily: 'Inter',
+    borderRadius: 'large',
+    buttonStyle: 'solid',
+    spacing: 'normal'
+  },
   sportsPage: {
     title: 'Tanto sport, zero stress.',
     subtitle: 'Abbiamo campi nuovi e un ambiente accogliente. Non siamo il circolo più lussuoso del mondo, ma siamo il posto giusto se cerchi una partita tra amici e un\'atmosfera dove stare bene e divertirsi senza pensieri.',

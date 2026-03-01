@@ -132,6 +132,13 @@ export interface SiteConfig {
   workingHours: string;
   externalBookingUrl: string;
   sections: SectionContent[]; 
+  /* Global Design System */
+  design: {
+    fontFamily: 'Inter' | 'Space Grotesk' | 'Playfair Display' | 'JetBrains Mono';
+    borderRadius: 'none' | 'small' | 'medium' | 'large' | 'full';
+    buttonStyle: 'solid' | 'outline' | 'glass';
+    spacing: 'compact' | 'normal' | 'relaxed';
+  };
   /* Sub-pages content */
   sportsPage: {
     title: string;

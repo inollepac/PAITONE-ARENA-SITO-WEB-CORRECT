@@ -7,7 +7,7 @@
     <title>Paitone Arena - Tennis & Padel Club</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script>
       window.tailwind.config = {
         theme: {
@@ -32,10 +32,15 @@
           --brand-blue: #4E5B83;
           --brand-green: #A8D38E;
           --brand-green-opaque: rgba(168, 211, 142, 0.2);
+          --font-main: 'Inter', sans-serif;
+          --radius-main: 32px;
         }
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: var(--font-main);
             scroll-behavior: smooth;
+        }
+        .rounded-main {
+            border-radius: var(--radius-main);
         }
         .glass {
             background: rgba(255, 255, 255, 0.85);

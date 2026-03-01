@@ -13,6 +13,7 @@ import CommunityPage from './components/CommunityPage';
 import BookingSystem from './components/BookingSystem';
 import ContactsPage from './components/ContactsPage';
 import AdminPanel from './components/AdminPanel';
+import FloatingToolbar from './components/FloatingToolbar';
 import ChatBot from './components/ChatBot';
 import LoginPage from './components/LoginPage';
 import Footer from './components/Footer';
@@ -43,12 +44,40 @@ const App: React.FC = () => {
     document.documentElement.style.setProperty('--brand-blue', config.primaryColor);
     document.documentElement.style.setProperty('--brand-green', config.accentColor);
     document.documentElement.style.setProperty('--brand-green-opaque', `${config.accentColor}33`);
-  }, [config.primaryColor, config.accentColor]);
+    
+    // Design System variables
+    const fontMap: Record<string, string> = {
+      'Inter': '"Inter", sans-serif',
+      'Space Grotesk': '"Space Grotesk", sans-serif',
+      'Playfair Display': '"Playfair Display", serif',
+      'JetBrains Mono': '"JetBrains Mono", monospace'
+    };
+    document.documentElement.style.setProperty('--font-main', fontMap[config.design.fontFamily] || fontMap['Inter']);
+    
+    const radiusMap: Record<string, string> = {
+      'none': '0px',
+      'small': '8px',
+      'medium': '16px',
+      'large': '32px',
+      'full': '9999px'
+    };
+    document.documentElement.style.setProperty('--radius-main', radiusMap[config.design.borderRadius] || radiusMap['large']);
+  }, [config]);
 
-  const updateConfig = (newConfig: SiteConfig) => {
+  const updateConfig = (newConfig: SiteConfig, saveToHistory = true) => {
+    if (saveToHistory) {
+      setHistory(prev => [...prev.slice(-19), config]); // Keep last 20 states
+    }
     setConfig(newConfig);
     localStorage.setItem('arena_v2_config', JSON.stringify(newConfig));
-    console.log("Config updated and saved to localStorage");
+  };
+
+  const undo = () => {
+    if (history.length === 0) return;
+    const previous = history[history.length - 1];
+    setHistory(prev => prev.slice(0, -1));
+    setConfig(previous);
+    localStorage.setItem('arena_v2_config', JSON.stringify(previous));
   };
 
   const handleLogin = (success: boolean) => {
@@ -68,6 +97,11 @@ const App: React.FC = () => {
   const navigateTo = (page: Page) => {
     setActivePage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const openAdminWithTab = (tab?: string) => {
+    if (tab) setAdminTab(tab);
+    navigateTo('admin');
   };
 
   const renderPage = () => {
@@ -99,26 +133,19 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col selection:bg-brand-green selection:text-brand-blue">
+    <div className="min-h-screen flex flex-col selection:bg-brand-green selection:text-brand-blue" style={{ fontFamily: 'var(--font-main)' }}>
       {isAuthenticated && (
-        <div className="fixed top-0 left-0 w-full z-[100] bg-brand-blue text-white px-6 py-3 flex items-center justify-between shadow-2xl border-b border-white/10 backdrop-blur-md">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${isEditMode ? 'bg-brand-green animate-pulse' : 'bg-white/20'}`}></div>
-              <span className="text-[10px] font-black uppercase tracking-widest italic">Visual Control Arena</span>
-            </div>
-            <button 
-              onClick={() => setIsEditMode(!isEditMode)}
-              className={`px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${isEditMode ? 'bg-brand-green text-brand-blue shadow-[0_0_15px_#A8D38E]' : 'bg-white/10'}`}
-            >
-              {isEditMode ? 'MODALITÀ EDITING ATTIVA' : 'Attiva Modifiche Live'}
-            </button>
-          </div>
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigateTo('admin')} className={`text-white/60 hover:text-white p-2 transition ${activePage === 'admin' ? 'text-brand-green' : ''}`}><i className="fas fa-cog"></i></button>
-            <button onClick={handleLogout} className="bg-red-500/20 text-red-400 px-4 py-1.5 rounded-full text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">Logout</button>
-          </div>
-        </div>
+        <FloatingToolbar 
+          config={config}
+          activePage={activePage}
+          isEditMode={isEditMode}
+          onToggleEdit={() => setIsEditMode(!isEditMode)}
+          onNavigate={navigateTo}
+          onOpenAdmin={openAdminWithTab}
+          onUndo={undo}
+          canUndo={history.length > 0}
+          onSave={() => updateConfig(config, false)}
+        />
       )}
 
       <Navbar 

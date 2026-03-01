@@ -44,10 +44,47 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig, initial
     }
   };
 
+  const TEMPLATES = [
+    {
+      id: 'modern',
+      name: 'Moderno & Pulito',
+      config: {
+        primaryColor: '#4E5B83',
+        accentColor: '#A8D38E',
+        design: { fontFamily: 'Inter', borderRadius: 'large', buttonStyle: 'solid', spacing: 'normal' }
+      }
+    },
+    {
+      id: 'tech',
+      name: 'Tech & Futuro',
+      config: {
+        primaryColor: '#0a0a0a',
+        accentColor: '#00ff00',
+        design: { fontFamily: 'Space Grotesk', borderRadius: 'none', buttonStyle: 'outline', spacing: 'compact' }
+      }
+    },
+    {
+      id: 'luxury',
+      name: 'Elegante & Luxury',
+      config: {
+        primaryColor: '#1a1a1a',
+        accentColor: '#d4af37',
+        design: { fontFamily: 'Playfair Display', borderRadius: 'medium', buttonStyle: 'glass', spacing: 'relaxed' }
+      }
+    }
+  ];
+
+  const applyTemplate = (tpl: any) => {
+    const updated = { ...localConfig, ...tpl.config };
+    setLocalConfig(updated);
+    onUpdateConfig(updated);
+  };
+
   const tabs = [
     { id: 'general', label: 'Impostazioni Base', icon: 'fa-cog' },
     { id: 'logos', label: 'Loghi e Visual', icon: 'fa-copyright' },
     { id: 'colors', label: 'Colori e Brand', icon: 'fa-palette' },
+    { id: 'design', label: 'Design System', icon: 'fa-vector-square' },
     { id: 'contacts', label: 'Contatti e Orari', icon: 'fa-phone' }
   ];
 
@@ -323,6 +360,108 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig, initial
                       onChange={e => handleChange('accentColor', e.target.value)}
                       className="w-24 h-24 rounded-full border-0 p-0 cursor-pointer mx-auto block overflow-hidden shadow-xl"
                     />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'design' && (
+            <div className="space-y-12 animate-in fade-in duration-300">
+              <h3 className="text-3xl font-black text-brand-blue uppercase italic tracking-tighter">Design System</h3>
+              
+              {/* Templates Quick Select */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-black uppercase opacity-40">Template Predefiniti</label>
+                <div className="grid grid-cols-3 gap-4">
+                  {TEMPLATES.map(tpl => (
+                    <button
+                      key={tpl.id}
+                      onClick={() => applyTemplate(tpl)}
+                      className="p-6 rounded-[2rem] border-2 border-gray-100 hover:border-brand-green transition-all text-left space-y-2 group"
+                    >
+                      <div className="w-8 h-8 rounded-full" style={{ backgroundColor: tpl.config.accentColor }}></div>
+                      <p className="text-[10px] font-black uppercase tracking-widest">{tpl.name}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-gray-100">
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">Font Family</label>
+                  <select 
+                    value={localConfig.design.fontFamily}
+                    onChange={e => handleChange('design', { ...localConfig.design, fontFamily: e.target.value })}
+                    className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl font-bold outline-none"
+                  >
+                    <option value="Inter">Inter (Moderno)</option>
+                    <option value="Space Grotesk">Space Grotesk (Tech)</option>
+                    <option value="Playfair Display">Playfair Display (Elegante)</option>
+                    <option value="JetBrains Mono">JetBrains Mono (Brutalista)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">Arrotondamento Bordi</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['none', 'small', 'medium', 'large', 'full'].map(r => (
+                      <button
+                        key={r}
+                        onClick={() => handleChange('design', { ...localConfig.design, borderRadius: r })}
+                        className={`p-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${localConfig.design.borderRadius === r ? 'bg-brand-blue text-white' : 'bg-gray-50 text-gray-400'}`}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">Stile Pulsanti</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['solid', 'outline', 'glass'].map(s => (
+                      <button
+                        key={s}
+                        onClick={() => handleChange('design', { ...localConfig.design, buttonStyle: s })}
+                        className={`p-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${localConfig.design.buttonStyle === s ? 'bg-brand-blue text-white' : 'bg-gray-50 text-gray-400'}`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">Spaziatura</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['compact', 'normal', 'relaxed'].map(s => (
+                      <button
+                        key={s}
+                        onClick={() => handleChange('design', { ...localConfig.design, spacing: s })}
+                        className={`p-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${localConfig.design.spacing === s ? 'bg-brand-blue text-white' : 'bg-gray-50 text-gray-400'}`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase opacity-40">Tema</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => handleChange('primaryColor', '#4E5B83')}
+                      className="p-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-brand-blue text-white"
+                    >
+                      Classico
+                    </button>
+                    <button
+                      onClick={() => handleChange('primaryColor', '#1a1a1a')}
+                      className="p-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-[#1a1a1a] text-white"
+                    >
+                      Dark Mode
+                    </button>
                   </div>
                 </div>
               </div>
