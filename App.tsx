@@ -145,7 +145,6 @@ const App: React.FC = () => {
           onUndo={undo}
           canUndo={history.length > 0}
           onSave={() => updateConfig(config, false)}
-          onLogout={handleLogout}
         />
       )}
 

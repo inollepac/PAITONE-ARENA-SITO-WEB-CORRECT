@@ -151,19 +151,9 @@ const Navbar: React.FC<NavbarProps> = ({
               <button 
                   onClick={() => onAdminToggle()}
                   className={`p-2.5 rounded-full transition ${isAdminActive ? 'bg-brand-green text-brand-blue' : 'text-brand-blue/30 hover:text-brand-blue'}`}
-                  title="Impostazioni"
               >
                   <i className="fas fa-cog text-sm"></i>
               </button>
-              {isAuthenticated && (
-                <button 
-                  onClick={onLogout}
-                  className="p-2.5 rounded-full text-red-400 hover:text-red-600 hover:bg-red-50 transition-all"
-                  title="Logout"
-                >
-                  <i className="fas fa-sign-out-alt text-sm"></i>
-                </button>
-              )}
             </div>
           </div>
 
