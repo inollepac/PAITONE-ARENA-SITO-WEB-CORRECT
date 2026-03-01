@@ -10,10 +10,9 @@ export interface AdminPanelProps {
   onUpdateConfig: (config: SiteConfig) => void;
   onUpdateCourts: (courts: Court[]) => void;
   onUpdateEvents: (events: Event[]) => void;
-  onLogout: () => void;
 }
 
-const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig, onLogout, initialTab = 'general' }) => {
+const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig, initialTab = 'general' }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [localConfig, setLocalConfig] = useState<SiteConfig>({ ...config });
   
@@ -167,16 +166,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig, onLogou
               <i className={`fas ${tab.icon} text-sm`}></i> {tab.label}
             </button>
           ))}
-          
-          <div className="mt-8 pt-8 border-t border-gray-100">
-            <button
-              onClick={onLogout}
-              className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-red-400 hover:bg-red-50 transition-all"
-            >
-              <i className="fas fa-sign-out-alt text-sm"></i> Logout
-            </button>
-          </div>
-
           <div className="mt-auto pt-8">
             <p className="text-[9px] font-black uppercase opacity-30 text-center">v2.8 - Stato: Online</p>
           </div>

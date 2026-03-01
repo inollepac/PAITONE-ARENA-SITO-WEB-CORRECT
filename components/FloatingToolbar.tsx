@@ -13,7 +13,6 @@ interface FloatingToolbarProps {
   onUndo: () => void;
   canUndo: boolean;
   onSave: () => void;
-  onLogout: () => void;
 }
 
 const FloatingToolbar: React.FC<FloatingToolbarProps> = ({ 
@@ -25,8 +24,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   onOpenAdmin,
   onUndo,
   canUndo,
-  onSave,
-  onLogout
+  onSave
 }) => {
   const [isSaving, setIsSaving] = React.useState(false);
 
@@ -106,14 +104,6 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
             className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${isEditMode ? 'bg-white text-brand-blue' : 'bg-brand-green text-brand-blue'}`}
           >
             {isEditMode ? 'Esci' : 'Modifica'}
-          </button>
-
-          <button
-            onClick={onLogout}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all"
-            title="Logout"
-          >
-            <i className="fas fa-sign-out-alt text-xs"></i>
           </button>
         </div>
       </motion.div>

@@ -111,14 +111,14 @@ const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBooki
       )}
 
       {/* Content Layer */}
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full text-center">
-        <div className="flex flex-col items-center">
-          <div className="w-full flex flex-col items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7">
             {config.heroLogo.enabled && (
               <motion.div 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-12 overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-md"
+                className="mb-8 overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-md"
                 style={{ 
                   width: `${config.heroLogo.width}px`, 
                   height: `${config.heroLogo.height}px`,
@@ -134,30 +134,30 @@ const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBooki
               </motion.div>
             )}
             {isEditMode ? (
-              <div className="space-y-6 w-full max-w-4xl">
+              <div className="space-y-6">
                 <textarea 
                   value={config.heroTitle}
                   onChange={(e) => updateHeroConfig({ heroTitle: e.target.value })}
-                  className="w-full bg-white/10 border-none rounded-3xl p-6 text-6xl md:text-8xl font-black uppercase italic tracking-tighter text-white focus:outline-none focus:ring-4 focus:ring-brand-green/30 min-h-[180px] resize-none overflow-hidden text-center"
+                  className="w-full bg-white/10 border-none rounded-3xl p-6 text-6xl md:text-8xl font-black uppercase italic tracking-tighter text-white focus:outline-none focus:ring-4 focus:ring-brand-green/30 min-h-[180px] resize-none overflow-hidden"
                 />
                 <textarea 
                   value={config.heroSubtitle}
                   onChange={(e) => updateHeroConfig({ heroSubtitle: e.target.value })}
-                  className="w-full bg-white/5 border-none rounded-3xl p-6 text-xl md:text-2xl font-medium italic text-white/80 focus:outline-none focus:ring-4 focus:ring-brand-green/30 min-h-[120px] resize-none text-center"
+                  className="w-full bg-white/5 border-none rounded-3xl p-6 text-xl md:text-2xl font-medium italic text-white/80 focus:outline-none focus:ring-4 focus:ring-brand-green/30 min-h-[120px] resize-none"
                 />
               </div>
             ) : (
-              <div className="max-w-4xl">
-                <h1 className="text-6xl md:text-9xl font-black mb-8 tracking-tighter leading-[0.85] uppercase italic animate-in fade-in slide-in-from-bottom duration-700">
+              <>
+                <h1 className="text-6xl md:text-9xl font-black mb-8 tracking-tighter leading-[0.85] uppercase italic animate-in fade-in slide-in-from-left duration-700">
                   {config.heroTitle}
                 </h1>
-                <p className="text-xl md:text-3xl font-medium mb-12 text-brand-light opacity-80 italic animate-in fade-in slide-in-from-bottom delay-200 duration-700">
+                <p className="text-xl md:text-3xl font-medium mb-12 text-brand-light opacity-80 max-w-2xl border-l-8 border-brand-green pl-8 italic animate-in fade-in slide-in-from-left delay-200 duration-700">
                   {config.heroSubtitle}
                 </p>
-              </div>
+              </>
             )}
             
-            <div className="flex flex-col sm:flex-row gap-6 mt-16 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 mt-16">
               <button onClick={onBookingClick} className="px-12 py-6 bg-brand-green text-brand-blue rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all hover:scale-105 shadow-[0_20px_40px_rgba(168,211,142,0.4)]">
                 Prenota l'Arena
               </button>
@@ -170,6 +170,54 @@ const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBooki
               >
                 <i className="fab fa-whatsapp text-lg"></i> Contattaci via WhatsApp
               </button>
+            </div>
+          </div>
+
+          {/* Availability Widget */}
+          <div className="lg:col-span-5 hidden lg:block">
+            <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[3rem] p-10 shadow-2xl animate-in fade-in slide-in-from-right duration-1000">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h3 className="text-2xl font-black uppercase italic tracking-tighter">Live Arena</h3>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-green">Disponibilità Oggi</p>
+                </div>
+                <div className="w-12 h-12 bg-brand-green rounded-2xl flex items-center justify-center text-brand-blue shadow-lg animate-pulse">
+                  <i className="fas fa-bolt"></i>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-10">
+                {[
+                  { name: 'Campo Centrale', type: 'Padel', slots: 4, status: 'available' },
+                  { name: 'Arena 2', type: 'Padel', slots: 2, status: 'limited' },
+                  { name: 'Court 1', type: 'Tennis', slots: 0, status: 'full' },
+                ].map((court, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all cursor-pointer group" onClick={() => window.open(config.externalBookingUrl, '_blank')}>
+                    <div className="flex items-center gap-4">
+                      <div className={`w-2 h-2 rounded-full ${court.status === 'available' ? 'bg-brand-green shadow-[0_0_10px_#A8D38E]' : court.status === 'limited' ? 'bg-yellow-400' : 'bg-red-500'}`}></div>
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-tight">{court.name}</p>
+                        <p className="text-[8px] font-black uppercase opacity-40 tracking-widest">{court.type}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-xs font-black ${court.status === 'full' ? 'text-white/20' : 'text-brand-green'}`}>
+                        {court.status === 'full' ? 'PIENO' : `${court.slots} SLOT`}
+                      </p>
+                      <p className="text-[8px] font-black uppercase opacity-40 tracking-widest group-hover:text-brand-green transition-colors">Prenota ora</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button 
+                onClick={() => window.open(config.externalBookingUrl, '_blank')}
+                className="w-full py-5 bg-white text-brand-blue rounded-full font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-brand-green transition-all flex items-center justify-center gap-3"
+              >
+                Vedi Tutti gli Orari <i className="fas fa-arrow-right text-[8px]"></i>
+              </button>
+              
+              <p className="text-[8px] font-black uppercase opacity-30 text-center mt-6 tracking-widest">Sincronizzato con il gestionale in tempo reale</p>
             </div>
           </div>
         </div>
