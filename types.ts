@@ -74,6 +74,14 @@ export interface SectionStyle {
   bgImageUrl?: string;
   bgOpacity?: number;
   parallax?: boolean;
+  brightness?: number;
+  contrast?: number;
+  saturate?: number;
+  blur?: number;
+  grayscale?: number;
+  sepia?: number;
+  hueRotate?: number;
+  invert?: number;
 }
 
 export interface SectionContent {

@@ -23,7 +23,15 @@ const DEFAULT_STYLE: SectionStyle = {
   bgGradient: '',
   bgImageUrl: '',
   bgOpacity: 1,
-  parallax: false
+  parallax: false,
+  brightness: 1,
+  contrast: 1,
+  saturate: 1,
+  blur: 0,
+  grayscale: 0,
+  sepia: 0,
+  hueRotate: 0,
+  invert: 0
 };
 
 const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdateConfig }) => {
@@ -565,6 +573,33 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                       <label className="text-[8px] font-bold uppercase block mb-2 text-left">Opacità Sfondo ({Math.round((activeSection.style?.bgOpacity ?? 1) * 100)}%)</label>
                       <input type="range" min="0" max="1" step="0.05" value={activeSection.style?.bgOpacity ?? 1} onChange={e => updateSectionStyle(activeSection.id, { bgOpacity: +e.target.value })} className="w-full accent-brand-blue" />
                     </div>
+
+                    <div className="space-y-4">
+                      <h5 className="text-[7px] font-black uppercase opacity-30 mt-4">Filtri Sfondo</h5>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                        {[
+                          { label: 'Luminosità', key: 'brightness', min: 0, max: 2 },
+                          { label: 'Contrasto', key: 'contrast', min: 0, max: 2 },
+                          { label: 'Grigio', key: 'grayscale', min: 0, max: 1 },
+                          { label: 'Seppia', key: 'sepia', min: 0, max: 1 },
+                          { label: 'Sfocatura', key: 'blur', min: 0, max: 20 },
+                          { label: 'Saturazione', key: 'saturate', min: 0, max: 3 },
+                          { label: 'Inverti', key: 'invert', min: 0, max: 1 },
+                          { label: 'Hue', key: 'hueRotate', min: 0, max: 360 },
+                        ].map(f => (
+                          <div key={f.key}>
+                            <label className="text-[7px] font-bold uppercase block mb-1">{f.label}</label>
+                            <input 
+                              type="range" 
+                              min={f.min} max={f.max} step={f.key === 'hueRotate' ? 1 : 0.1} 
+                              value={(activeSection.style as any)[f.key] ?? (['brightness', 'contrast', 'saturate'].includes(f.key) ? 1 : 0)} 
+                              onChange={e => updateSectionStyle(activeSection.id, { [f.key]: +e.target.value })} 
+                              className="w-full accent-brand-green h-1" 
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -605,18 +640,32 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
         
         // Define dynamic background styles
         const bgStyles: React.CSSProperties = {};
+        let bgImageElement = null;
         
         if (sStyle.variant === 'solid') {
           bgStyles.backgroundColor = sStyle.bgColor;
         } else if (sStyle.variant === 'custom') {
           bgStyles.background = sStyle.bgGradient;
         } else if (sStyle.variant === 'image-bg') {
-          bgStyles.backgroundImage = `linear-gradient(rgba(255,255,255,${1 - (sStyle.bgOpacity ?? 1)}), rgba(255,255,255,${1 - (sStyle.bgOpacity ?? 1)})), url(${sStyle.bgImageUrl})`;
-          bgStyles.backgroundSize = 'cover';
-          bgStyles.backgroundPosition = 'center';
-          if (sStyle.parallax) {
-            bgStyles.backgroundAttachment = 'fixed';
-          }
+          const filterStr = `brightness(${sStyle.brightness ?? 1}) contrast(${sStyle.contrast ?? 1}) grayscale(${sStyle.grayscale ?? 0}) sepia(${sStyle.sepia ?? 0}) blur(${sStyle.blur ?? 0}px) hue-rotate(${sStyle.hueRotate ?? 0}deg) saturate(${sStyle.saturate ?? 1}) invert(${sStyle.invert ?? 0})`;
+          
+          bgImageElement = (
+            <div 
+              className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
+              style={{ borderRadius: 'inherit' }}
+            >
+              <div 
+                className="w-full h-full"
+                style={{
+                  backgroundImage: `linear-gradient(rgba(255,255,255,${1 - (sStyle.bgOpacity ?? 1)}), rgba(255,255,255,${1 - (sStyle.bgOpacity ?? 1)})), url(${sStyle.bgImageUrl})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundAttachment: sStyle.parallax ? 'fixed' : 'scroll',
+                  filter: filterStr
+                }}
+              />
+            </div>
+          );
         } else if (sStyle.variant === 'glass') {
           bgStyles.backgroundColor = 'rgba(255, 255, 255, 0.4)';
           bgStyles.backdropFilter = 'blur(16px)';
@@ -651,6 +700,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
               boxShadow: sStyle.shadow !== 'none' ? '0 20px 50px rgba(0,0,0,0.1)' : 'none'
             }}
           >
+            {bgImageElement}
             {/* Section Control Toolbar */}
             {isEditMode && (
               <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-brand-blue text-white px-8 py-3 rounded-full flex gap-6 shadow-2xl z-[60] opacity-0 group-hover/section:opacity-100 transition-opacity">
