@@ -8,7 +8,6 @@ interface HeroProps {
   isEditMode: boolean;
   onUpdateConfig: (config: SiteConfig) => void;
   onBookingClick: () => void;
-  onDiscoverClick: () => void;
 }
 
 const HERO_GRADIENTS = [
@@ -18,7 +17,7 @@ const HERO_GRADIENTS = [
   { name: 'Neon Match', value: 'linear-gradient(135deg, #4E5B83, #A8D38E)' }
 ];
 
-const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBookingClick, onDiscoverClick }) => {
+const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBookingClick }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showDesignPanel, setShowDesignPanel] = useState(false);
 
@@ -162,8 +161,14 @@ const Hero: React.FC<HeroProps> = ({ config, isEditMode, onUpdateConfig, onBooki
               <button onClick={onBookingClick} className="px-12 py-6 bg-brand-green text-brand-blue rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all hover:scale-105 shadow-[0_20px_40px_rgba(168,211,142,0.4)]">
                 Prenota l'Arena
               </button>
-              <button onClick={onDiscoverClick} className="px-12 py-6 bg-white/10 backdrop-blur-xl text-white border-2 border-white/40 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all hover:bg-white hover:text-brand-blue shadow-xl">
-                Esplora lo Spazio
+              <button 
+                onClick={() => {
+                  const cleanNumber = config.whatsapp.replace(/\D/g, '');
+                  window.open(`https://wa.me/${cleanNumber}`, '_blank');
+                }} 
+                className="px-12 py-6 bg-[#25D366] text-white rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all hover:scale-105 shadow-[0_20px_40px_rgba(37,211,102,0.3)] flex items-center justify-center gap-3"
+              >
+                <i className="fab fa-whatsapp text-lg"></i> Contattaci via WhatsApp
               </button>
             </div>
           </div>

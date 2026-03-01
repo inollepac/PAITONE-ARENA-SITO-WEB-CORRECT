@@ -139,7 +139,7 @@ const App: React.FC = () => {
       <main className={`flex-grow ${isAuthenticated ? 'pt-12' : 'pt-24'}`}>
         <AnimatePresence mode="wait">
           <motion.div key={activePage} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            {activePage === 'home' && <Hero config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} onBookingClick={() => navigateTo('booking')} onDiscoverClick={() => navigateTo('space')} />}
+            {activePage === 'home' && <Hero config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} onBookingClick={() => navigateTo('booking')} />}
             {renderPage()}
           </motion.div>
         </AnimatePresence>
