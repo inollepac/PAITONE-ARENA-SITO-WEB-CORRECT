@@ -1,32 +1,116 @@
 
 import React from 'react';
+import { SiteConfig } from '../types';
 
-const CoursesPage: React.FC = () => {
+const CoursesPage: React.FC<{
+  config: SiteConfig;
+  isEditMode: boolean;
+  onUpdateConfig: (config: SiteConfig) => void;
+}> = ({ config, isEditMode, onUpdateConfig }) => {
+  const updateCoursesPage = (updates: Partial<SiteConfig['coursesPage']>) => {
+    onUpdateConfig({
+      ...config,
+      coursesPage: { ...config.coursesPage, ...updates }
+    });
+  };
+
   return (
     <div className="py-20 max-w-7xl mx-auto px-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
         <div className="space-y-6">
             <span className="text-brand-green font-black tracking-[0.4em] uppercase text-xs mb-4 block">Competenza Scientifica</span>
-            <h1 className="text-6xl font-black uppercase tracking-tighter text-brand-blue italic leading-[0.9]">Impara davvero, staccando tutto.</h1>
-            <p className="text-xl text-brand-blue/60 leading-relaxed font-medium italic border-l-4 border-brand-green pl-6">
-              Il nostro team è composto da Dottori in Scienze Motorie e Tecnici qualificati dalle federazioni. Non ti insegniamo solo a colpire la pallina: ti insegniamo la biomeccanica del movimento per giocare meglio e più a lungo.
-            </p>
+            {isEditMode ? (
+              <div className="space-y-4">
+                <input 
+                  value={config.coursesPage.title}
+                  onChange={e => updateCoursesPage({ title: e.target.value })}
+                  className="w-full text-6xl font-black uppercase tracking-tighter text-brand-blue italic leading-[0.9] bg-brand-blue/5 border-2 border-brand-green rounded-2xl p-4 outline-none"
+                />
+                <textarea 
+                  value={config.coursesPage.subtitle}
+                  onChange={e => updateCoursesPage({ subtitle: e.target.value })}
+                  className="w-full text-xl text-brand-blue/60 leading-relaxed font-medium italic border-l-4 border-brand-green pl-6 bg-brand-blue/5 outline-none h-32"
+                />
+              </div>
+            ) : (
+              <>
+                <h1 className="text-6xl font-black uppercase tracking-tighter text-brand-blue italic leading-[0.9]">{config.coursesPage.title}</h1>
+                <p className="text-xl text-brand-blue/60 leading-relaxed font-medium italic border-l-4 border-brand-green pl-6">
+                  {config.coursesPage.subtitle}
+                </p>
+              </>
+            )}
         </div>
-        <img src="https://images.unsplash.com/photo-1599474924187-334a4ae5bd3c?auto=format&fit=crop&q=80&w=1000" className="rounded-[4rem] shadow-2xl h-96 w-full object-cover border-4 border-brand-green/20" alt="Course" />
+        <div className="relative group">
+          <img src={config.coursesPage.imageUrl} className="rounded-[4rem] shadow-2xl h-96 w-full object-cover border-4 border-brand-green/20" alt="Course" />
+          {isEditMode && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-[4rem] opacity-0 group-hover:opacity-100 transition-opacity">
+              <input 
+                type="text" 
+                value={config.coursesPage.imageUrl} 
+                onChange={e => updateCoursesPage({ imageUrl: e.target.value })}
+                className="w-3/4 p-2 rounded-lg text-xs"
+                placeholder="URL Immagine..."
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mb-24 bg-brand-blue p-12 md:p-20 rounded-[5rem] text-white relative overflow-hidden">
           <div className="circle-accent w-64 h-64 -top-32 -right-32"></div>
           <div className="relative z-10 max-w-3xl">
-              <h2 className="text-4xl font-black uppercase italic mb-8">Il "Metodo Arena"</h2>
+              {isEditMode ? (
+                <input 
+                  value={config.coursesPage.methodTitle}
+                  onChange={e => updateCoursesPage({ methodTitle: e.target.value })}
+                  className="text-4xl font-black uppercase italic mb-8 bg-white/10 border-2 border-brand-green rounded-xl p-2 outline-none w-full"
+                />
+              ) : (
+                <h2 className="text-4xl font-black uppercase italic mb-8">{config.coursesPage.methodTitle}</h2>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                   <div>
-                      <h4 className="text-brand-green font-black uppercase tracking-widest text-sm mb-4">Base Accademica</h4>
-                      <p className="text-white/60 text-sm leading-relaxed">Programmi di allenamento strutturati secondo i più recenti studi universitari sulla fisiologia dell'esercizio e sul coordinamento motorio.</p>
+                      {isEditMode ? (
+                        <div className="space-y-4">
+                          <input 
+                            value={config.coursesPage.methodBaseTitle}
+                            onChange={e => updateCoursesPage({ methodBaseTitle: e.target.value })}
+                            className="text-brand-green font-black uppercase tracking-widest text-sm mb-4 bg-white/10 border border-brand-green/30 rounded-lg p-1 outline-none w-full"
+                          />
+                          <textarea 
+                            value={config.coursesPage.methodBaseDesc}
+                            onChange={e => updateCoursesPage({ methodBaseDesc: e.target.value })}
+                            className="text-white/60 text-sm leading-relaxed bg-white/10 border border-brand-green/30 rounded-lg p-2 outline-none w-full h-24"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <h4 className="text-brand-green font-black uppercase tracking-widest text-sm mb-4">{config.coursesPage.methodBaseTitle}</h4>
+                          <p className="text-white/60 text-sm leading-relaxed">{config.coursesPage.methodBaseDesc}</p>
+                        </>
+                      )}
                   </div>
                   <div>
-                      <h4 className="text-brand-green font-black uppercase tracking-widest text-sm mb-4">Focus Federale</h4>
-                      <p className="text-white/60 text-sm leading-relaxed">Aggiornamento costante con le metodologie delle federazioni di Tennis e Padel per garantire standard tecnici d'eccellenza.</p>
+                      {isEditMode ? (
+                        <div className="space-y-4">
+                          <input 
+                            value={config.coursesPage.methodFocusTitle}
+                            onChange={e => updateCoursesPage({ methodFocusTitle: e.target.value })}
+                            className="text-brand-green font-black uppercase tracking-widest text-sm mb-4 bg-white/10 border border-brand-green/30 rounded-lg p-1 outline-none w-full"
+                          />
+                          <textarea 
+                            value={config.coursesPage.methodFocusDesc}
+                            onChange={e => updateCoursesPage({ methodFocusDesc: e.target.value })}
+                            className="text-white/60 text-sm leading-relaxed bg-white/10 border border-brand-green/30 rounded-lg p-2 outline-none w-full h-24"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <h4 className="text-brand-green font-black uppercase tracking-widest text-sm mb-4">{config.coursesPage.methodFocusTitle}</h4>
+                          <p className="text-white/60 text-sm leading-relaxed">{config.coursesPage.methodFocusDesc}</p>
+                        </>
+                      )}
                   </div>
               </div>
           </div>

@@ -61,7 +61,40 @@ export const INITIAL_SITE_CONFIG: SiteConfig = {
     { id: 'booking', navLabel: 'Prenota', title: 'Prenotazione Istantanea', description: 'Entra in campo con un semplice click.', enabled: true },
     { id: 'contacts', navLabel: 'Contatti', title: 'Sempre a tua disposizione.', description: 'Hai domande? Il nostro team è pronto ad aiutarti.', enabled: true },
     { id: 'staff', navLabel: '', title: 'Esperti del Movimento', description: 'Passione sportiva supportata da percorsi accademici e federali.', enabled: true },
-  ]
+  ],
+  sportsPage: {
+    title: 'Tanto sport, zero stress.',
+    subtitle: 'Abbiamo campi nuovi e un ambiente accogliente. Non siamo il circolo più lussuoso del mondo, ma siamo il posto giusto se cerchi una partita tra amici e un\'atmosfera dove stare bene e divertirsi senza pensieri.',
+    tennisTitle: 'Il fascino della racchetta',
+    tennisDescription: 'I nostri campi in terra rossa e resina sono nuovi e curati, ideali per chi vuole giocare una partita in relax o sfidare i propri limiti senza la pressione dei grandi club esclusivi.',
+    padelTitle: 'Puro divertimento',
+    padelDescription: 'Campi panoramici nuovi fiammanti. Il padel da noi è sinonimo di risate, scambi veloci e un bel terzo tempo al bar con i compagni di gioco.',
+    footerTitle: 'Livelli per tutti',
+    footerDescription: 'Non importa se hai appena iniziato o se giochi da anni. Qui l\'unica cosa che conta è che ti trovi bene in campo con persone del tuo stesso livello.'
+  },
+  coursesPage: {
+    title: 'Impara davvero, staccando tutto.',
+    subtitle: 'Il nostro team è composto da Dottori in Scienze Motorie e Tecnici qualificati dalle federazioni. Non ti insegniamo solo a colpire la pallina: ti insegniamo la biomeccanica del movimento per giocare meglio e più a lungo.',
+    imageUrl: 'https://images.unsplash.com/photo-1599474924187-334a4ae5bd3c?auto=format&fit=crop&q=80&w=1000',
+    methodTitle: 'Il "Metodo Arena"',
+    methodBaseTitle: 'Base Accademica',
+    methodBaseDesc: 'Programmi di allenamento strutturati secondo i più recenti studi universitari sulla fisiologia dell\'esercizio e sul coordinamento motorio.',
+    methodFocusTitle: 'Focus Federale',
+    methodFocusDesc: 'Aggiornamento costante con le metodologie delle federazioni di Tennis e Padel per garantire standard tecnici d\'eccellenza.'
+  },
+  communityPage: {
+    title: 'La nostra Community',
+    subtitle: 'Oltre il rettangolo di gioco, creiamo legami che durano nel tempo.',
+    stats: [
+      { label: 'Soci Attivi', value: '450+' },
+      { label: 'Tornei / Anno', value: '24' },
+      { label: 'Ore Giocate', value: '12k+' }
+    ]
+  },
+  spacePage: {
+    title: 'Il Nostro Spazio',
+    subtitle: 'Un\'arena moderna progettata per il tuo benessere sportivo.'
+  }
 };
 
 export const INITIAL_COURTS: Court[] = [

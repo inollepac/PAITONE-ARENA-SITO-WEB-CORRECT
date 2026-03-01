@@ -132,6 +132,36 @@ export interface SiteConfig {
   workingHours: string;
   externalBookingUrl: string;
   sections: SectionContent[]; 
+  /* Sub-pages content */
+  sportsPage: {
+    title: string;
+    subtitle: string;
+    tennisTitle: string;
+    tennisDescription: string;
+    padelTitle: string;
+    padelDescription: string;
+    footerTitle: string;
+    footerDescription: string;
+  };
+  coursesPage: {
+    title: string;
+    subtitle: string;
+    imageUrl: string;
+    methodTitle: string;
+    methodBaseTitle: string;
+    methodBaseDesc: string;
+    methodFocusTitle: string;
+    methodFocusDesc: string;
+  };
+  communityPage: {
+    title: string;
+    subtitle: string;
+    stats: { label: string; value: string }[];
+  };
+  spacePage: {
+    title: string;
+    subtitle: string;
+  };
 }
 
 export type Page = string;

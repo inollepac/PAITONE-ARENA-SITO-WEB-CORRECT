@@ -11,8 +11,13 @@ interface OurSpaceProps {
 const OurSpace: React.FC<OurSpaceProps> = ({ config, isEditMode, onUpdateConfig }) => {
   const images = config.spaceImageUrls;
 
-  const updateConfig = (updates: Partial<SiteConfig>) => {
-    if (onUpdateConfig) onUpdateConfig({ ...config, ...updates });
+  const updateSpacePage = (updates: Partial<SiteConfig['spacePage']>) => {
+    if (onUpdateConfig) {
+      onUpdateConfig({
+        ...config,
+        spacePage: { ...config.spacePage, ...updates }
+      });
+    }
   };
   
   return (
@@ -20,20 +25,28 @@ const OurSpace: React.FC<OurSpaceProps> = ({ config, isEditMode, onUpdateConfig 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div className="space-y-8 text-left">
             {isEditMode ? (
-              <textarea 
-                value={config.heroSubtitle || "Uno spazio per ritrovarsi."}
-                onChange={e => updateConfig({ heroSubtitle: e.target.value })}
-                className="w-full text-5xl font-extrabold leading-tight uppercase italic text-brand-blue tracking-tighter bg-white/50 border-2 border-brand-green/30 rounded-3xl p-4 focus:ring-4 focus:ring-brand-green/20 outline-none"
-              />
+              <div className="space-y-4">
+                <input 
+                  value={config.spacePage.title}
+                  onChange={e => updateSpacePage({ title: e.target.value })}
+                  className="w-full text-5xl font-extrabold leading-tight uppercase italic text-brand-blue tracking-tighter bg-white/50 border-2 border-brand-green/30 rounded-3xl p-4 focus:ring-4 focus:ring-brand-green/20 outline-none"
+                />
+                <textarea 
+                  value={config.spacePage.subtitle}
+                  onChange={e => updateSpacePage({ subtitle: e.target.value })}
+                  className="w-full text-xl text-brand-blue/60 leading-relaxed font-medium italic border-l-4 border-brand-green pl-6 bg-white/50 border-2 border-brand-green/30 rounded-3xl p-4 outline-none h-32"
+                />
+              </div>
             ) : (
-              <h1 className="text-5xl font-extrabold leading-tight uppercase italic text-brand-blue tracking-tighter">
-                Uno spazio per ritrovarsi.
-              </h1>
+              <>
+                <h1 className="text-5xl font-extrabold leading-tight uppercase italic text-brand-blue tracking-tighter">
+                  {config.spacePage.title}
+                </h1>
+                <p className="text-xl text-brand-blue/60 leading-relaxed font-medium italic border-l-4 border-brand-green pl-6">
+                  {config.spacePage.subtitle}
+                </p>
+              </>
             )}
-
-            <p className="text-xl text-brand-blue/60 leading-relaxed font-medium italic border-l-4 border-brand-green pl-6">
-              Il nostro centro non è solo un insieme di campi, ma un ecosistema pensato per il tuo benessere. Dalla filosofia della socialità post-partita alla cura maniacale dei dettagli.
-            </p>
             
             <div className="space-y-6">
                 <div className="p-6 bg-white rounded-3xl border border-brand-green/10 shadow-sm flex gap-6">

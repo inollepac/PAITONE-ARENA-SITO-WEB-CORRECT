@@ -2,16 +2,45 @@
 import React from 'react';
 import { Event, SiteConfig } from '../types';
 
-const CommunityPage: React.FC<{ events: Event[], config: SiteConfig }> = ({ events, config }) => {
+const CommunityPage: React.FC<{ 
+  events: Event[], 
+  config: SiteConfig,
+  isEditMode: boolean,
+  onUpdateConfig: (config: SiteConfig) => void
+}> = ({ events, config, isEditMode, onUpdateConfig }) => {
+  const updateCommunityPage = (updates: Partial<SiteConfig['communityPage']>) => {
+    onUpdateConfig({
+      ...config,
+      communityPage: { ...config.communityPage, ...updates }
+    });
+  };
+
   return (
     <div className="py-20">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
             <div className="max-w-2xl">
-                <h1 className="text-5xl font-black mb-6 uppercase italic text-brand-blue tracking-tighter">Più di un circolo sportivo.</h1>
-                <p className="text-xl text-brand-blue/60 font-medium italic border-l-4 border-brand-green pl-6">
-                    Organizziamo eventi, tornei e serate a tema perché lo sport è la scusa migliore per stare insieme.
-                </p>
+                {isEditMode ? (
+                  <div className="space-y-4">
+                    <input 
+                      value={config.communityPage.title}
+                      onChange={e => updateCommunityPage({ title: e.target.value })}
+                      className="w-full text-5xl font-black uppercase italic text-brand-blue tracking-tighter bg-brand-blue/5 border-2 border-brand-green rounded-2xl p-4 outline-none"
+                    />
+                    <textarea 
+                      value={config.communityPage.subtitle}
+                      onChange={e => updateCommunityPage({ subtitle: e.target.value })}
+                      className="w-full text-xl text-brand-blue/60 font-medium italic border-l-4 border-brand-green pl-6 bg-brand-blue/5 outline-none h-24"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <h1 className="text-5xl font-black mb-6 uppercase italic text-brand-blue tracking-tighter">{config.communityPage.title}</h1>
+                    <p className="text-xl text-brand-blue/60 font-medium italic border-l-4 border-brand-green pl-6">
+                      {config.communityPage.subtitle}
+                    </p>
+                  </>
+                )}
             </div>
             <button className="bg-brand-blue text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-sm shadow-xl hover:bg-brand-green hover:text-brand-blue transition-all shrink-0">
                 Unisciti alla Community

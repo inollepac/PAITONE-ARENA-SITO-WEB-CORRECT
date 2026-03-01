@@ -89,9 +89,9 @@ const App: React.FC = () => {
     switch (activePage) {
       case 'home': return <HomeSections config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} onNavigate={navigateTo} events={events} courts={courts} />;
       case 'space': return <OurSpace config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} />;
-      case 'sports': return <SportsPage config={config} courts={courts} />;
-      case 'courses': return <CoursesPage />;
-      case 'community': return <CommunityPage events={events} config={config} />;
+      case 'sports': return <SportsPage config={config} courts={courts} isEditMode={isEditMode} onUpdateConfig={updateConfig} />;
+      case 'courses': return <CoursesPage config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} />;
+      case 'community': return <CommunityPage events={events} config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} />;
       case 'booking': return <BookingSystem config={config} courts={courts} />;
       case 'contacts': return <ContactsPage config={config} />;
       default: return <HomeSections config={config} isEditMode={isEditMode} onUpdateConfig={updateConfig} onNavigate={navigateTo} events={events} courts={courts} />;
