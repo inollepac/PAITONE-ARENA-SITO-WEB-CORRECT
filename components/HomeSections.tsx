@@ -82,20 +82,6 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
   };
 
   const updateElementStyle = (sId: string, elId: string, styleUpdates: any) => {
-    if (elId === 'title') {
-      const section = config.sections.find(s => s.id === sId);
-      if (section) {
-        updateSection(sId, { titleStyle: { ...(section.titleStyle || {}), ...styleUpdates } });
-      }
-      return;
-    }
-    if (elId === 'description') {
-      const section = config.sections.find(s => s.id === sId);
-      if (section) {
-        updateSection(sId, { descriptionStyle: { ...(section.descriptionStyle || {}), ...styleUpdates } });
-      }
-      return;
-    }
     const nextSections = config.sections.map(s => s.id === sId ? {
       ...s,
       elements: s.elements?.map(el => el.id === elId ? { 
@@ -154,27 +140,7 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
 
   const activeElement = useMemo(() => {
     if (!activeEditor) return null;
-    const section = config.sections.find(s => s.id === activeEditor.sId);
-    if (!section) return null;
-
-    if (activeEditor.elId === 'title') {
-      return {
-        id: 'title',
-        type: 'text',
-        content: section.title,
-        style: section.titleStyle || { fontSize: '48px', fontWeight: '900', textAlign: 'center', color: '#4E5B83' }
-      } as SectionElement;
-    }
-    if (activeEditor.elId === 'description') {
-      return {
-        id: 'description',
-        type: 'text',
-        content: section.description,
-        style: section.descriptionStyle || { fontSize: '20px', fontWeight: '500', textAlign: 'center', color: '#4E5B83', opacity: 0.6 }
-      } as SectionElement;
-    }
-
-    return section.elements?.find(el => el.id === activeEditor.elId);
+    return config.sections.find(s => s.id === activeEditor.sId)?.elements?.find(el => el.id === activeEditor.elId);
   }, [activeEditor, config.sections]);
 
   const activeSection = useMemo(() => {
@@ -759,68 +725,20 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                   <input 
                     value={section.title || ''} 
                     onChange={e => updateSection(section.id, { title: e.target.value })} 
-                    onClick={(e) => { e.stopPropagation(); setActiveEditor({ sId: section.id, elId: 'title' }); }}
-                    className={`w-full text-5xl font-black uppercase italic text-center bg-white/20 backdrop-blur-md border-2 ${activeEditor?.elId === 'title' && activeEditor?.sId === section.id ? 'border-brand-green ring-4 ring-brand-green/30' : 'border-brand-green/30'} rounded-2xl p-4 text-brand-blue outline-none cursor-pointer transition-all`}
-                    style={{
-                      color: section.titleStyle?.color,
-                      fontSize: section.titleStyle?.fontSize,
-                      fontWeight: section.titleStyle?.fontWeight,
-                      textAlign: section.titleStyle?.textAlign,
-                      letterSpacing: section.titleStyle?.letterSpacing,
-                      textTransform: section.titleStyle?.textTransform,
-                      lineHeight: section.titleStyle?.lineHeight,
-                    }}
+                    className="w-full text-5xl font-black uppercase italic text-center bg-white/20 backdrop-blur-md border-2 border-brand-green rounded-2xl p-4 text-brand-blue outline-none"
                     placeholder="Titolo Sezione"
                   />
                   <textarea 
                     value={section.description || ''} 
                     onChange={e => updateSection(section.id, { description: e.target.value })} 
-                    onClick={(e) => { e.stopPropagation(); setActiveEditor({ sId: section.id, elId: 'description' }); }}
-                    className={`w-full text-xl italic text-center bg-white/20 backdrop-blur-md border-2 ${activeEditor?.elId === 'description' && activeEditor?.sId === section.id ? 'border-brand-green ring-4 ring-brand-green/30' : 'border-brand-green/30'} rounded-2xl p-4 text-brand-blue outline-none h-32 cursor-pointer transition-all`}
-                    style={{
-                      color: section.descriptionStyle?.color,
-                      fontSize: section.descriptionStyle?.fontSize,
-                      fontWeight: section.descriptionStyle?.fontWeight,
-                      textAlign: section.descriptionStyle?.textAlign,
-                      letterSpacing: section.descriptionStyle?.letterSpacing,
-                      textTransform: section.descriptionStyle?.textTransform,
-                      lineHeight: section.descriptionStyle?.lineHeight,
-                      opacity: section.descriptionStyle?.opacity ?? 0.6
-                    }}
+                    className="w-full text-xl opacity-60 italic text-center bg-white/20 backdrop-blur-md border-2 border-brand-green rounded-2xl p-4 text-brand-blue outline-none h-32"
                     placeholder="Descrizione della sezione..."
                   />
                 </div>
               ) : (
                 <>
-                  <h2 
-                    className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter leading-none"
-                    style={{
-                      color: section.titleStyle?.color,
-                      fontSize: section.titleStyle?.fontSize,
-                      fontWeight: section.titleStyle?.fontWeight,
-                      textAlign: section.titleStyle?.textAlign,
-                      letterSpacing: section.titleStyle?.letterSpacing,
-                      textTransform: section.titleStyle?.textTransform,
-                      lineHeight: section.titleStyle?.lineHeight,
-                    }}
-                  >
-                    {section.title}
-                  </h2>
-                  <p 
-                    className="text-xl italic max-w-3xl mx-auto"
-                    style={{
-                      color: section.descriptionStyle?.color,
-                      fontSize: section.descriptionStyle?.fontSize,
-                      fontWeight: section.descriptionStyle?.fontWeight,
-                      textAlign: section.descriptionStyle?.textAlign,
-                      letterSpacing: section.descriptionStyle?.letterSpacing,
-                      textTransform: section.descriptionStyle?.textTransform,
-                      lineHeight: section.descriptionStyle?.lineHeight,
-                      opacity: section.descriptionStyle?.opacity ?? 0.6
-                    }}
-                  >
-                    {section.description}
-                  </p>
+                  <h2 className="text-4xl md:text-7xl font-black uppercase italic tracking-tighter leading-none">{section.title}</h2>
+                  <p className="text-xl opacity-60 italic max-w-3xl mx-auto">{section.description}</p>
                 </>
               )}
 

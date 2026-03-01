@@ -93,8 +93,6 @@ export interface SectionContent {
   isCustom?: boolean;
   elements?: SectionElement[];
   style?: SectionStyle;
-  titleStyle?: SectionElement['style'];
-  descriptionStyle?: SectionElement['style'];
 }
 
 export interface LogoPlacementConfig {
