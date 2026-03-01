@@ -775,6 +775,16 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                       <motion.div 
                         layout
                         key={el.id} 
+                        drag={isEditMode}
+                        dragMomentum={false}
+                        onDragEnd={(_e, info) => {
+                          if (isEditMode) {
+                            updateElementStyle(section.id, el.id, { 
+                              x: Math.round((st.x || 0) + info.offset.x), 
+                              y: Math.round((st.y || 0) + info.offset.y) 
+                            });
+                          }
+                        }}
                         whileHover={st.hoverEffect && st.hoverEffect !== 'none' ? hoverVariants[st.hoverEffect] : {}}
                         onClick={(e) => {
                           if (isEditMode) {
@@ -782,10 +792,13 @@ const HomeSections: React.FC<HomeSectionsProps> = ({ config, isEditMode, onUpdat
                             setActiveEditor({ sId: section.id, elId: el.id });
                           }
                         }}
-                        className={`relative transition-all duration-300 ${isEditMode ? 'cursor-pointer hover:ring-2 hover:ring-brand-green/50 p-6 rounded-[3.5rem] bg-white shadow-xl' : ''} ${isSelected ? 'ring-4 ring-brand-green z-[50] shadow-[0_0_30px_#A8D38E]' : ''}`}
+                        className={`relative ${isEditMode ? 'cursor-grab active:cursor-grabbing hover:ring-2 hover:ring-brand-green/50 p-6 rounded-[3.5rem] bg-white shadow-xl' : 'transition-all duration-300'} ${isSelected ? 'ring-4 ring-brand-green z-[50] shadow-[0_0_30px_#A8D38E]' : ''}`}
                         style={{ 
                           width: el.type === 'text' ? '100%' : st.width || '320px',
-                          transform: `scale(${st.scale || 1}) translate(${st.x || 0}px, ${st.y || 0}px) rotate(${st.rotation || 0}deg)`,
+                          x: st.x || 0,
+                          y: st.y || 0,
+                          scale: st.scale || 1,
+                          rotate: st.rotation || 0,
                           zIndex: isSelected ? 100 : st.zIndex || 5,
                           opacity: st.opacity ?? 1,
                           boxShadow: st.shadow ? shadowMap[st.shadow as keyof typeof shadowMap] : 'none'
