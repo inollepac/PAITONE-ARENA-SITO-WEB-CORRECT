@@ -116,6 +116,7 @@ const App: React.FC = () => {
           onUpdateConfig={updateConfig} 
           onUpdateCourts={(c) => { setCourts(c); localStorage.setItem('arena_v2_courts', JSON.stringify(c)); }}
           onUpdateEvents={(e) => { setEvents(e); localStorage.setItem('arena_v2_events', JSON.stringify(e)); }}
+          onLogout={handleLogout}
         />
       );
     }
@@ -145,6 +146,7 @@ const App: React.FC = () => {
           onUndo={undo}
           canUndo={history.length > 0}
           onSave={() => updateConfig(config, false)}
+          onLogout={handleLogout}
         />
       )}
 

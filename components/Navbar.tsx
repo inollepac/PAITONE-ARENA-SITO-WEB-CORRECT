@@ -151,9 +151,19 @@ const Navbar: React.FC<NavbarProps> = ({
               <button 
                   onClick={() => onAdminToggle()}
                   className={`p-2.5 rounded-full transition ${isAdminActive ? 'bg-brand-green text-brand-blue' : 'text-brand-blue/30 hover:text-brand-blue'}`}
+                  title="Impostazioni"
               >
                   <i className="fas fa-cog text-sm"></i>
               </button>
+              {isAuthenticated && (
+                <button 
+                    onClick={onLogout}
+                    className="p-2.5 rounded-full text-red-400 hover:text-red-500 hover:bg-red-50 transition"
+                    title="Logout"
+                >
+                    <i className="fas fa-sign-out-alt text-sm"></i>
+                </button>
+              )}
             </div>
           </div>
 
@@ -164,6 +174,63 @@ const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden fixed inset-0 z-40 bg-white pt-24 px-6 flex flex-col gap-6"
+          >
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  onNavigate(item.id);
+                  setIsOpen(false);
+                }}
+                className="text-2xl font-black uppercase tracking-tighter text-brand-blue text-left border-b border-gray-100 pb-4"
+              >
+                {item.navLabel}
+              </button>
+            ))}
+            <button
+              onClick={() => {
+                onNavigate('booking');
+                setIsOpen(false);
+              }}
+              className="bg-brand-blue text-white w-full py-6 rounded-3xl font-black text-lg uppercase tracking-widest shadow-xl"
+            >
+              Prenota Ora
+            </button>
+            
+            <div className="mt-auto pb-12 flex flex-col gap-4">
+              <button
+                onClick={() => {
+                  onAdminToggle();
+                  setIsOpen(false);
+                }}
+                className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-gray-50 text-brand-blue font-black uppercase text-xs tracking-widest"
+              >
+                <i className="fas fa-cog"></i> Impostazioni
+              </button>
+              
+              {isAuthenticated && (
+                <button
+                  onClick={() => {
+                    onLogout();
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-red-50 text-red-500 font-black uppercase text-xs tracking-widest"
+                >
+                  <i className="fas fa-sign-out-alt"></i> Logout
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style>{`
         @keyframes shimmer {
